@@ -1,0 +1,360 @@
+/* =========================================
+   CORE & RESET
+   ========================================= */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: white;
+  overflow-x: hidden;
+}
+
+.page {
+  min-height: 100vh;
+  width: 100%;
+  display: block;
+}
+
+.hero-card {
+  position: relative;
+  width: 100%;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #eef2ff 0%, #dae7ff 100%);
+  padding: 20px 60px;
+  overflow: hidden;
+}
+
+/* =========================================
+   NAVBAR (CHỈNH SỬA)
+   ========================================= */
+.navbar {
+  display: flex;
+  align-items: center;
+  /* Đẩy nội dung sang phải vì đã xóa logo bên trái */
+  justify-content: flex-end; 
+  padding-top: 15px;
+  padding-bottom: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.nav-links {
+  display: flex;
+  /* Tăng khoảng cách để các nút cách đều và thoáng hơn */
+  gap: 50px; 
+  align-items: center;
+}
+
+.nav-links a {
+  text-decoration: none;
+  color: #666; /* Màu xám cho Practice, About Us */
+  font-size: 15px;
+  font-weight: 500;
+  transition: opacity 0.2s;
+}
+
+/* Class riêng cho chữ LogIn màu xanh */
+.nav-links a.text-blue {
+    color: #0084ff;
+    font-weight: 600;
+}
+
+.nav-links a:hover {
+  opacity: 0.7;
+}
+
+/* Nút Sign Up */
+.btn-primary.small {
+  background: #2b84ff; /* Màu xanh sáng giống ảnh */
+  color: white;
+  border: none;
+  padding: 12px 35px; /* Nút dài hơn chút */
+  border-radius: 30px;
+  font-weight: 500;
+  font-size: 15px;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(43, 132, 255, 0.25);
+}
+
+/* =========================================
+   HERO SECTION
+   ========================================= */
+.hero-content {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  max-width: 1200px;
+  margin: 40px auto 0;
+  height: calc(100vh - 100px);
+}
+
+.hero-left {
+  flex: 1.2;
+  position: relative;
+  height: 100%;
+}
+
+.hero-title {
+  font-size: 42px;
+  line-height: 1.2;
+  font-weight: 800;
+  color: #111;
+  margin-bottom: 20px;
+  position: relative;
+  z-index: 10;
+}
+
+/* =========================================
+   IMAGE & CHIPS (CHỈNH SỬA VỊ TRÍ)
+   ========================================= */
+.image-floating-wrapper {
+  position: relative;
+  width: 100%;
+  height: 600px;
+  margin-top: -20px;
+}
+
+.hero-image-left {
+  position: absolute;
+  height: 550px;
+  width: auto;
+  bottom: 90;
+  left: 45%;
+  transform: translateX(-50%);
+  z-index: 2;
+  object-fit: contain;
+}
+
+/* Style chung nút trôi */
+.floating-chip {
+  position: absolute;
+  background: white;
+  padding: 14px 45px;
+  font-weight: 700;
+  font-size: 16px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+  z-index: 3;
+}
+
+/* Nút TEST: Dời lên cao và sang phải hơn để không đụng đầu */
+.chip-test {
+  top: 80px; 
+  right: 100px; /* Cách xa người mẫu hơn */
+  color: #0084ff;
+  border-radius: 30px 30px 30px 0;
+}
+
+/* Nút COURSES: Dời xuống thấp và sang trái hơn để không đụng tay */
+.chip-courses {
+  bottom: -10px;
+  left: -50px; /* Đẩy hẳn sang trái */
+  color: #0084ff;
+  border-radius: 30px 0 30px 30px;
+}
+
+/* =========================================
+   DECORATION
+   ========================================= */
+.circle-deco {
+  position: absolute;
+  border-radius: 50%;
+  border: 15px solid #0084ff;
+  z-index: 1;
+  opacity: 0.9;
+}
+
+.circle-top-left {
+  width: 100px;
+  height: 100px;
+  top: 240px;
+  left: 90px;
+}
+
+.circle-bottom-center {
+  width: 90px;
+  height: 90px;
+  bottom: 20px;
+  left: 42%; 
+  transform: translateX(-50%);
+}
+
+/* =========================================
+   RIGHT CARD (FORM)
+   ========================================= */
+.signup-card-container {
+  flex: 0.8;
+  display: flex;
+  justify-content: flex-end;
+  padding-top: 20px;
+}
+
+.signup-card {
+  background: white;
+  border-radius: 40px;
+  padding: 40px 50px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 30px 60px rgba(13, 71, 161, 0.15);
+  text-align: center;
+}
+
+.form-logo {
+  font-size: 36px;
+  font-weight: 800;
+  color: #0d47a1;
+  margin-bottom: 30px;
+  letter-spacing: -1px;
+}
+.form-logo span { color: #0d47a1; }
+
+.form-group { margin-bottom: 20px; position: relative; }
+
+.form-input {
+  width: 100%;
+  padding: 18px 20px;
+  border-radius: 12px;
+  border: 1px solid #f0f0f0;
+  background: white;
+  font-size: 14px;
+  outline: none;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+  transition: all 0.3s;
+}
+.form-input:focus {
+  border-color: #0084ff;
+  box-shadow: 0 4px 15px rgba(0, 132, 255, 0.15);
+}
+.form-input::placeholder { color: #ccc; }
+
+.password-icon {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #ccc;
+  cursor: pointer;
+}
+
+.btn-register {
+  width: 100%;
+  margin-top: 10px;
+  background: #0084ff;
+  color: white;
+  border: none;
+  padding: 18px;
+  border-radius: 30px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 10px 20px rgba(0, 132, 255, 0.3);
+  transition: transform 0.2s;
+}
+.btn-register:hover { transform: translateY(-2px); }
+
+.form-footer { margin-top: 20px; font-size: 13px; color: #888; }
+.link-blue { color: #0084ff; font-weight: 700; text-decoration: none; margin-left: 5px; }
+
+.social-separator { margin: 30px 0; font-size: 12px; color: #bbb; }
+
+.social-icons { display: flex; justify-content: center; gap: 25px; margin-bottom: 20px; }
+.social-btn {
+  background: none;
+  border: none;
+  font-size: 28px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.social-btn:hover { transform: scale(1.1); }
+
+.legal-text { font-size: 10px; color: #ccc; line-height: 1.4; padding: 0 10px; }
+
+/* RESPONSIVE */
+@media (max-width: 1024px) {
+  .hero-content { flex-direction: column; height: auto; align-items: center; }
+  .hero-left { width: 100%; margin-bottom: 50px; display: flex; flex-direction: column; align-items: center; text-align: center; }
+  .image-floating-wrapper { height: 500px; }
+  
+  /* Reset vị trí trên mobile để không bị tràn màn hình */
+  .chip-test { right: 10%; top: 20px; }
+  .chip-courses { left: 10%; bottom: 50px; }
+  
+  .signup-card-container { width: 100%; justify-content: center; padding-bottom: 50px; }
+}
+
+/* --- THÊM VÀO CUỐI FILE start.css --- */
+
+/* Text thông báo validation */
+.validation-message {
+  font-size: 12px;
+  margin-top: 8px;
+  text-align: left;
+  font-weight: 500;
+  padding-left: 5px;
+  transition: all 0.3s ease;
+}
+
+/* Màu đỏ cho lỗi */
+.msg-error {
+  color: #ff3b30; /* Màu đỏ iPhone */
+}
+
+/* Màu xanh cho thành công */
+.msg-success {
+  color: #34c759; /* Màu xanh lá iPhone */
+}
+
+/* Khi có lỗi, viền input đổi màu đỏ */
+.input-error {
+  border-color: #ff3b30 !important;
+  box-shadow: 0 0 0 4px rgba(255, 59, 48, 0.1) !important;
+}
+
+/* Khi thành công, viền input đổi màu xanh */
+.input-success {
+  border-color: #34c759 !important;
+  box-shadow: 0 0 0 4px rgba(52, 199, 89, 0.1) !important;
+}
+
+/* --- THÊM VÀO CUỐI FILE start.css --- */
+
+/* Giao diện khi đăng ký thành công */
+.success-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 300px;
+  animation: fadeIn 0.5s ease;
+}
+
+.icon-success {
+  font-size: 80px;
+  color: #34c759; /* Màu xanh lá */
+  margin-bottom: 20px;
+}
+
+.success-title {
+  font-size: 24px;
+  font-weight: 800;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.success-desc {
+  font-size: 14px;
+  color: #666;
+  margin-bottom: 30px;
+}
+
+/* Hiệu ứng hiện dần */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
