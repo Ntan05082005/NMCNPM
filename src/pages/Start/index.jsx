@@ -26,12 +26,13 @@ export default function LogIn() {
           {/* LEFT SIDE – TEXT */}
           <section className="hero-left">
             <h1 className="hero-title">
-              <span>Building</span>
-              <br />
-              <span className="accent">Tomorrow,</span>{" "}
-              <span>One</span>
-              <br />
-              <span>Line At A Time</span>
+              <span className="line1">
+              Building <span className="accent">Tomorrow</span>
+              </span>
+               <br />
+
+              <span className="line2"> One Line At A Time
+              </span>
             </h1>
 
             <p className="hero-sub">
