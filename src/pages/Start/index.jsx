@@ -1,9 +1,12 @@
 import React from "react";
 import "./start.css";
 import heroMan from "../../assets/hero-women.png";
-export default function LogIn() {
+import { Link } from "react-router-dom";
+
+
+export default function Start() {
   return (
-    <div className="page">
+    <div className="start-page">
       <div className="hero-card">
         {/* NAVBAR */}
         <header className="navbar">
@@ -26,30 +29,26 @@ export default function LogIn() {
           {/* LEFT SIDE – TEXT */}
           <section className="hero-left">
             <h1 className="hero-title">
-              <span className="line1">
-              Building <span className="accent">Tomorrow</span>
-              </span>
+              <span className="line1"> Building Tomorrow</span>
                <br />
 
               <span className="line2"> One Line At A Time
               </span>
             </h1>
 
-            <p className="hero-sub">
-              UniCode Will Give You An Unforgettable
-              <br />
-              Experience
-            </p>
+            <p className="hero-sub">UniCode Will Give You An Unforgettable Experience</p>
 
-            <div className="hero-cta-row">
-              <button className="btn btn-primary btn-large">
-                Create Account
-              </button>
-            </div>
+            <div className="hero-actions">
+              <div className="hero-cta-row">
+                <Link to="/signup" className="btn btn-primary btn-large">
+                  Create Account
+                </Link>
+              </div>
 
-            <div className="hero-secondary-row">
-              <button className="chip">Test</button>
-              <button className="chip">Courses</button>
+              <div className="hero-secondary-row">
+                <button className="chip">Test</button>
+                <button className="chip">Courses</button>
+              </div>
             </div>
           </section>
 

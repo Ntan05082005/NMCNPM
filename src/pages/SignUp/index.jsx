@@ -1,9 +1,11 @@
 import React, { useState } from "react";
-import "./start.css";
-import heroMan from "../../assets/hero-women.png";
+import "./signup.css";
+import heroMan from "../../assets/ảnh-sinh-viên.png";
 // Import thêm icon Check hình tròn (FaCheckCircle)
 import { FaRegEyeSlash, FaGithub, FaFacebook, FaCheckCircle } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
+import { registerUser } from "../../API/api-signup.js";
+
 
 export default function SignUp() {
   const [showPassword, setShowPassword] = useState(false);
@@ -13,6 +15,10 @@ export default function SignUp() {
 
   // --- 1. STATE MỚI: Kiểm tra đăng ký thành công chưa ---
   const [isSuccess, setIsSuccess] = useState(false);
+
+   // ⬅ NEW: state cho email & username
+  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
 
   // Validate Password Real-time
   const handlePasswordChange = (e) => {
@@ -35,20 +41,35 @@ export default function SignUp() {
   };
 
   // --- 2. HÀM XỬ LÝ KHI NHẤN REGISTER ---
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault(); // Ngăn trình duyệt load lại trang
 
-    // Kiểm tra: Nếu mật khẩu hợp lệ (isValid === true) thì mới cho thành công
-    // Bạn có thể thêm điều kiện kiểm tra email/username không rỗng ở đây
-    if (isValid === true) {
-      setIsSuccess(true); // Chuyển trạng thái sang thành công
-    } else {
+    if (isValid !== true) {
       alert("Please enter a valid password before registering!");
+      return;
+    }
+
+    try {
+      const payload = { email, username, password };
+
+      const res = await registerUser(payload); // ⬅ GỌI API
+      console.log("Register success:", res.data);
+
+      setIsSuccess(true); // Chuyển sang view thành công
+    } catch (err) {
+      console.error(err);
+
+      // Nếu backend trả message cụ thể
+      if (err.response?.data?.message) {
+        alert(err.response.data.message);
+      } else {
+        alert("Register failed! Please try again.");
+      }
     }
   };
 
   return (
-    <div className="page">
+    <div className="page signup-page">
       <div className="hero-card">
         <header className="navbar">
           <nav className="nav-links">
@@ -66,7 +87,7 @@ export default function SignUp() {
           <section className="hero-left">
             <h1 className="hero-title">
               <span className="line1" style={{ color: '#0084ff', marginBottom: '-10px' }}>
-                Building Tomorrow,
+                Building Tomorrow
               </span>
               <br />
               <span className="line2" style={{ color: '#333', fontSize: '0.9em' }}>
@@ -110,10 +131,10 @@ export default function SignUp() {
                 <>
                   <form onSubmit={handleSubmit}>
                     <div className="form-group">
-                      <input required type="email" placeholder="Mail Id" className="form-input" />
+                      <input required type="email" placeholder="Email" className="form-input" value={email} onChange={(e) => setEmail(e.target.value)}/>
                     </div>
                     <div className="form-group">
-                      <input required type="text" placeholder="Username" className="form-input" />
+                      <input required type="text" placeholder="Username" className="form-input"value={username} onChange={(e) => setUsername(e.target.value)}  />
                     </div>
 
                     <div className="form-group">
