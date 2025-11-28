@@ -81,7 +81,6 @@ mvn spring-boot:run
 ## 📡 API Endpoints
 
 ### Register User
-
 **Endpoint:** `POST /api/auth/register`
 
 **Request:**
@@ -131,7 +130,7 @@ or
 ## 🧪 Testing the API
 
 ### Using Invoke-WebRequest
-
+Terminal:
 ```bash
 # Register a new user
 Invoke-WebRequest -Uri "http://localhost:8080/api/auth/register" `
