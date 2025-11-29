@@ -5,6 +5,8 @@ import heroMan from "../../assets/ảnh-sinh-viên.png";
 import { FaRegEyeSlash, FaGithub, FaFacebook, FaCheckCircle } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { registerUser } from "../../API/api-signup.js";
+import { Link } from "react-router-dom"; 
+
 
 
 export default function SignUp() {
@@ -73,10 +75,12 @@ export default function SignUp() {
       <div className="hero-card">
         <header className="navbar">
           <nav className="nav-links">
-            <a href="#practice">Practice</a>
-            <a href="#about">About Us</a>
-            <a href="#login" className="text-blue">LogIn</a>
-            <button className="btn btn-primary small">Sign Up</button>
+            <Link to="/practice">Practice</Link>
+            <Link to="/about">About Us</Link>
+            <Link to="/login" className="text-blue">LogIn</Link>
+            <Link to="/signup">
+                <button className="btn btn-primary small">Sign Up</button>
+            </Link>
           </nav>
         </header>
 
@@ -119,12 +123,10 @@ export default function SignUp() {
                   <FaCheckCircle className="icon-success" />
                   <h3 className="success-title">Registration Successful!</h3>
                   <p className="success-desc">Welcome to the UniCode community.</p>
-                  <button
-                    className="btn btn-primary small"
-                    onClick={() => window.location.reload()} // Tải lại trang để reset
-                  >
-                    Back to Home
+                  <button className="btn btn-primary small">
+                    <Link to="/" style={{ color: "white" }}>Back to Home</Link>
                   </button>
+
                 </div>
               ) : (
                 // --- GIAO DIỆN FORM ĐĂNG KÝ (CŨ) ---
@@ -162,7 +164,7 @@ export default function SignUp() {
                   </form>
 
                   <div className="form-footer">
-                    Have an Account ? <a href="#login" className="link-blue">Log In</a>
+                    Have an Account ? <Link to="/login" className="link-blue">Log In</Link>
                   </div>
 
                   <div className="social-separator">Or you can Signup with</div>

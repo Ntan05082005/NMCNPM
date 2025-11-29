@@ -24,7 +24,8 @@
   min-height: 100vh;
   background: linear-gradient(135deg, #eef2ff 0%, #dae7ff 100%);
   padding: 20px 60px;
-  overflow: hidden;
+  /* Allow scrolling when content is taller than viewport so forms are reachable */
+  overflow-y: auto;
 }
 
 /* NAVBAR */

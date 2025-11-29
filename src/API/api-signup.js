@@ -1,9 +1,16 @@
+// src/API/api-signup.js
 import axios from "axios";
 
-// đổi URL này thành URL của bạn từ MockAPI
-const API_URL = "https://6927c926b35b4ffc501312d5.mockapi.io/users";
+const API = axios.create({
+  baseURL: "http://localhost:8080/api/auth", // http://localhost:8080
+});
 
-export function registerUser(data) {
-  return axios.post(API_URL, data);
+// Hàm gọi API đăng ký
+export function registerUser(payload) {      // payload = { email, username, password } từ SignUp.jsx
+  return API.post("/api/auth/register", {
+    username: payload.username,
+    password: payload.password,
+    email: payload.email,
+  });
 }
-export default registerUser;
+
