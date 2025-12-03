@@ -3,13 +3,15 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 import './index.css';
-import "./pages/Start/start.css";
+//import "./pages/Start/start.css";
 
 // Pages
 import Start from './pages/Start/index.jsx';
 import SignUp from './pages/SignUp/index.jsx';
 import LogIn from './pages/Login/index.jsx';
 import ProtectedPage from './pages/Protected/index.jsx'; // trang test JWT
+import ListExercise from './pages/ListExercise/index.jsx';
+import SpecifiedProblem from './pages/SpecifiedProblem/index.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
