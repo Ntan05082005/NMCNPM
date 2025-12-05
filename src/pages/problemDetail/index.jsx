@@ -3,9 +3,11 @@ import React, { useEffect, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { mockApi } from "../../API/api-problemdetail.js";
 import "./problem-detail.css"; 
+import { FiSearch, FiBell, FiChevronDown, FiGrid, FiFileText, FiSend, FiUser, FiSettings, FiLogOut } from 'react-icons/fi';
+import { FaUserCircle } from 'react-icons/fa';
 
 function ProblemDetail() {
-  const id = 2  ;         
+  const { id } = useParams();       
   const [problem, setProblem] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -25,6 +27,7 @@ function ProblemDetail() {
       })
       .finally(() => setLoading(false));
   }, [id]);
+
 
   if (loading) {
     return (
@@ -52,40 +55,41 @@ function ProblemDetail() {
   const constraintLines = (problem.constraints || "").split("\n").filter(Boolean);
 
   return (
-    <div className="problem-layout">
+    <div className="problem-detail-page">
+      <div className="dashboard-container">
       {/* ========== SIDEBAR ĐƠN GIẢN ========= */}
       <aside className="sidebar">
-        <div className="sidebar-logo">
-          <span className="logo-mark">Uni</span>
+        <div className="logo">
+          <span className="logo-uni">Uni</span>
           <span className="logo-text">Code</span>
         </div>
 
-        <nav className="sidebar-menu">
-          <Link to="/" className="menu-item active">
-            <span className="menu-icon">🏠</span>
+        <nav className="nav-menu">
+          <Link to="/" className="nav-item active">
+            <FiGrid className="nav-icon" />
             <span className="menu-label">Dashboard</span>
           </Link>
-          <Link to="/problems" className="menu-item">
-            <span className="menu-icon">📑</span>
+          <Link to="/problems" className="nav-item">
+            <FiFileText className="nav-icon" />
             <span className="menu-label">Problems</span>
           </Link>
-          <button className="menu-item">
-            <span className="menu-icon">📤</span>
+          <button className="nav-item">
+            <FiSend className="nav-icon" />
             <span className="menu-label">Submission</span>
           </button>
-          <button className="menu-item">
-            <span className="menu-icon">👤</span>
+          <button className="nav-item">
+            <FiUser className="nav-icon" />
             <span className="menu-label">Profile</span>
           </button>
         </nav>
 
-        <div className="sidebar-footer">
-          <button className="menu-item">
-            <span className="menu-icon">⚙️</span>
+        <div className="sidebar-bottom">
+          <button className="nav-item">
+            <FiSettings className="nav-icon" />
             <span className="menu-label">Settings</span>
           </button>
-          <button className="menu-item">
-            <span className="menu-icon">🔒</span>
+          <button className="nav-item">
+            <FiLogOut className="nav-icon" />
             <span className="menu-label">Log Out</span>
           </button>
         </div>
@@ -112,24 +116,38 @@ function ProblemDetail() {
             </div>
           </div>
 
-          <div className="problem-header-right">
-            <button className="circle-btn bell">🔔</button>
-            <button className="circle-btn avatar" />
-            <button className="triangle-btn">▼</button>
+          <div className="header-right">
+            <div className="search-box small">
+              <FiSearch className="search-icon" />
+              <input type="text" placeholder="Search problems" />
+            </div>
+
+            <div className="user-controls">
+              <div className="notification-icon">
+                <FiBell /> <span className="dot"></span>
+              </div>
+              <div className="user-avatar"> <FaUserCircle /> </div>
+              <FiChevronDown style={{ color: '#64748b' }} />
+            </div>
           </div>
         </header>
 
         {/* CONTENT */}
         <section className="problem-content">
-          {/* Learning Objectives – tạm fix cứng, sau này muốn thì thêm field trong MockAPI */}
-          <section className="section-card">
-            <h2 className="section-title green">Learning Objectives</h2>
-            <ul className="objectives-list">
-              <li>Implementing classical algorithms.</li>
-              <li>Understanding problem-solving patterns.</li>
-              <li>Improving code quality and readability.</li>
-            </ul>
-          </section>
+          {problem.learningObjectives && (
+            <section className="section-card">
+              <h2 className="section-title green">Learning Objectives</h2>
+              <ul className="objectives-list">
+                {Array.isArray(problem.learningObjectives) ? (
+                  problem.learningObjectives.map((obj, idx) => (
+                    <li key={idx}>{obj}</li>
+                  ))
+                ) : (
+                  <li>{problem.learningObjectives}</li>
+                )}
+              </ul>
+            </section>
+          )}
 
           {/* Problem summary + examples */}
           <section className="section-card">
@@ -203,6 +221,7 @@ function ProblemDetail() {
           <button className="code-now-btn">CODE NOW</button>
         </div>
       </main>
+      </div>
     </div>
   );
 }
