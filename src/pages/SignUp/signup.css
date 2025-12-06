@@ -9,7 +9,7 @@
 
 .signup-page {
   margin: 0;
-  font-family: inherit;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 .signup-page .page {

@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { mockApi } from "../../API/api-problemdetail.js"; // Import API đã tạo
 import "./specified-problem.css"; 
 
 // Import Icons
@@ -8,26 +9,40 @@ import { FaUserCircle } from "react-icons/fa";
 
 export default function SpecifiedProblem() {
   const navigate = useNavigate();
+  
+  // --- STATE QUẢN LÝ DỮ LIỆU ---
+  const [problems, setProblems] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // --- GỌI API KHI COMPONENT MOUNT ---
+  useEffect(() => {
+    // Fetch list of problems from MockAPI resource '/problem'
+    mockApi
+      .get('/problem')
+      .then((res) => {
+        setProblems(res.data);
+      })
+      .catch((err) => {
+        console.error("Lỗi tải danh sách bài tập:", err);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
 
   const handleLogout = () => {
     navigate('/login');
   };
 
-  const easyProblems = [
-    "Create An Array",
-    "Add a list of numbers",
-    "Sum of two numbers",
-    "Palindrome string",
-    "Reverse integer"
-  ];
+  // --- XỬ LÝ CLICK ĐỂ CHUYỂN TRANG ---
+  const handleProblemClick = (id) => {
+    navigate(`/problems/${id}`);
+  };
 
-  const mediumProblems = [
-    "Count and Say",
-    "Combination of Sum",
-    "Multiply String",
-    "Jump Game",
-    "Rotate Image"
-  ];
+  // --- LỌC BÀI TẬP THEO ĐỘ KHÓ ---
+  // Lưu ý: Trên MockAPI bạn phải điền field difficulty là "Easy" hoặc "Medium"
+  const easyProblems = problems.filter(p => (p.difficulty || '').toLowerCase() === 'easy');
+  const mediumProblems = problems.filter(p => (p.difficulty || '').toLowerCase() === 'medium');
 
   return (
     <div className="specified-problem-page">
@@ -63,7 +78,6 @@ export default function SpecifiedProblem() {
             </div>
             <div className="header-actions">
               <div className="search-box">
-                {/* --- ĐÃ THÊM LẠI ICON KÍNH LÚP TẠI ĐÂY --- */}
                 <FiSearch className="search-icon" />
                 <input type="text" placeholder="Search" />
               </div>
@@ -86,31 +100,59 @@ export default function SpecifiedProblem() {
           {/* PROBLEM COLUMNS */}
           <div className="problem-columns-container">
             
-            {/* CỘT EASY */}
-            <div className="problem-column col-easy">
-              <div className="col-header">
-                <h3>Easy</h3>
-                <FiChevronDown className="header-icon" />
-              </div>
-              <ul className="problem-list">
-                {easyProblems.map((prob, index) => (
-                  <li key={index} className="problem-item">{prob}</li>
-                ))}
-              </ul>
-            </div>
+            {loading ? (
+              <div style={{ padding: '20px', color: '#64748b' }}>Loading problems...</div>
+            ) : (
+              <>
+                {/* CỘT EASY */}
+                <div className="problem-column col-easy">
+                  <div className="col-header">
+                    <h3>Easy</h3>
+                    <FiChevronDown className="header-icon" />
+                  </div>
+                  <ul className="problem-list">
+                    {easyProblems.length > 0 ? (
+                      easyProblems.map((prob) => (
+                        <li 
+                          key={prob.id} 
+                          className="problem-item"
+                          onClick={() => handleProblemClick(prob.id)}
+                          style={{ cursor: 'pointer' }} // Thêm biểu tượng bàn tay khi hover
+                        >
+                          {prob.title}
+                        </li>
+                      ))
+                    ) : (
+                      <li className="problem-item" style={{color: '#999'}}>No easy problems found</li>
+                    )}
+                  </ul>
+                </div>
 
-            {/* CỘT MEDIUM */}
-            <div className="problem-column col-medium">
-              <div className="col-header">
-                <h3>Medium</h3>
-                <FiChevronDown className="header-icon" />
-              </div>
-              <ul className="problem-list">
-                {mediumProblems.map((prob, index) => (
-                  <li key={index} className="problem-item">{prob}</li>
-                ))}
-              </ul>
-            </div>
+                {/* CỘT MEDIUM */}
+                <div className="problem-column col-medium">
+                  <div className="col-header">
+                    <h3>Medium</h3>
+                    <FiChevronDown className="header-icon" />
+                  </div>
+                  <ul className="problem-list">
+                    {mediumProblems.length > 0 ? (
+                      mediumProblems.map((prob) => (
+                        <li 
+                          key={prob.id} 
+                          className="problem-item"
+                          onClick={() => handleProblemClick(prob.id)}
+                          style={{ cursor: 'pointer' }}
+                        >
+                          {prob.title}
+                        </li>
+                      ))
+                    ) : (
+                       <li className="problem-item" style={{color: '#999'}}>No medium problems found</li>
+                    )}
+                  </ul>
+                </div>
+              </>
+            )}
 
           </div>
 

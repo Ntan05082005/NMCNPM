@@ -62,6 +62,10 @@
   margin-right : 50px;
 }
 
+.start-page a {
+  text-decoration: none;
+}
+
 .start-page .nav-links a.login-link {
   color: #0084ff;
   font-weight: 600;

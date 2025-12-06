@@ -1,21 +1,27 @@
 // src/pages/ProblemDetail/ProblemDetail.jsx
 import React, { useEffect, useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { mockApi } from "../../API/api-problemdetail.js";
 import "./problem-detail.css"; 
 import { FiSearch, FiBell, FiChevronDown, FiGrid, FiFileText, FiSend, FiUser, FiSettings, FiLogOut } from 'react-icons/fi';
 import { FaUserCircle } from 'react-icons/fa';
 
 function ProblemDetail() {
-  const { id } = useParams();       
+  const { id } = useParams();
+  const navigate = useNavigate();
   const [problem, setProblem] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const handleLogout = () => {
+    navigate('/login');
+  };
 
   useEffect(() => {
     setLoading(true);
     setError("");
 
+  
     mockApi
       .get(`/problem/${id}`)              
       .then((res) => {
@@ -59,39 +65,20 @@ function ProblemDetail() {
       <div className="dashboard-container">
       {/* ========== SIDEBAR ĐƠN GIẢN ========= */}
       <aside className="sidebar">
-        <div className="logo">
-          <span className="logo-uni">Uni</span>
-          <span className="logo-text">Code</span>
+        <div className="sidebar-top">
+          <div className="logo">
+            <span className="logo-uni">Uni</span>Code
+          </div>
+          <nav className="nav-menu">
+            <div className="nav-item"> <FiGrid className="nav-icon" /> Dashboard </div>
+            <div className="nav-item active"> <FiFileText className="nav-icon" /> Problems </div>
+            <div className="nav-item"> <FiSend className="nav-icon" /> Submission </div>
+            <div className="nav-item"> <FiUser className="nav-icon" /> Profile </div>
+          </nav>
         </div>
-
-        <nav className="nav-menu">
-          <Link to="/" className="nav-item active">
-            <FiGrid className="nav-icon" />
-            <span className="menu-label">Dashboard</span>
-          </Link>
-          <Link to="/problems" className="nav-item">
-            <FiFileText className="nav-icon" />
-            <span className="menu-label">Problems</span>
-          </Link>
-          <button className="nav-item">
-            <FiSend className="nav-icon" />
-            <span className="menu-label">Submission</span>
-          </button>
-          <button className="nav-item">
-            <FiUser className="nav-icon" />
-            <span className="menu-label">Profile</span>
-          </button>
-        </nav>
-
         <div className="sidebar-bottom">
-          <button className="nav-item">
-            <FiSettings className="nav-icon" />
-            <span className="menu-label">Settings</span>
-          </button>
-          <button className="nav-item">
-            <FiLogOut className="nav-icon" />
-            <span className="menu-label">Log Out</span>
-          </button>
+          <div className="nav-item"> <FiSettings className="nav-icon" /> Settings </div>
+          <div className="nav-item" onClick={handleLogout}> <FiLogOut className="nav-icon" /> Log Out </div>
         </div>
       </aside>
 

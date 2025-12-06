@@ -9,6 +9,7 @@ import LogIn from './pages/Login/index.jsx';
 import ProtectedPage from './pages/Protected/index.jsx'; // trang test JWT
 import ProblemDetail from './pages/problemDetail/index.jsx';
 import ListExercise from './pages/ListExercise/index.jsx';
+import SpecifiedProblem from './pages/SpecifiedProblem/index.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -26,6 +27,7 @@ createRoot(document.getElementById('root')).render(
         
         {/* EXERCISE/PROBLEMS PAGES */}
         <Route path="/problems" element={<ListExercise />} />
+        <Route path="/list/" element={<SpecifiedProblem />} />
         <Route path="/problems/:id" element={<ProblemDetail />} />
         
         {/* Fallback route to help debug unmatched paths */}

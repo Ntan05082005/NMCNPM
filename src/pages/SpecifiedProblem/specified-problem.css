@@ -19,9 +19,10 @@
 .specified-problem-page .welcome-text h1 { font-size: 36px; font-weight: 700; color: #0f172a; margin-bottom: 8px; }
 .specified-problem-page .welcome-text p { color: #94a3b8; font-size: 15px; }
 .specified-problem-page .header-actions { display: flex; align-items: center; gap: 30px; }
+.specified-problem-page .search-box { position: relative; }
 .specified-problem-page .search-box input { padding: 12px 20px 12px 50px; border-radius: 30px; border: none; background: #f1f5f9; width: 300px; outline: none; font-size: 14px; font-family: 'Poppins', sans-serif; }
 /* CSS cho icon search đã có sẵn ở đây, chỉ cần thêm JSX là nhận */
-.specified-problem-page .search-icon { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 18px; }
+.specified-problem-page .search-icon { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 18px; pointer-events: none; }
 .specified-problem-page .user-controls { display: flex; align-items: center; gap: 20px; }
 .specified-problem-page .notification-icon { font-size: 24px; color: #1e3a8a; position: relative; cursor: pointer; }
 .specified-problem-page .notification-icon .dot { position: absolute; top: 0; right: 0; width: 10px; height: 10px; background: #22c55e; border-radius: 50%; border: 2px solid white; }
