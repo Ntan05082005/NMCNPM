@@ -1,18 +1,26 @@
 # 🌐 Coding Website - Backend API
 
-A Spring Boot REST API for a coding practice platform with JWT authentication.
+A Spring Boot REST API for a coding practice platform with JWT authentication and code execution.
 
 ## ✨ Features Implemented
 
+### Authentication
 - ✅ User Registration with DTOs
 - ✅ User Login with JWT Authentication
-- ✅ Field Validation (username, email, password)
 - ✅ BCrypt Password Hashing
 - ✅ JWT Token Generation & Validation
-- ✅ Default USER Role Assignment
-- ✅ Duplicate Username/Email Detection
-- ✅ PostgreSQL Database with Docker
-- ✅ Timezone Support (Asia/Ho_Chi_Minh)
+
+### Code Submission
+- ✅ Submit code for execution (`POST /api/submissions`)
+- ✅ Multi-language support (Python, JavaScript, C++)
+- ✅ Docker sandbox for isolated execution
+- ✅ Test case validation
+- ✅ Timeout handling (5 seconds)
+
+### Database
+- ✅ PostgreSQL with Docker
+- ✅ Problems & Test Cases
+- ✅ User Submissions tracking
 
 ## 📋 Prerequisites
 
@@ -22,34 +30,33 @@ A Spring Boot REST API for a coding practice platform with JWT authentication.
 
 ## 🚀 Quick Start
 
-### 1. Start PostgreSQL Database (Docker)
-
+### 1. Start PostgreSQL (Docker)
 ```bash
 docker run --name cws-postgres -e POSTGRES_USER=testuser -e POSTGRES_PASSWORD=123456 -e POSTGRES_DB=cws -p 5432:5432 -d postgres:16
 ```
 
-**Start existing container:**
+### 2. Pull Code Execution Images
 ```bash
-docker start cws-postgres
+docker pull python:3.11-slim
+docker pull node:20-slim
+docker pull gcc:13
 ```
 
-### 2. Build & Run
-
+### 3. Build & Run
 ```bash
 mvn clean install
 mvn spring-boot:run
 ```
 
-✅ Server starts at: **http://localhost:8080**
+✅ Server: **http://localhost:8080**
 
 ---
 
 ## 📡 API Endpoints
 
-### 1. Register User
-**POST** `/api/auth/register`
+### Authentication (Public)
 
-**Request:**
+#### POST /api/auth/register
 ```json
 {
   "username": "johndoe",
@@ -58,27 +65,7 @@ mvn spring-boot:run
 }
 ```
 
-**Response (201 Created):**
-```json
-{
-  "token": "eyJhbGciOiJIUzM4NCJ9...",
-  "type": "Bearer",
-  "expiresIn": 86400000,
-  "user": {
-    "id": 1,
-    "username": "johndoe",
-    "email": "john@example.com",
-    "role": "USER"
-  }
-}
-```
-
----
-
-### 2. Login User
-**POST** `/api/auth/login`
-
-**Request:**
+#### POST /api/auth/login
 ```json
 {
   "username": "johndoe",
@@ -86,92 +73,137 @@ mvn spring-boot:run
 }
 ```
 
-**Response (200 OK):**
+**Response:**
 ```json
 {
   "token": "eyJhbGciOiJIUzM4NCJ9...",
   "type": "Bearer",
   "expiresIn": 86400000,
-  "user": {
-    "id": 1,
-    "username": "johndoe",
-    "email": "john@example.com",
-    "role": "USER"
-  }
+  "user": { "id": 1, "username": "johndoe", "role": "USER" }
 }
 ```
 
-**Invalid Credentials (403 Forbidden):**
+---
+
+### Code Submission (Protected - JWT Required)
+
+#### POST /api/submissions
+**Headers:** `Authorization: Bearer <token>`
+
+**Request:**
 ```json
 {
-  "error": "Invalid username or password"
+  "problemId": 1,
+  "code": "print(input())",
+  "language": "python"
 }
 ```
 
+**Supported Languages:**
+- `python` - Python 3.11
+- `javascript` - Node.js 20
+- `cpp` - GCC 13
+
+**Response:**
+```json
+{
+  "submissionId": 1,
+  "status": "ACCEPTED",
+  "output": "Hello World",
+  "executionTimeMs": 1205,
+  "testResults": [
+    {
+      "input": "Hello World",
+      "expectedOutput": "Hello World",
+      "actualOutput": "Hello World",
+      "passed": true
+    }
+  ]
+}
+```
+
+**Status Values:**
+- `ACCEPTED` - All test cases passed
+- `WRONG_ANSWER` - Output doesn't match expected
+- `RUNTIME_ERROR` - Code crashed during execution
+- `TIME_LIMIT_EXCEEDED` - Execution exceeded 5 seconds
+- `COMPILATION_ERROR` - Code failed to compile (C++)
+
 ---
 
-### 3. Using JWT Token for Protected Endpoints
+#### GET /api/problems
+Returns list of all problems.
 
-Add the token to the Authorization header:
-```
-Authorization: Bearer eyJhbGciOiJIUzM4NCJ9...
-```
+#### GET /api/problems/{id}
+Returns specific problem with test cases.
 
 ---
 
-## 🧪 Testing the API
+### Admin API (ADMIN Role Required)
 
-### Using PowerShell
+#### POST /api/admin/problems
+Create a new problem with test cases.
 
-**Register:**
-```powershell
-$body = '{"username":"testuser","email":"test@example.com","password":"test123"}'
-Invoke-RestMethod -Uri 'http://localhost:8080/api/auth/register' -Method POST -ContentType 'application/json' -Body $body
+**Headers:** `Authorization: Bearer <admin-token>`
+
+**Request:**
+```json
+{
+  "title": "Sum of Two Numbers",
+  "description": "Read two integers (one per line) and print their sum.",
+  "testCases": [
+    {"input": "5\n3", "expectedOutput": "8"},
+    {"input": "10\n20", "expectedOutput": "30"}
+  ]
+}
 ```
 
-**Login:**
-```powershell
-$body = '{"username":"testuser","password":"test123"}'
-Invoke-RestMethod -Uri 'http://localhost:8080/api/auth/login' -Method POST -ContentType 'application/json' -Body $body
+**Response (201):**
+```json
+{
+  "id": 4,
+  "title": "Sum of Two Numbers",
+  "description": "Read two integers...",
+  "testCases": [
+    {"id": 1, "input": "5\n3", "expectedOutput": "8"}
+  ]
+}
 ```
 
-### Using Postman
+#### GET /api/admin/problems
+List all problems with test cases.
 
-1. Create POST request to `http://localhost:8080/api/auth/register`
-2. Set header: `Content-Type: application/json`
-3. Body (raw JSON):
-   ```json
-   {
-     "username": "testuser",
-     "email": "test@example.com",
-     "password": "test123"
-   }
-   ```
+#### GET /api/admin/problems/{id}
+Get specific problem.
 
-**Login:**
-- POST `http://localhost:8080/api/auth/login`
-- Body:
-   ```json
-   {
-     "username": "testuser",
-     "password": "test123"
-   }
-   ```
+#### DELETE /api/admin/problems/{id}
+Delete a problem.
 
-### Query Database
+**Make a user ADMIN:**
 ```bash
-docker exec -it cws-postgres psql -U testuser -d cws -c "SELECT * FROM users;"
+docker exec -it cws-postgres psql -U testuser -d cws -c "UPDATE users SET role='ADMIN' WHERE username='youruser';"
 ```
 
----
+## 🧪 Testing with PowerShell
 
-## ✅ Validation Rules
+### Register & Login
+```powershell
+# Register
+$body = '{"username":"testuser","email":"test@example.com","password":"test123"}'
+$response = Invoke-RestMethod -Uri 'http://localhost:8080/api/auth/register' -Method POST -ContentType 'application/json' -Body $body
 
-| Field | Rules |
-|-------|-------|
-| **username** | 3-50 characters, required, unique |
-| **email** | Valid email format, required, unique |
-| **password** | Minimum 6 characters, required |
+# Save token
+$token = $response.token
+```
+
+### Submit Code
+```powershell
+# Python
+$code = 'print(input())'
+$body = @{problemId=1; code=$code; language="python"} | ConvertTo-Json
+$headers = @{"Authorization"="Bearer $token"; "Content-Type"="application/json"}
+Invoke-RestMethod -Uri 'http://localhost:8080/api/submissions' -Method POST -Headers $headers -Body $body
+```
 
 ---
 
@@ -179,68 +211,105 @@ docker exec -it cws-postgres psql -U testuser -d cws -c "SELECT * FROM users;"
 
 ```
 src/main/java/com/codingwebsite/backend/
-├── BackendApplication.java       # Main entry point
 ├── config/
-│   └── SecurityConfig.java       # JWT & BCrypt configuration
+│   ├── SecurityConfig.java        # JWT & security
+│   └── DataInitializer.java       # Sample problems
 ├── controller/
-│   └── AuthController.java       # Register & Login endpoints
+│   ├── AuthController.java        # Register & Login
+│   ├── SubmissionController.java  # Code submission
+│   └── AdminController.java       # Admin problem CRUD
 ├── dto/
-│   ├── RegisterRequest.java      # Registration request DTO
-│   ├── LoginRequest.java         # Login request DTO
-│   ├── AuthResponse.java         # JWT token response DTO
-│   └── UserDto.java              # User response DTO
+│   ├── RegisterRequest.java
+│   ├── LoginRequest.java
+│   ├── AuthResponse.java
+│   ├── SubmitRequest.java
+│   ├── SubmitResponse.java
+│   ├── TestResultDto.java
+│   ├── CreateProblemRequest.java  # Admin create problem
+│   └── ProblemDto.java            # Problem response
 ├── entity/
-│   └── User.java                 # JPA entity (implements UserDetails)
+│   ├── User.java
+│   ├── Problem.java
+│   ├── TestCase.java
+│   └── Submission.java
 ├── enums/
-│   └── Role.java                 # User roles (USER, ADMIN)
+│   ├── Role.java                  # USER, ADMIN
+│   ├── Language.java              # PYTHON, JAVASCRIPT, CPP
+│   └── SubmissionStatus.java      # ACCEPTED, WRONG_ANSWER, etc.
 ├── repository/
-│   └── UserRepository.java       # Spring Data JPA repository
+│   ├── UserRepository.java
+│   ├── ProblemRepository.java
+│   └── SubmissionRepository.java
 ├── security/
-│   ├── JwtService.java           # JWT token generation/validation
-│   ├── JwtAuthenticationFilter.java  # JWT request filter
-│   └── CustomUserDetailsService.java # User loading for Spring Security
+│   ├── JwtService.java
+│   ├── JwtAuthenticationFilter.java
+│   └── CustomUserDetailsService.java
 └── service/
-    └── UserService.java          # Business logic
-
-src/main/resources/
-└── application.yml               # Application & JWT configuration
+    ├── UserService.java
+    ├── SubmissionService.java
+    ├── ProblemService.java        # Problem CRUD
+    └── CodeExecutionService.java  # Docker execution
 ```
 
 ---
 
 ## 🗃️ Database Schema
 
-| Column | Type | Constraints |
+### users
+| Column | Type | Description |
 |--------|------|-------------|
-| id | BIGSERIAL | PRIMARY KEY |
-| username | VARCHAR(50) | UNIQUE, NOT NULL |
-| email | VARCHAR(100) | UNIQUE, NOT NULL |
-| password | VARCHAR(255) | NOT NULL (BCrypt hashed) |
-| role | VARCHAR(20) | NOT NULL, DEFAULT 'USER' |
-| created_at | TIMESTAMP | Auto-generated |
-| updated_at | TIMESTAMP | Auto-updated |
+| id | BIGSERIAL | Primary key |
+| username | VARCHAR(50) | Unique |
+| email | VARCHAR(100) | Unique |
+| password | VARCHAR(255) | BCrypt hashed |
+| role | VARCHAR(20) | USER/ADMIN |
+
+### problems
+| Column | Type | Description |
+|--------|------|-------------|
+| id | BIGSERIAL | Primary key |
+| title | VARCHAR | Problem title |
+| description | TEXT | Problem description |
+
+### test_cases
+| Column | Type | Description |
+|--------|------|-------------|
+| id | BIGSERIAL | Primary key |
+| problem_id | BIGINT | Foreign key |
+| input | TEXT | Test input |
+| expected_output | TEXT | Expected output |
+
+### submissions
+| Column | Type | Description |
+|--------|------|-------------|
+| id | BIGSERIAL | Primary key |
+| user_id | BIGINT | Foreign key |
+| problem_id | BIGINT | Foreign key |
+| code | TEXT | Submitted code |
+| language | VARCHAR | PYTHON/JAVASCRIPT/CPP |
+| status | VARCHAR | Execution result |
+| output | TEXT | Code output |
+| execution_time_ms | BIGINT | Time in ms |
 
 ---
 
 ## 🔒 Security Features
 
-- **JWT Authentication** - Stateless token-based authentication
-- **BCrypt Password Hashing** - Passwords encrypted with BCrypt
-- **24-hour Token Expiration** - Configurable in application.yml
-- **Field Validation** - Jakarta Bean Validation
-- **Unique Constraints** - Database-level uniqueness
-- **SQL Injection Protection** - JPA parameterized queries
+- **JWT Authentication** - Stateless token-based auth
+- **BCrypt Password Hashing** - Secure password storage
+- **Docker Sandbox** - Isolated code execution
+- **Network Disabled** - No network access for code
+- **Timeout Limit** - 5 second execution limit
 
 ---
 
-## ⚙️ Configuration
+## 🐳 Docker Images
 
-JWT settings in `application.yml`:
-```yaml
-jwt:
-  secret: CodingWebsiteSecretKey2024ForJWTTokenGenerationMustBeLongEnough256Bits
-  expiration: 86400000  # 24 hours in milliseconds
-```
+| Language | Image | Size |
+|----------|-------|------|
+| Python | `python:3.11-slim` | ~50MB |
+| JavaScript | `node:20-slim` | ~60MB |
+| C++ | `gcc:13` | ~1.4GB |
 
 ---
 
