@@ -1,12 +1,14 @@
 # 🌐 Coding Website - Backend API
 
-A Spring Boot REST API for a coding practice platform with user authentication and management.
+A Spring Boot REST API for a coding practice platform with JWT authentication.
 
 ## ✨ Features Implemented
 
 - ✅ User Registration with DTOs
+- ✅ User Login with JWT Authentication
 - ✅ Field Validation (username, email, password)
 - ✅ BCrypt Password Hashing
+- ✅ JWT Token Generation & Validation
 - ✅ Default USER Role Assignment
 - ✅ Duplicate Username/Email Detection
 - ✅ PostgreSQL Database with Docker
@@ -14,80 +16,41 @@ A Spring Boot REST API for a coding practice platform with user authentication a
 
 ## 📋 Prerequisites
 
-Before you begin, ensure you have the following installed:
-
 1. **Java 21** - [Download](https://adoptium.net/)
 2. **Maven 3.9+** - [Download](https://maven.apache.org/download.cgi)
-3. **Docker Desktop** - [Download](https://www.docker.com/products/docker-desktop/) *(Required for PostgreSQL 16)*
+3. **Docker Desktop** - [Download](https://www.docker.com/products/docker-desktop/)
 
 ## 🚀 Quick Start
 
 ### 1. Start PostgreSQL Database (Docker)
 
-Run PostgreSQL container with the following configuration:
-
 ```bash
 docker run --name cws-postgres -e POSTGRES_USER=testuser -e POSTGRES_PASSWORD=123456 -e POSTGRES_DB=cws -p 5432:5432 -d postgres:16
-
 ```
 
-**Verify the container is running:**
+**Start existing container:**
 ```bash
-docker ps
+docker start cws-postgres
 ```
 
-### 2. Configure Application
-
-The application is pre-configured in `src/main/resources/application.yml`:
-
-```yaml
-spring:
-  application:
-    name: coding-website-backend
-  
-  datasource:
-    url: jdbc:postgresql://localhost:5432/cws?serverTimezone=Asia/Ho_Chi_Minh
-    username: testuser
-    password: 123456
-    driver-class-name: org.postgresql.Driver
-  
-  jpa:
-    hibernate:
-      ddl-auto: update  # Auto-creates tables on startup
-    show-sql: true      # Logs SQL queries
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.PostgreSQLDialect
-        format_sql: true
-        jdbc:
-          time_zone: Asia/Ho_Chi_Minh
-
-server:
-  port: 8080
-```
-
-### 3. Build & Run
+### 2. Build & Run
 
 ```bash
-# Clean and build the project
 mvn clean install
-
-# Run the application
 mvn spring-boot:run
 ```
 
 ✅ Server starts at: **http://localhost:8080**
 
+---
+
 ## 📡 API Endpoints
 
-### Register User
-**Endpoint:** `POST /api/auth/register`
+### 1. Register User
+**POST** `/api/auth/register`
 
 **Request:**
-```http
-POST /api/auth/register
-Content-Type: application/json
-
+```json
 {
   "username": "johndoe",
   "email": "john@example.com",
@@ -95,61 +58,88 @@ Content-Type: application/json
 }
 ```
 
-**Success Response (201 Created):**
+**Response (201 Created):**
 ```json
 {
-  "id": 1,
+  "token": "eyJhbGciOiJIUzM4NCJ9...",
+  "type": "Bearer",
+  "expiresIn": 86400000,
+  "user": {
+    "id": 1,
+    "username": "johndoe",
+    "email": "john@example.com",
+    "role": "USER"
+  }
+}
+```
+
+---
+
+### 2. Login User
+**POST** `/api/auth/login`
+
+**Request:**
+```json
+{
   "username": "johndoe",
-  "email": "john@example.com",
-  "role": "USER"
+  "password": "password123"
 }
 ```
 
-**Validation Error (400 Bad Request):**
+**Response (200 OK):**
 ```json
 {
-  "username": "Username must be between 3 and 50 characters",
-  "email": "Email must be valid",
-  "password": "Password must be at least 6 characters"
+  "token": "eyJhbGciOiJIUzM4NCJ9...",
+  "type": "Bearer",
+  "expiresIn": 86400000,
+  "user": {
+    "id": 1,
+    "username": "johndoe",
+    "email": "john@example.com",
+    "role": "USER"
+  }
 }
 ```
 
-**Duplicate Error (400 Bad Request):**
+**Invalid Credentials (403 Forbidden):**
 ```json
 {
-  "error": "Username already exists"
+  "error": "Invalid username or password"
 }
 ```
-or
-```json
-{
-  "error": "Email already exists"
-}
+
+---
+
+### 3. Using JWT Token for Protected Endpoints
+
+Add the token to the Authorization header:
 ```
+Authorization: Bearer eyJhbGciOiJIUzM4NCJ9...
+```
+
+---
 
 ## 🧪 Testing the API
 
-### Using Invoke-WebRequest
-Terminal:
-```bash
-# Register a new user
-Invoke-WebRequest -Uri "http://localhost:8080/api/auth/register" `
-  -Method POST `
-  -Headers @{"Content-Type"="application/json"} `
-  -Body '{"username":"timezone_test","email":"timezone@test.com","password":"test123"}'
+### Using PowerShell
+
+**Register:**
+```powershell
+$body = '{"username":"testuser","email":"test@example.com","password":"test123"}'
+Invoke-RestMethod -Uri 'http://localhost:8080/api/auth/register' -Method POST -ContentType 'application/json' -Body $body
 ```
 
-### Querry database
-```bash
-docker exec -it cws-postgres psql -U testuser -d cws -c "SELECT * FROM users;"
+**Login:**
+```powershell
+$body = '{"username":"testuser","password":"test123"}'
+Invoke-RestMethod -Uri 'http://localhost:8080/api/auth/login' -Method POST -ContentType 'application/json' -Body $body
 ```
 
 ### Using Postman
 
-1. Create a new POST request to `http://localhost:8080/api/auth/register`
+1. Create POST request to `http://localhost:8080/api/auth/register`
 2. Set header: `Content-Type: application/json`
-3. In the Body tab, select "raw" and "JSON"
-4. Add the request body:
+3. Body (raw JSON):
    ```json
    {
      "username": "testuser",
@@ -157,44 +147,68 @@ docker exec -it cws-postgres psql -U testuser -d cws -c "SELECT * FROM users;"
      "password": "test123"
    }
    ```
-5. Click "Send"
 
-### Validation Rules
+**Login:**
+- POST `http://localhost:8080/api/auth/login`
+- Body:
+   ```json
+   {
+     "username": "testuser",
+     "password": "test123"
+   }
+   ```
+
+### Query Database
+```bash
+docker exec -it cws-postgres psql -U testuser -d cws -c "SELECT * FROM users;"
+```
+
+---
+
+## ✅ Validation Rules
 
 | Field | Rules |
 |-------|-------|
-| **username** | 3-50 characters, required, must be unique |
-| **email** | Valid email format, required, must be unique |
+| **username** | 3-50 characters, required, unique |
+| **email** | Valid email format, required, unique |
 | **password** | Minimum 6 characters, required |
+
+---
 
 ## 📁 Project Structure
 
 ```
 src/main/java/com/codingwebsite/backend/
-├── BackendApplication.java       # Main Spring Boot entry point
+├── BackendApplication.java       # Main entry point
 ├── config/
-│   └── SecurityConfig.java       # BCrypt password encoder configuration
+│   └── SecurityConfig.java       # JWT & BCrypt configuration
 ├── controller/
-│   └── AuthController.java       # REST API endpoints for authentication
+│   └── AuthController.java       # Register & Login endpoints
 ├── dto/
-│   ├── RegisterRequest.java      # User registration request DTO
+│   ├── RegisterRequest.java      # Registration request DTO
+│   ├── LoginRequest.java         # Login request DTO
+│   ├── AuthResponse.java         # JWT token response DTO
 │   └── UserDto.java              # User response DTO
 ├── entity/
-│   └── User.java                 # JPA entity for users table
+│   └── User.java                 # JPA entity (implements UserDetails)
 ├── enums/
 │   └── Role.java                 # User roles (USER, ADMIN)
 ├── repository/
 │   └── UserRepository.java       # Spring Data JPA repository
+├── security/
+│   ├── JwtService.java           # JWT token generation/validation
+│   ├── JwtAuthenticationFilter.java  # JWT request filter
+│   └── CustomUserDetailsService.java # User loading for Spring Security
 └── service/
-    └── UserService.java          # Business logic for user operations
+    └── UserService.java          # Business logic
 
 src/main/resources/
-└── application.yml               # Application configuration
+└── application.yml               # Application & JWT configuration
 ```
 
-## �️ Database Schema
+---
 
-The `users` table is automatically created with the following structure:
+## 🗃️ Database Schema
 
 | Column | Type | Constraints |
 |--------|------|-------------|
@@ -203,14 +217,32 @@ The `users` table is automatically created with the following structure:
 | email | VARCHAR(100) | UNIQUE, NOT NULL |
 | password | VARCHAR(255) | NOT NULL (BCrypt hashed) |
 | role | VARCHAR(20) | NOT NULL, DEFAULT 'USER' |
+| created_at | TIMESTAMP | Auto-generated |
+| updated_at | TIMESTAMP | Auto-updated |
 
-## �🔒 Security Features
+---
 
-- **BCrypt Password Hashing** - Passwords are encrypted with BCrypt (strength 10)
-- **Field Validation** - Input validation using Jakarta Bean Validation
-- **Unique Constraints** - Database-level uniqueness for username and email
-- **Default Role Assignment** - New users automatically receive the USER role
-- **SQL Injection Protection** - JPA/Hibernate parameterized queries
+## 🔒 Security Features
+
+- **JWT Authentication** - Stateless token-based authentication
+- **BCrypt Password Hashing** - Passwords encrypted with BCrypt
+- **24-hour Token Expiration** - Configurable in application.yml
+- **Field Validation** - Jakarta Bean Validation
+- **Unique Constraints** - Database-level uniqueness
+- **SQL Injection Protection** - JPA parameterized queries
+
+---
+
+## ⚙️ Configuration
+
+JWT settings in `application.yml`:
+```yaml
+jwt:
+  secret: CodingWebsiteSecretKey2024ForJWTTokenGenerationMustBeLongEnough256Bits
+  expiration: 86400000  # 24 hours in milliseconds
+```
+
+---
 
 ## 📄 License
 
