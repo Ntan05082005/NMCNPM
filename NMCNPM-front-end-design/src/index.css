@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+
+/* RESET CSS */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* FULL-WIDTH GLOBAL LAYOUT */
+html,
+body {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  background: white; /* đổi nếu muốn */
+  overflow-x: hidden; /* tránh bị scrollbar ngang */
+}
+
+/* ROOT MUST NOT RESTRICT WIDTH */
+#root {
+  width: 100%;
+  height: 100%;
+  max-width: 100%; /* quan trọng */
+  margin: 0;
+  padding: 0;
+}
+
+/* OPTIONAL — remove default Vite centering */
+:root {
+  font-size: 16px;
+}
+
+/* REMOVE default link underline */
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+/* BUTTON — remove default outline */
+button {
+  border: none;
+  cursor: pointer;
+}
+

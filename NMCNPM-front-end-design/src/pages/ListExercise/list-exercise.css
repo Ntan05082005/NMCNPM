@@ -1,0 +1,501 @@
+/* --- 1. FONTS & BASE --- */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap');
+
+.list-exercise-page *,
+.list-exercise-page *::before,
+.list-exercise-page *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.list-exercise-page {
+  font-family: 'Poppins', sans-serif;
+  color: #333;
+  height: 100vh;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* --- 2. MAIN LAYOUT --- */
+.list-exercise-page .dashboard-container {
+  display: flex;
+  height: 100vh;
+  /* Gradient nền mờ ảo: Xanh nhạt -> Trắng -> Tím nhạt */
+  background: linear-gradient(90deg, #eef4ff 0%, #f4f6ff 50%, #fdfdff 100%);
+}
+
+/* --- 3. SIDEBAR --- */
+.list-exercise-page .sidebar {
+  width: 280px;
+  background: linear-gradient(180deg, #dceaff 0%, #edf3ff 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 40px 30px;
+  flex-shrink: 0;
+}
+
+/* Logo */
+.list-exercise-page .logo {
+  font-size: 36px;
+  font-weight: 800;
+  color: #1e3a8a;
+  margin-bottom: 60px;
+  letter-spacing: -1px;
+  display: flex;
+  align-items: center;
+}
+
+.list-exercise-page .logo-uni {
+  color: #2563eb;
+  margin-right: 2px;
+}
+
+/* Menu */
+.list-exercise-page .nav-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.list-exercise-page .nav-item {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  font-size: 16px;
+  font-weight: 500;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding-left: 10px;
+}
+
+.list-exercise-page .nav-item:hover {
+  color: #2563eb;
+}
+
+.list-exercise-page .nav-item.active {
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.list-exercise-page .nav-icon {
+  font-size: 22px;
+}
+
+.list-exercise-page .sidebar-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+/* --- 4. MAIN CONTENT AREA --- */
+.list-exercise-page .main-content {
+  flex: 1;
+  padding: 40px 60px;
+  overflow-y: auto;
+}
+
+/* Header */
+.list-exercise-page .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 50px;
+}
+
+.list-exercise-page .welcome-text h1 {
+  font-size: 36px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 8px;
+}
+
+.list-exercise-page .welcome-text p {
+  color: #94a3b8;
+  font-size: 15px;
+}
+
+/* Actions */
+.list-exercise-page .header-actions {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.list-exercise-page .search-box {
+  position: relative;
+}
+
+.list-exercise-page .search-box input {
+  padding: 12px 20px 12px 50px;
+  border-radius: 30px;
+  border: none;
+  background: #f1f5f9;
+  width: 300px;
+  outline: none;
+  font-size: 14px;
+  color: #475569;
+  font-family: 'Poppins', sans-serif;
+}
+
+.list-exercise-page .search-icon {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  font-size: 18px;
+}
+
+.list-exercise-page .user-controls {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.list-exercise-page .notification-icon {
+  font-size: 24px;
+  color: #1e3a8a;
+  position: relative;
+  cursor: pointer;
+}
+
+.list-exercise-page .notification-icon .dot {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 10px;
+  height: 10px;
+  background: #22c55e;
+  border-radius: 50%;
+  border: 2px solid white;
+}
+
+.list-exercise-page .user-avatar {
+  width: 45px;
+  height: 45px;
+  background: #bfdbfe;
+  color: #2563eb;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* Filters */
+.list-exercise-page .filter-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.list-exercise-page .filter-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  font-size: 18px;
+  color: #0f172a;
+}
+
+.list-exercise-page .paperclip-icon {
+  transform: rotate(-45deg);
+  display: inline-block;
+  color: #2563eb;
+  font-size: 20px;
+}
+
+.list-exercise-page .sort-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #0f172a;
+  cursor: pointer;
+}
+
+/* --- 5. PROBLEMS GRID & CARD STYLES --- */
+.list-exercise-page .problems-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 30px;
+  padding-bottom: 40px;
+}
+
+.list-exercise-page .problem-card {
+  background: white;
+  border-radius: 24px;
+  padding: 40px 25px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+  min-height: 320px;
+}
+
+.list-exercise-page .problem-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Khu vực hiển thị Icon (cao cố định để đều) */
+.list-exercise-page .card-visual-area {
+  height: 120px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+/* Khu vực Text */
+.list-exercise-page .card-content-area {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.list-exercise-page .problem-card h3 {
+  font-size: 18px;
+  font-weight: 700;
+  color: #334155;
+  margin-bottom: 12px;
+  line-height: 1.4;
+  height: 50px;
+  /* Để tiêu đề 2 dòng thẳng hàng nhau */
+  display: flex;
+  align-items: center;
+}
+
+.list-exercise-page .card-desc {
+  font-size: 13px;
+  color: #94a3b8;
+  line-height: 1.6;
+  font-weight: 400;
+}
+
+/* --- 6. CUSTOM ICONS (PHẦN QUAN TRỌNG NHẤT) --- */
+
+/* DSA Custom */
+.list-exercise-page .icon-group-vertical {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+}
+
+.list-exercise-page .icon-dsa {
+  color: #3b82f6;
+}
+
+.list-exercise-page .logo-text-dsa {
+  font-size: 32px;
+  font-weight: 900;
+  margin-top: -5px;
+  letter-spacing: 1px;
+}
+
+/* Implementation Custom */
+.list-exercise-page .icon-group-horizontal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.list-exercise-page .icon-impl {
+  color: #f59e0b;
+}
+
+/* Debugging Custom */
+.list-exercise-page .icon-debug {
+  color: #10b981;
+}
+
+/* OOP Banner Custom */
+.list-exercise-page .icon-oop {
+  color: #0ea5e9;
+}
+
+.list-exercise-page .oop-banner {
+  background: #0ea5e9;
+  color: white;
+  padding: 8px 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transform: skewX(-10deg);
+  box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.1);
+}
+
+.list-exercise-page .oop-banner span:first-child {
+  font-size: 28px;
+  font-weight: 900;
+}
+
+.list-exercise-page .oop-banner .oop-sub {
+  font-size: 8px;
+  font-weight: 600;
+  line-height: 1.1;
+  text-align: left;
+  transform: skewX(10deg);
+  /* Counter-skew cho text */
+}
+
+/* =========================================
+   7. CUSTOM SYSTEM DESIGN (Vẽ dấu ngoặc và code)
+   ========================================= */
+.list-exercise-page .icon-system-custom {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  /* Khoảng cách giữa ngoặc và code */
+}
+
+.list-exercise-page .icon-system-custom .brace {
+  font-size: 100px;
+  /* Dấu ngoặc cực lớn */
+  font-weight: 300;
+  /* Dấu ngoặc mỏng */
+  color: #1e40af;
+  /* Màu xanh đậm */
+  line-height: 0.7;
+  /* Ép dòng để căn giữa theo chiều dọc */
+  margin-top: -15px;
+  /* Tinh chỉnh vị trí lên một chút */
+  font-family: 'Courier New', monospace;
+  /* Font code cho dấu ngoặc đẹp hơn */
+}
+
+.list-exercise-page .icon-system-custom .code-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  /* Khoảng cách giữa các dòng code */
+  width: 70px;
+  align-items: flex-start;
+  /* Căn trái */
+}
+
+/* Các thanh màu mô phỏng dòng code */
+.list-exercise-page .icon-system-custom .line {
+  height: 6px;
+  border-radius: 4px;
+}
+
+/* Màu sắc dòng code giống hình mẫu */
+.list-exercise-page .line-orange {
+  background-color: #f97316;
+}
+
+.list-exercise-page .line-black {
+  background-color: #1e293b;
+}
+
+.list-exercise-page .line-green {
+  background-color: #86efac;
+}
+
+.list-exercise-page .line-blue {
+  background-color: #60a5fa;
+}
+
+/* Độ dài giả lập */
+.w-80 {
+  width: 100%;
+}
+
+.w-70 {
+  width: 85%;
+}
+
+.w-60 {
+  width: 70%;
+}
+
+.w-50 {
+  width: 50%;
+}
+
+.w-40 {
+  width: 40%;
+}
+
+
+/* =========================================
+   8. CUSTOM SQL ICON (Hình trụ + Chữ)
+   ========================================= */
+.list-exercise-page .icon-sql-custom {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+}
+
+.list-exercise-page .icon-sql-custom .db-icon {
+  color: #3b82f6;
+  /* Xanh dương sáng */
+}
+
+.list-exercise-page .icon-sql-custom .db-text {
+  font-size: 42px;
+  font-weight: 800;
+  color: #3b82f6;
+  letter-spacing: 1px;
+}
+
+/* --- 9. RESPONSIVE --- */
+@media (max-width: 1200px) {
+  .list-exercise-page .problems-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .list-exercise-page .dashboard-container {
+    flex-direction: column;
+    height: auto;
+    overflow-y: auto;
+  }
+
+  .list-exercise-page .sidebar {
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    padding: 15px;
+  }
+
+  .list-exercise-page .nav-menu,
+  .list-exercise-page .sidebar-bottom {
+    display: none;
+  }
+
+  .list-exercise-page .problems-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .list-exercise-page .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .list-exercise-page .search-box input {
+    width: 100%;
+  }
+
+  .list-exercise-page .main-content {
+    padding: 20px;
+  }
+}
