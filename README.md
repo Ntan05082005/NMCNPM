@@ -57,6 +57,9 @@ Trước khi bắt đầu, đảm bảo máy tính của bạn đã cài đặt:
   - Kiểm tra: `node -v` và `npm -v`
 - **PostgreSQL 12+**
   - Kiểm tra: `psql --version`
+- **Docker Desktop** (BẮT BUỘC - để chạy code sandbox)
+  - Kiểm tra: `docker --version` và `docker ps`
+  - Download: [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 - **Git**
   - Kiểm tra: `git --version`
 
@@ -157,21 +160,70 @@ mvn clean install
 
 Database schema và sample data sẽ tự động được tạo khi chạy ứng dụng lần đầu tiên nhờ Flyway migration. Các migration files nằm trong `src/main/resources/db/migration/`.
 
-### 4. Cài đặt Frontend
+### 4. Cài đặt Docker
 
-#### Bước 4.1: Di chuyển vào thư mục frontend
+#### Bước 4.1: Cài đặt Docker Desktop
+
+**Windows & macOS:**
+1. Download Docker Desktop từ [docker.com](https://www.docker.com/products/docker-desktop/)
+2. Cài đặt và chạy Docker Desktop
+3. Đảm bảo Docker đang chạy (icon Docker trong system tray)
+
+**Linux (Ubuntu/Debian):**
+```bash
+# Cài đặt Docker
+sudo apt update
+sudo apt install docker.io docker-compose
+sudo systemctl start docker
+sudo systemctl enable docker
+
+# Thêm user vào docker group (để không cần sudo)
+sudo usermod -aG docker $USER
+# Logout và login lại để áp dụng
+```
+
+#### Bước 4.2: Kiểm tra Docker
+
+```bash
+docker --version
+docker ps
+```
+
+#### Bước 4.3: Pull Docker Images (Tùy chọn - tự động pull khi chạy lần đầu)
+
+Hệ thống cần các Docker images sau để chạy code:
+
+```bash
+# Python
+docker pull python:3.11-slim
+
+# JavaScript/Node.js
+docker pull node:20-slim
+
+# C++
+docker pull gcc:13
+```
+
+> **Lưu ý:** 
+> - Images sẽ tự động được pull khi chạy code lần đầu tiên
+> - Tổng dung lượng: ~1.5 GB (python: 120MB, node: 170MB, gcc: 1.2GB)
+> - Lần chạy đầu tiên mỗi ngôn ngữ sẽ chậm hơn do phải pull image
+
+### 5. Cài đặt Frontend
+
+#### Bước 5.1: Di chuyển vào thư mục frontend
 
 ```bash
 cd frontend
 ```
 
-#### Bước 4.2: Cài đặt dependencies
+#### Bước 5.2: Cài đặt dependencies
 
 ```bash
 npm install
 ```
 
-#### Bước 4.3: Cấu hình environment
+#### Bước 5.3: Cấu hình environment
 
 File `.env` đã có sẵn với cấu hình mặc định:
 
@@ -182,6 +234,16 @@ VITE_API_URL=http://localhost:8080
 > **Lưu ý:** Nếu backend chạy ở port khác, hãy cập nhật `VITE_API_URL` cho phù hợp.
 
 ## ▶️ Chạy ứng dụng
+
+### Kiểm tra Docker đang chạy
+
+Trước khi chạy backend, đảm bảo Docker Desktop đã được khởi động:
+
+```bash
+docker ps
+```
+
+Nếu thấy lỗi, hãy mở Docker Desktop và đợi cho đến khi nó khởi động hoàn tất.
 
 ### Chạy Backend
 
@@ -300,6 +362,100 @@ Sau khi chạy backend, các API endpoints có sẵn:
 
 Chi tiết đầy đủ xem file: `COMPLETE_API_TEST_GUIDE.md` và `postman_collection.json`
 
+## 🔒 Kiến trúc Sandbox & Bảo mật
+
+### Docker Sandbox Environment
+
+Hệ thống sử dụng **Docker containers** để tạo môi trường cô lập và an toàn cho việc thực thi code người dùng:
+
+#### Docker Images được sử dụng:
+- **Python**: `python:3.11-slim` (~120 MB)
+- **JavaScript**: `node:20-slim` (~170 MB) 
+- **C++**: `gcc:13` (~1.2 GB)
+
+#### Cơ chế hoạt động:
+
+1. **Code Isolation**: Mỗi submission chạy trong Docker container riêng biệt
+2. **Temporary Files**: Code được viết vào thư mục tạm, tự động xóa sau khi chạy
+3. **Volume Mounting**: 
+   - Python/JS: Mount read-only (`-v "/path:/code:ro"`)
+   - C++: Mount read-write (cần compile)
+4. **Network Isolation**: `--network=none` - Không có quyền truy cập mạng
+5. **Auto Cleanup**: Container tự động xóa sau khi chạy (`--rm` flag)
+
+#### Các tính năng bảo mật:
+
+```java
+✅ Isolated Execution - Mỗi submission trong container riêng
+✅ No Network Access - Flag --network=none ngăn truy cập internet
+✅ Timeout Protection - Giới hạn 5 giây/test case
+✅ Read-only Code Mount - Code Python/JS không thể tự sửa
+✅ Automatic Cleanup - Xóa temp files và containers sau khi chạy
+✅ JWT Authentication - Chỉ user đã đăng nhập mới submit được
+✅ Resource Limits - Docker giới hạn CPU/Memory
+```
+
+#### Docker Commands được sử dụng:
+
+**Python:**
+```bash
+docker run --rm --network=none \
+  -v "/temp/path:/code:ro" \
+  -w /code python:3.11-slim \
+  sh -c "python solution.py < input.txt"
+```
+
+**JavaScript:**
+```bash
+docker run --rm --network=none \
+  -v "/temp/path:/code:ro" \
+  -w /code node:20-slim \
+  sh -c "node solution.js < input.txt"
+```
+
+**C++:**
+```bash
+docker run --rm --network=none \
+  -v "/temp/path:/code" \
+  -w /code gcc:13 \
+  sh -c "g++ -o solution solution.cpp && ./solution < input.txt"
+```
+
+### Performance
+
+- **First run**: Chậm hơn (pull image + container start) - ~2-5 giây
+- **Subsequent runs**: Nhanh hơn (~50-200ms) tùy độ phức tạp code
+- **Timeout limit**: 5 giây/test case
+- **Execution tracking**: Đo runtime chính xác bằng `RuntimeCalculator`
+
+### Code Execution Flow
+
+```
+User Submit Code
+    ↓
+Backend receives submission
+    ↓
+Create temp directory (code_exec_*)
+    ↓
+Write code & input to files
+    ↓
+Build Docker command
+    ↓
+Execute in Docker container (isolated)
+    ↓
+Capture output & runtime
+    ↓
+Compare with expected output
+    ↓
+Judge result & calculate score
+    ↓
+Cleanup temp files
+    ↓
+Return result to user
+```
+
+Chi tiết đầy đủ xem file: `COMPLETE_API_TEST_GUIDE.md` và `postman_collection.json`
+
 ## 🔨 Build cho Production
 
 ### Build Backend
@@ -325,6 +481,34 @@ npm run build
 Files build sẽ nằm trong thư mục `frontend/dist/`
 
 ## 🐛 Troubleshooting
+
+### Lỗi Docker
+
+**Lỗi:** `Cannot connect to Docker daemon` hoặc `Docker not running`
+
+**Giải pháp:**
+1. Mở Docker Desktop
+2. Đợi cho đến khi Docker khởi động hoàn tất (icon xanh lá)
+3. Kiểm tra: `docker ps`
+4. Trên Linux: `sudo systemctl start docker`
+
+**Lỗi:** `Error response from daemon: pull access denied`
+
+**Giải pháp:**
+- Docker image sẽ tự động pull khi cần
+- Hoặc pull thủ công: `docker pull python:3.11-slim`
+- Đảm bảo có kết nối internet khi pull lần đầu
+
+**Lỗi:** `no space left on device`
+
+**Giải pháp:**
+```bash
+# Xóa unused containers và images
+docker system prune -a
+
+# Xem dung lượng
+docker system df
+```
 
 ### Lỗi kết nối Database
 
@@ -402,5 +586,16 @@ Sau khi chạy migrations, có thể sử dụng các tài khoản mẫu (xem tr
 
 Check file migration để biết username/password mặc định.
 
+## 📞 Liên hệ & Hỗ trợ
+
+- **Project:** Unicode Programming Practice System
+- **Version:** 0.0.1-SNAPSHOT
+- **Documentation:** Xem thêm tại `COMPLETE_API_TEST_GUIDE.md`, `WORKING_CODE_EXAMPLES.md`
+
+## 📄 License
+
+SE Project - Educational Purpose
+
+---
 
 **Chúc bạn code vui vẻ! 🚀**
