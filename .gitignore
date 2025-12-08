@@ -31,3 +31,20 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Environment Variables ###
+.env
+.env.local
+.env.*.local
+
+### Database ###
+*.sql.backup
+*.db
+
+### Temp Files ###
+temp/
+tmp/
+code_exec_*/
+
+### Docker ###
+docker-compose.override.yml
