@@ -33,7 +33,7 @@ A Spring Boot REST API for a coding practice platform with JWT authentication an
 ### 1. Start PostgreSQL (Docker)
 ```bash
 docker run --name cws-postgres -e POSTGRES_USER=testuser -e POSTGRES_PASSWORD=123456 -e POSTGRES_DB=cws -p 5432:5432 -d postgres:16
-Get-Content backup.sql | docker exec -i cws-postgres5 psql -U testuser -d cws  
+Get-Content backup.sql | docker exec -i cws-postgres psql -U testuser -d cws  
 ```
 
 ### 2. Pull Code Execution Images
