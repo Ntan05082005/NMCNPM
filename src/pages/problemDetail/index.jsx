@@ -7,23 +7,33 @@ import { FiSearch, FiBell, FiChevronDown, FiGrid, FiFileText, FiSend, FiUser, Fi
 import { FaUserCircle } from 'react-icons/fa';
 
 function ProblemDetail() {
-  const { id } = useParams();
+  const { slug } = useParams();
   const navigate = useNavigate();
   const [problem, setProblem] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  const title = decodeURIComponent(slug);
 
   const handleLogout = () => {
     navigate('/login');
   };
 
   useEffect(() => {
-    setLoading(true);
-    setError("");
-
-  
+    // Fetch tất cả problems để tìm id từ title
     mockApi
-      .get(`/problem/${id}`)              
+      .get('/problem')
+      .then((res) => {
+        console.log('All problems:', res.data);
+        console.log('Looking for title:', title);
+        const foundProblem = res.data.find(p => p.title === title);
+        console.log('Found problem:', foundProblem);
+        if (foundProblem) {
+          return mockApi.get(`/problem/${foundProblem.id}`);
+        } else {
+          throw new Error("Không tìm thấy bài tập.");
+        }
+      })
       .then((res) => {
         setProblem(res.data);
       })
@@ -32,7 +42,7 @@ function ProblemDetail() {
         setError("Không tải được dữ liệu bài tập.");
       })
       .finally(() => setLoading(false));
-  }, [id]);
+  }, [title]);
 
 
   if (loading) {

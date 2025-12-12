@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { mockApi } from "../../API/api-problemdetail.js"; // Import API đã tạo
 import "./specified-problem.css"; 
 
@@ -9,10 +9,32 @@ import { FaUserCircle } from "react-icons/fa";
 
 export default function SpecifiedProblem() {
   const navigate = useNavigate();
+  const { category } = useParams();
+  
+  // Mapping từ category sang title
+  const categoryTitles = {
+    dsa: 'Algorithm & Data Structure Problems',
+    implementation: 'Implementation / Simulation Problems',
+    debugging: 'Debugging Questions',
+    'system-design': 'System Design Questions',
+    oop: 'Object-Oriented Programming (OOP) & Design Patterns',
+    sql: 'Database / SQL Coding Questions'
+  };
+
+  const pageTitle = categoryTitles[category] || 'Problems';
   
   // --- STATE QUẢN LÝ DỮ LIỆU ---
   const [problems, setProblems] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Hàm tạo slug từ title
+  const createSlug = (title) => {
+    return title
+      .toLowerCase()
+      .replace(/[^a-z0-9\s]/g, '') // Loại bỏ ký tự đặc biệt
+      .replace(/\s+/g, '-') // Thay space bằng -
+      .trim();
+  };
 
   // --- GỌI API KHI COMPONENT MOUNT ---
   useEffect(() => {
@@ -20,6 +42,7 @@ export default function SpecifiedProblem() {
     mockApi
       .get('/problem')
       .then((res) => {
+        console.log('Problems data:', res.data);
         setProblems(res.data);
       })
       .catch((err) => {
@@ -35,14 +58,18 @@ export default function SpecifiedProblem() {
   };
 
   // --- XỬ LÝ CLICK ĐỂ CHUYỂN TRANG ---
-  const handleProblemClick = (id) => {
-    navigate(`/problems/${id}`);
+  const handleProblemClick = (title) => {
+    const encodedTitle = encodeURIComponent(title);
+    navigate(`/problems/${encodedTitle}`);
   };
 
   // --- LỌC BÀI TẬP THEO ĐỘ KHÓ ---
   // Lưu ý: Trên MockAPI bạn phải điền field difficulty là "Easy" hoặc "Medium"
-  const easyProblems = problems.filter(p => (p.difficulty || '').toLowerCase() === 'easy');
-  const mediumProblems = problems.filter(p => (p.difficulty || '').toLowerCase() === 'medium');
+  const filteredProblems = problems.filter(p => (p.category || '').toLowerCase() === category.toLowerCase());
+  console.log('Category:', category);
+  console.log('Filtered problems:', filteredProblems);
+  const easyProblems = filteredProblems.filter(p => (p.difficulty || '').toLowerCase() === 'easy');
+  const mediumProblems = filteredProblems.filter(p => (p.difficulty || '').toLowerCase() === 'medium');
 
   return (
     <div className="specified-problem-page">
@@ -93,7 +120,7 @@ export default function SpecifiedProblem() {
 
           {/* PAGE TITLE */}
           <div className="page-header">
-            <h2 className="page-title">Algorithm & Data Structure Problems</h2>
+            <h2 className="page-title">{pageTitle}</h2>
             <div className="sort-btn"> Sort By <FiChevronDown /> </div>
           </div>
 
@@ -116,7 +143,7 @@ export default function SpecifiedProblem() {
                         <li 
                           key={prob.id} 
                           className="problem-item"
-                          onClick={() => handleProblemClick(prob.id)}
+                          onClick={() => handleProblemClick(prob.title)}
                           style={{ cursor: 'pointer' }} // Thêm biểu tượng bàn tay khi hover
                         >
                           {prob.title}
@@ -140,7 +167,7 @@ export default function SpecifiedProblem() {
                         <li 
                           key={prob.id} 
                           className="problem-item"
-                          onClick={() => handleProblemClick(prob.id)}
+                          onClick={() => handleProblemClick(prob.title)}
                           style={{ cursor: 'pointer' }}
                         >
                           {prob.title}

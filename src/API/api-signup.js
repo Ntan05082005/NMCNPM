@@ -2,7 +2,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://localhost:8080/api/auth", // http://localhost:8080
+  baseURL: import.meta.env.VITE_API_URL, // http://localhost:8080
 });
 
 // Hàm gọi API đăng ký

@@ -95,7 +95,7 @@ export default function ListExercise() {
   ];
 
   const handleCardClick = (id) => {
-    navigate(`/problems/${id}`);
+    navigate(`/list/${id}`);
   };
 
   const handleLogout = () => {

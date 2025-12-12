@@ -118,32 +118,9 @@
 .problem-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 40px 60px;
-  margin-bottom: 30px;
-}
-
-.problem-detail-page .welcome-text h1 {
-  font-size: 36px;
-  font-weight: 700;
-  color: #0f172a;
-  margin-bottom: 8px;
-}
-
-.problem-detail-page .welcome-text p {
-  color: #94a3b8;
-  font-size: 15px;
-}
-
-.problem-detail-page .header-actions {
-  display: flex;
-  align-items: center;
-  gap: 30px;
-}
-
-.problem-title-block-container {
-  padding: 0 60px 30px;
-  border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+  align-items: flex-start;
+  padding: 60px 60px 40px;
+  margin-bottom: 0;
 }
 
 .problem-title-block {
@@ -206,8 +183,25 @@
   display: none;
 }
 
-.problem-detail-page .search-box.small {
-  display: none;
+.problem-detail-page .search-box input {
+  padding: 12px 20px 12px 50px;
+  border-radius: 30px;
+  border: none;
+  background: #f1f5f9;
+  width: 300px;
+  outline: none;
+  font-size: 14px;
+  color: #475569;
+  font-family: 'Poppins', sans-serif;
+}
+
+.problem-detail-page .search-icon {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  font-size: 18px;
 }
 
 .problem-detail-page .user-controls {
