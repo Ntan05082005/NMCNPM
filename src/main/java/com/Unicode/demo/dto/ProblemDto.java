@@ -16,6 +16,7 @@ public class ProblemDto {
     private String title;
     private String slug;
     private String difficulty;
+    private String status; // "Solved" or "Unsolved" - calculated based on user submissions
     private String description;
     private BigDecimal acceptanceRate;
     private Integer totalSubmissions;
@@ -30,6 +31,14 @@ public class ProblemDto {
     private String sampleInput;
     private String sampleOutput;
     private String explanation;
+    private String summary;
+    private String learningObjectives;
+    private String example1Input;
+    private String example1Output;
+    private String example1Explanation;
+    private String example2Input;
+    private String example2Output;
+    private String example2Explanation;
     private Boolean isPremium;
     private Set<TagDto> tags;
     private String authorUsername;

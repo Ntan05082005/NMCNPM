@@ -77,6 +77,30 @@ public class Problem {
     @Column(columnDefinition = "TEXT")
     private String explanation;
 
+    @Column(columnDefinition = "TEXT")
+    private String summary;
+
+    @Column(name = "learning_objectives", columnDefinition = "TEXT")
+    private String learningObjectives;
+
+    @Column(name = "example1_input", columnDefinition = "TEXT")
+    private String example1Input;
+
+    @Column(name = "example1_output", columnDefinition = "TEXT")
+    private String example1Output;
+
+    @Column(name = "example1_explanation", columnDefinition = "TEXT")
+    private String example1Explanation;
+
+    @Column(name = "example2_input", columnDefinition = "TEXT")
+    private String example2Input;
+
+    @Column(name = "example2_output", columnDefinition = "TEXT")
+    private String example2Output;
+
+    @Column(name = "example2_explanation", columnDefinition = "TEXT")
+    private String example2Explanation;
+
     @Column(name = "is_premium")
     private Boolean isPremium = false;
 

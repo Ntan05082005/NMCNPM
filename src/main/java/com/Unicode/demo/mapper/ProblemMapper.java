@@ -21,6 +21,7 @@ public class ProblemMapper {
         dto.setTitle(problem.getTitle());
         dto.setSlug(problem.getSlug());
         dto.setDifficulty(problem.getDifficulty());
+        dto.setStatus("Unsolved"); // Default status - can be enhanced to check user's submissions
         dto.setDescription(problem.getDescription());
         dto.setAcceptanceRate(problem.getAcceptanceRate());
         dto.setTotalSubmissions(problem.getTotalSubmissions());
@@ -35,6 +36,14 @@ public class ProblemMapper {
         dto.setSampleInput(problem.getSampleInput());
         dto.setSampleOutput(problem.getSampleOutput());
         dto.setExplanation(problem.getExplanation());
+        dto.setSummary(problem.getSummary());
+        dto.setLearningObjectives(problem.getLearningObjectives());
+        dto.setExample1Input(problem.getExample1Input());
+        dto.setExample1Output(problem.getExample1Output());
+        dto.setExample1Explanation(problem.getExample1Explanation());
+        dto.setExample2Input(problem.getExample2Input());
+        dto.setExample2Output(problem.getExample2Output());
+        dto.setExample2Explanation(problem.getExample2Explanation());
         dto.setIsPremium(problem.getIsPremium());
         dto.setCreatedAt(problem.getCreatedAt());
         dto.setUpdatedAt(problem.getUpdatedAt());
