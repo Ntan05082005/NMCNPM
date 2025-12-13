@@ -11,8 +11,24 @@ export function getAllProblems({ page = 0, size = 10, difficulty, tags, search }
   params.append("page", page);
   params.append("size", size);
   
-  if (difficulty) params.append("difficulty", difficulty);
-  if (tags) params.append("tags", tags);
+  // Handle array of difficulties
+  if (difficulty) {
+    if (Array.isArray(difficulty)) {
+      difficulty.forEach(d => params.append("difficulty", d));
+    } else {
+      params.append("difficulty", difficulty);
+    }
+  }
+  
+  // Handle array of tags
+  if (tags) {
+    if (Array.isArray(tags)) {
+      tags.forEach(tag => params.append("tags", tag));
+    } else {
+      params.append("tags", tags);
+    }
+  }
+  
   if (search) params.append("search", search);
   
   return API.get(`/api/problems?${params.toString()}`);

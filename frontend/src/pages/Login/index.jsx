@@ -31,7 +31,7 @@ export default function LogIn() {
 
       setMessage("Login successful! Redirecting...");
       setTimeout(() => {
-        window.location.href = "/"; // chuyển sang home
+        window.location.href = "/problems"; // chuyển sang trang danh sách bài tập
       }, 1200);
     } catch (err) {
       console.error("Full error object:", err);
