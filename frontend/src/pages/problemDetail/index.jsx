@@ -7,7 +7,7 @@ import { FiSearch, FiBell, FiChevronDown, FiGrid, FiFileText, FiSend, FiUser, Fi
 import { FaUserCircle } from 'react-icons/fa';
 
 function ProblemDetail() {
-  const { id } = useParams(); // This is actually the slug from the URL
+  const { slug } = useParams(); // Get slug from URL
   const navigate = useNavigate();
   const [problem, setProblem] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -22,7 +22,7 @@ function ProblemDetail() {
     setError("");
 
     // Fetch problem by slug from backend API
-    getProblemBySlug(id)              
+    getProblemBySlug(slug)              
       .then((res) => {
         setProblem(res.data);
       })
@@ -31,7 +31,7 @@ function ProblemDetail() {
         setError("Không tải được dữ liệu bài tập.");
       })
       .finally(() => setLoading(false));
-  }, [id]);
+  }, [slug]);
 
 
   if (loading) {

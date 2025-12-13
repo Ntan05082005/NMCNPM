@@ -14,7 +14,7 @@ export default function Start() {
 
           <nav className="nav-links">
             <Link 
-              to="/list" 
+              to="/problems" 
               style={{
                 cursor: 'pointer',
                 textDecoration: 'none',

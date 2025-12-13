@@ -143,10 +143,12 @@ export default function SignUp() {
                 <div className="success-view">
                   <FaCheckCircle className="icon-success" />
                   <h3 className="success-title">Registration Successful!</h3>
-                  <p className="success-desc">Welcome to the UniCode community.</p>
-                  <button className="btn btn-primary small">
-                    <Link to="/" style={{ color: "white" }}>Back to Home</Link>
-                  </button>
+                  <p className="success-desc">Welcome to the UniCode community. Please login to continue.</p>
+                  <Link to="/login">
+                    <button className="btn btn-primary small" style={{ color: "white" }}>
+                      Go to Login
+                    </button>
+                  </Link>
 
                 </div>
               ) : (

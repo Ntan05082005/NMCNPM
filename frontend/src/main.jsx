@@ -27,8 +27,8 @@ createRoot(document.getElementById('root')).render(
         
         {/* EXERCISE/PROBLEMS PAGES */}
         <Route path="/problems" element={<ListExercise />} />
-        <Route path="/list/" element={<SpecifiedProblem />} />
-        <Route path="/problems/:id" element={<ProblemDetail />} />
+        <Route path="/category/:categoryId" element={<SpecifiedProblem />} />
+        <Route path="/problem/:slug" element={<ProblemDetail />} />
         
         {/* Fallback route to help debug unmatched paths */}
         <Route path="*" element={<div style={{padding:20}}>No route matched — Router is active</div>} />

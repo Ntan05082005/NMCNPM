@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { getAllProblems } from "../../API/api-problemdetail.js"; // Import API đã tạo
 import "./specified-problem.css"; 
 
@@ -9,15 +9,53 @@ import { FaUserCircle } from "react-icons/fa";
 
 export default function SpecifiedProblem() {
   const navigate = useNavigate();
+  const { categoryId } = useParams(); // Lấy categoryId từ URL
   
   // --- STATE QUẢN LÝ DỮ LIỆU ---
   const [problems, setProblems] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // --- GỌI API KHI COMPONENT MOUNT ---
+  // --- MAPPING CATEGORY ID TO TAG NAME & TITLE ---
+  const categoryConfig = {
+    'dsa': {
+      tag: 'algorithm-data-structure',
+      title: 'Algorithm & Data Structure Problems'
+    },
+    'implementation': {
+      tag: 'implementation',
+      title: 'Implementation / Simulation Problems'
+    },
+    'debugging': {
+      tag: 'debugging',
+      title: 'Debugging Questions'
+    },
+    'system-design': {
+      tag: 'system-design',
+      title: 'System Design Questions'
+    },
+    'oop': {
+      tag: 'oop',
+      title: 'Object-Oriented Programming (OOP) & Design Patterns'
+    },
+    'sql': {
+      tag: 'database',
+      title: 'Database / SQL Coding Questions'
+    }
+  };
+
+  const currentCategory = categoryConfig[categoryId] || {
+    tag: 'algorithm-data-structure',
+    title: 'Algorithm & Data Structure Problems'
+  };
+
+  // --- GỌI API KHI COMPONENT MOUNT HOẶC CATEGORY THAY ĐỔI ---
   useEffect(() => {
-    // Fetch list of problems from backend API
-    getAllProblems({ page: 0, size: 100 })
+    // Fetch list of problems filtered by category tag
+    getAllProblems({ 
+      page: 0, 
+      size: 100,
+      tags: [currentCategory.tag] // Filter theo tag của category
+    })
       .then((res) => {
         // Backend returns paginated response with 'content' array
         setProblems(res.data.content || []);
@@ -28,7 +66,7 @@ export default function SpecifiedProblem() {
       .finally(() => {
         setLoading(false);
       });
-  }, []);
+  }, [categoryId]);
 
   const handleLogout = () => {
     navigate('/login');
@@ -36,7 +74,7 @@ export default function SpecifiedProblem() {
 
   // --- XỬ LÝ CLICK ĐỂ CHUYỂN TRANG ---
   const handleProblemClick = (slug) => {
-    navigate(`/problems/${slug}`);
+    navigate(`/problem/${slug}`);
   };
 
   // --- LỌC BÀI TẬP THEO ĐỘ KHÓ ---
@@ -92,7 +130,7 @@ export default function SpecifiedProblem() {
 
           {/* PAGE TITLE */}
           <div className="page-header">
-            <h2 className="page-title">Algorithm & Data Structure Problems</h2>
+            <h2 className="page-title">{currentCategory.title}</h2>
             <div className="sort-btn"> Sort By <FiChevronDown /> </div>
           </div>
 

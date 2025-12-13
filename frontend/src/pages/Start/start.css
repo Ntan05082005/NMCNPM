@@ -30,6 +30,7 @@
 
 /* NAVBAR */
 .start-page .navbar {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -37,6 +38,7 @@
   padding-bottom: 20px;
   max-width: 1200px;
   margin: 0 auto;
+  z-index: 10;
 }
 
 .start-page .logo {
@@ -155,6 +157,7 @@
 
 .start-page .btn-primary:hover { transform: translateY(-2px); }
 .start-page .btn-large { padding:22px 44px; font-size:18px; border-radius:34px; }
+.start-page .btn-primary.small { padding:12px 24px; font-size:14px; }
 
 .start-page .hero-secondary-row { 
   display:flex; 
@@ -168,7 +171,15 @@
   font-size:16px; 
   font-weight:700; 
   color:#0084ff; 
-  box-shadow:0 12px 30px rgba(0,0,0,0.08); }
+  border: none;
+  cursor: pointer;
+  box-shadow:0 12px 30px rgba(0,0,0,0.08); 
+  transition: transform 0.2s;
+}
+
+.start-page .chip:hover {
+  transform: translateY(-2px);
+}
 
 .start-page .hero-image { 
   width:clamp(500px,38vw,560px); 
