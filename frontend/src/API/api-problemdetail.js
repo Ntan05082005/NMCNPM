@@ -44,6 +44,24 @@ export function getProblemById(id) {
   return API.get(`/api/problems/id/${id}`);
 }
 
+// Get problem detail for coding interface with language-specific starter code
+export function getProblemDetail(slug, language = "python") {
+  const token = localStorage.getItem("jwt_token");
+  
+  const config = {
+    params: { language }
+  };
+  
+  // Add auth header if token exists (to get submission status)
+  if (token) {
+    config.headers = {
+      Authorization: `Bearer ${token}`
+    };
+  }
+  
+  return API.get(`/api/problems/${slug}/detail`, config);
+}
+
 // Get all tags
 export function getAllTags() {
   return API.get("/api/tags");
@@ -95,6 +113,7 @@ export default {
   getAllProblems,
   getProblemBySlug,
   getProblemById,
+  getProblemDetail,
   getAllTags,
   getTagBySlug,
   submitCode,
