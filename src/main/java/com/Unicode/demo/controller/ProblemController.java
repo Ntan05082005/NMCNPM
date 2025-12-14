@@ -2,8 +2,10 @@ package com.Unicode.demo.controller;
 
 import com.Unicode.demo.dto.PageResponse;
 import com.Unicode.demo.dto.ProblemDto;
+import com.Unicode.demo.dto.ProblemDetailDto;
 import com.Unicode.demo.dto.ProblemFilterDto;
 import com.Unicode.demo.service.ProblemService;
+import com.Unicode.demo.service.ProblemDetailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,6 +19,7 @@ import java.util.List;
 public class ProblemController {
 
     private final ProblemService problemService;
+    private final ProblemDetailService problemDetailService;
 
     /**
      * Simple test endpoint
@@ -89,5 +92,31 @@ public class ProblemController {
     public ResponseEntity<ProblemDto> getProblemById(@PathVariable Long id) {
         ProblemDto problem = problemService.getProblemById(id);
         return ResponseEntity.ok(problem);
+    }
+
+    /**
+     * Get problem detail for coding interface by slug
+     * 
+     * Example: GET /api/problems/two-sum/detail?language=python
+     */
+    @GetMapping("/{slug}/detail")
+    public ResponseEntity<ProblemDetailDto> getProblemDetailBySlug(
+            @PathVariable String slug,
+            @RequestParam(required = false, defaultValue = "cpp") String language) {
+        ProblemDetailDto problemDetail = problemDetailService.getProblemDetailBySlug(slug, language);
+        return ResponseEntity.ok(problemDetail);
+    }
+
+    /**
+     * Get problem detail for coding interface by ID
+     * 
+     * Example: GET /api/problems/id/1/detail?language=python
+     */
+    @GetMapping("/id/{id}/detail")
+    public ResponseEntity<ProblemDetailDto> getProblemDetailById(
+            @PathVariable Long id,
+            @RequestParam(required = false, defaultValue = "cpp") String language) {
+        ProblemDetailDto problemDetail = problemDetailService.getProblemDetailById(id, language);
+        return ResponseEntity.ok(problemDetail);
     }
 }

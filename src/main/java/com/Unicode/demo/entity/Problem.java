@@ -104,6 +104,18 @@ public class Problem {
     @Column(name = "is_premium")
     private Boolean isPremium = false;
 
+    @Column(length = 50)
+    private String category;
+
+    @Column(name = "starter_code_cpp", columnDefinition = "TEXT")
+    private String starterCodeCpp;
+
+    @Column(name = "starter_code_python", columnDefinition = "TEXT")
+    private String starterCodePython;
+
+    @Column(name = "starter_code_javascript", columnDefinition = "TEXT")
+    private String starterCodeJavascript;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id")
     private User author;
