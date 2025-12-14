@@ -1,0 +1,74 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+*.md
+README.md
+CONTRIBUTING.md
+CHANGELOG.md
+LICENSE
+
+# IDE
+.idea
+.vscode
+*.iml
+*.ipr
+*.iws
+.settings
+.project
+.classpath
+
+# Build artifacts
+target/
+build/
+dist/
+*.jar
+*.war
+*.ear
+*.class
+
+# Maven
+.mvn/wrapper/maven-wrapper.jar
+mvnw
+mvnw.cmd
+
+# Node modules (if building frontend in Docker)
+node_modules/
+frontend/node_modules/
+frontend/dist/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+*.env
+
+# Logs
+*.log
+logs/
+
+# Temp files
+temp/
+tmp/
+code_exec_*/
+*.tmp
+*.bak
+*.swp
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Test files
+src/test/
+
+# Other
+postman_collection.json
+POSTMAN_SUBMISSION_EXAMPLES.json
+*.png
+*.jpg
+*.jpeg
+acli.exe

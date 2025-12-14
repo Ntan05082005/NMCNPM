@@ -40,6 +40,10 @@ public class ProblemDto {
     private String example2Output;
     private String example2Explanation;
     private Boolean isPremium;
+    private String category;
+    private String starterCodeCpp;
+    private String starterCodePython;
+    private String starterCodeJavascript;
     private Set<TagDto> tags;
     private String authorUsername;
     private LocalDateTime createdAt;

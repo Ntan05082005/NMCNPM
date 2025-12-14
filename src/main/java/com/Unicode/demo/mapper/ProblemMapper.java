@@ -45,6 +45,10 @@ public class ProblemMapper {
         dto.setExample2Output(problem.getExample2Output());
         dto.setExample2Explanation(problem.getExample2Explanation());
         dto.setIsPremium(problem.getIsPremium());
+        dto.setCategory(problem.getCategory());
+        dto.setStarterCodeCpp(problem.getStarterCodeCpp());
+        dto.setStarterCodePython(problem.getStarterCodePython());
+        dto.setStarterCodeJavascript(problem.getStarterCodeJavascript());
         dto.setCreatedAt(problem.getCreatedAt());
         dto.setUpdatedAt(problem.getUpdatedAt());
 
