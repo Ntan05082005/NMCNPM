@@ -1,3 +1,4 @@
+import "./index.css";
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
@@ -10,6 +11,9 @@ import ProtectedPage from './pages/Protected/index.jsx'; // trang test JWT
 import ProblemDetail from './pages/problemDetail/index.jsx';
 import ListExercise from './pages/ListExercise/index.jsx';
 import SpecifiedProblem from './pages/SpecifiedProblem/index.jsx';
+import AboutUs from './pages/aboutUs/index.jsx';
+
+
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
@@ -29,6 +33,9 @@ createRoot(document.getElementById('root')).render(
         <Route path="/problems" element={<ListExercise />} />
         <Route path="/category/:categoryId" element={<SpecifiedProblem />} />
         <Route path="/problem/:slug" element={<ProblemDetail />} />
+
+        <Route path="/about" element={<AboutUs />} />
+
         
         {/* Fallback route to help debug unmatched paths */}
         <Route path="*" element={<div style={{padding:20}}>No route matched — Router is active</div>} />
