@@ -4,6 +4,8 @@ import com.Unicode.demo.dto.SubmitRequest;
 import com.Unicode.demo.dto.SubmitResponse;
 import com.Unicode.demo.dto.TestResultDto;
 import com.Unicode.demo.dto.UserStatsDto;
+import com.Unicode.demo.dto.SubmissionSummaryDto;
+import com.Unicode.demo.dto.ProblemSummaryDto;
 import com.Unicode.demo.entity.Problem;
 import com.Unicode.demo.entity.Submission;
 import com.Unicode.demo.entity.TestCase;
@@ -193,55 +195,104 @@ public class SubmissionService {
     }
 
     /**
-     * Get user submission statistics
+     * Get user submission statistics with detailed breakdowns
      */
     public UserStatsDto getUserStats(Long userId) {
         // Verify user exists
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
 
-        // Count submissions by status
-        Long totalSubmissions = submissionRepository.countByUserId(userId);
-        Long acceptedSubmissions = submissionRepository.countByUserIdAndStatus(userId, SubmissionStatus.ACCEPTED);
-        Long wrongAnswerSubmissions = submissionRepository.countByUserIdAndStatus(userId,
-                SubmissionStatus.WRONG_ANSWER);
-        Long runtimeErrorSubmissions = submissionRepository.countByUserIdAndStatus(userId,
-                SubmissionStatus.RUNTIME_ERROR);
-        Long compilationErrorSubmissions = submissionRepository.countByUserIdAndStatus(userId,
-                SubmissionStatus.COMPILATION_ERROR);
-        Long timeLimitExceededSubmissions = submissionRepository.countByUserIdAndStatus(userId,
-                SubmissionStatus.TIME_LIMIT_EXCEEDED);
+        // Get all user submissions
+        List<Submission> allSubmissions = submissionRepository.findByUserIdOrderBySubmittedAtDesc(userId);
+
+        // Group submissions by status
+        List<SubmissionSummaryDto> acceptedList = new ArrayList<>();
+        List<SubmissionSummaryDto> wrongAnswerList = new ArrayList<>();
+        List<SubmissionSummaryDto> runtimeErrorList = new ArrayList<>();
+        List<SubmissionSummaryDto> compilationErrorList = new ArrayList<>();
+        List<SubmissionSummaryDto> timeLimitExceededList = new ArrayList<>();
+
+        for (Submission s : allSubmissions) {
+            SubmissionSummaryDto summary = SubmissionSummaryDto.builder()
+                    .id(s.getId())
+                    .problemId(s.getProblem().getId())
+                    .problemTitle(s.getProblem().getTitle())
+                    .problemSlug(s.getProblem().getSlug())
+                    .difficulty(s.getProblem().getDifficulty())
+                    .language(s.getLanguage().name())
+                    .status(s.getStatus().name())
+                    .executionTimeMs(s.getExecutionTimeMs())
+                    .submittedAt(s.getSubmittedAt())
+                    .build();
+
+            switch (s.getStatus()) {
+                case ACCEPTED -> acceptedList.add(summary);
+                case WRONG_ANSWER -> wrongAnswerList.add(summary);
+                case RUNTIME_ERROR -> runtimeErrorList.add(summary);
+                case COMPILATION_ERROR -> compilationErrorList.add(summary);
+                case TIME_LIMIT_EXCEEDED -> timeLimitExceededList.add(summary);
+                default -> {
+                } // PENDING or other statuses
+            }
+        }
+
+        // Get distinct problems solved by difficulty
+        List<ProblemSummaryDto> easyProblemsList = new ArrayList<>();
+        List<ProblemSummaryDto> mediumProblemsList = new ArrayList<>();
+        List<ProblemSummaryDto> hardProblemsList = new ArrayList<>();
+
+        // Get unique solved problems from accepted submissions
+        acceptedList.stream()
+                .map(s -> ProblemSummaryDto.builder()
+                        .id(s.getProblemId())
+                        .title(s.getProblemTitle())
+                        .slug(s.getProblemSlug())
+                        .difficulty(s.getDifficulty())
+                        .build())
+                .distinct()
+                .forEach(p -> {
+                    switch (p.getDifficulty().toUpperCase()) {
+                        case "EASY" -> easyProblemsList.add(p);
+                        case "MEDIUM" -> mediumProblemsList.add(p);
+                        case "HARD" -> hardProblemsList.add(p);
+                    }
+                });
 
         // Count problems
         Long totalProblemsAttempted = submissionRepository.countDistinctProblemsAttemptedByUserId(userId);
         Long totalProblemsSolved = submissionRepository.countDistinctProblemsSolvedByUserId(userId);
 
-        // Count by difficulty
-        Long easyProblemsSolved = submissionRepository.countDistinctProblemsSolvedByUserIdAndDifficulty(userId, "EASY");
-        Long mediumProblemsSolved = submissionRepository.countDistinctProblemsSolvedByUserIdAndDifficulty(userId,
-                "MEDIUM");
-        Long hardProblemsSolved = submissionRepository.countDistinctProblemsSolvedByUserIdAndDifficulty(userId, "HARD");
-
         // Calculate acceptance rate
+        Long totalSubmissions = (long) allSubmissions.size();
+        Long acceptedCount = (long) acceptedList.size();
         Double acceptanceRate = totalSubmissions > 0
-                ? (acceptedSubmissions * 100.0) / totalSubmissions
+                ? (acceptedCount * 100.0) / totalSubmissions
                 : 0.0;
 
         return UserStatsDto.builder()
                 .userId(userId)
                 .username(user.getUsername())
                 .totalSubmissions(totalSubmissions)
-                .acceptedSubmissions(acceptedSubmissions)
-                .wrongAnswerSubmissions(wrongAnswerSubmissions)
-                .runtimeErrorSubmissions(runtimeErrorSubmissions)
-                .compilationErrorSubmissions(compilationErrorSubmissions)
-                .timeLimitExceededSubmissions(timeLimitExceededSubmissions)
+                .acceptedCount(acceptedCount)
+                .wrongAnswerCount((long) wrongAnswerList.size())
+                .runtimeErrorCount((long) runtimeErrorList.size())
+                .compilationErrorCount((long) compilationErrorList.size())
+                .timeLimitExceededCount((long) timeLimitExceededList.size())
                 .totalProblemsAttempted(totalProblemsAttempted)
                 .totalProblemsSolved(totalProblemsSolved)
-                .easyProblemsSolved(easyProblemsSolved)
-                .mediumProblemsSolved(mediumProblemsSolved)
-                .hardProblemsSolved(hardProblemsSolved)
+                .easyProblemsSolved((long) easyProblemsList.size())
+                .mediumProblemsSolved((long) mediumProblemsList.size())
+                .hardProblemsSolved((long) hardProblemsList.size())
                 .acceptanceRate(Math.round(acceptanceRate * 100.0) / 100.0)
+                // Detailed lists
+                .acceptedSubmissions(acceptedList)
+                .wrongAnswerSubmissions(wrongAnswerList)
+                .runtimeErrorSubmissions(runtimeErrorList)
+                .compilationErrorSubmissions(compilationErrorList)
+                .timeLimitExceededSubmissions(timeLimitExceededList)
+                .easyProblemsSolvedList(easyProblemsList)
+                .mediumProblemsSolvedList(mediumProblemsList)
+                .hardProblemsSolvedList(hardProblemsList)
                 .build();
     }
 
