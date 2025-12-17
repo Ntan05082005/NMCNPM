@@ -28,9 +28,9 @@ public class SubmissionController {
      * 
      * Request body:
      * {
-     *   "problemId": 1,
-     *   "code": "def two_sum(nums, target): ...",
-     *   "language": "python"
+     * "problemId": 1,
+     * "code": "def two_sum(nums, target): ...",
+     * "language": "python"
      * }
      */
     @PostMapping
@@ -60,5 +60,16 @@ public class SubmissionController {
     public ResponseEntity<List<Submission>> getProblemSubmissions(@PathVariable Long problemId) {
         List<Submission> submissions = submissionService.getProblemSubmissions(problemId);
         return ResponseEntity.ok(submissions);
+    }
+
+    /**
+     * Get a submission by ID
+     * GET /api/submissions/{id}
+     */
+    @GetMapping("/{id}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<Submission> getSubmissionById(@PathVariable Long id) {
+        Submission submission = submissionService.getSubmissionById(id);
+        return ResponseEntity.ok(submission);
     }
 }
