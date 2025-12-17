@@ -3,6 +3,7 @@ package com.Unicode.demo.service;
 import com.Unicode.demo.dto.SubmitRequest;
 import com.Unicode.demo.dto.SubmitResponse;
 import com.Unicode.demo.dto.TestResultDto;
+import com.Unicode.demo.dto.UserStatsDto;
 import com.Unicode.demo.entity.Problem;
 import com.Unicode.demo.entity.Submission;
 import com.Unicode.demo.entity.TestCase;
@@ -75,7 +76,7 @@ public class SubmissionService {
 
         for (int i = 0; i < testCases.size(); i++) {
             TestCase testCase = testCases.get(i);
-            
+
             CodeExecutionService.ExecutionResult result = codeExecutionService.execute(
                     request.getCode(),
                     language,
@@ -88,11 +89,11 @@ public class SubmissionService {
             // Check for execution errors
             if (!result.success()) {
                 errorMessage = result.error();
-                
+
                 if (result.timedOut()) {
                     hasTimeout = true;
                 }
-                
+
                 if (result.hasCompilationError()) {
                     hasCompilationError = true;
                 }
@@ -114,18 +115,18 @@ public class SubmissionService {
                                 .executionTimeMs(result.executionTimeMs())
                                 .build()))
                         .build();
-                
+
                 testResults.add(testResult);
                 break; // Stop on first error
             }
 
             // Compare output with expected output using JudgeService
             boolean passed = judgeService.compareOutputs(testCase.getExpectedOutput(), result.output());
-            
+
             if (passed) {
                 passedCount++;
             }
-            
+
             TestResultDto testResult = TestResultDto.builder()
                     .testCaseNumber(i + 1)
                     .input(testCase.getInput())
@@ -135,17 +136,16 @@ public class SubmissionService {
                     .executionTimeMs(result.executionTimeMs())
                     .status(passed ? "CORRECT" : "WRONG_ANSWER")
                     .build();
-            
+
             testResults.add(testResult);
         }
 
         // Use JudgeService to determine final status
         SubmissionStatus finalStatus = judgeService.judgeSubmission(
-            testResults.toArray(new TestResultDto[0]),
-            hasCompilationError,
-            hasTimeout
-        );
-        
+                testResults.toArray(new TestResultDto[0]),
+                hasCompilationError,
+                hasTimeout);
+
         submission.setStatus(finalStatus);
 
         submission.setOutput(lastOutput);
@@ -182,6 +182,67 @@ public class SubmissionService {
      */
     public List<Submission> getProblemSubmissions(Long problemId) {
         return submissionRepository.findByProblemIdOrderBySubmittedAtDesc(problemId);
+    }
+
+    /**
+     * Get a submission by ID
+     */
+    public Submission getSubmissionById(Long submissionId) {
+        return submissionRepository.findById(submissionId)
+                .orElseThrow(() -> new RuntimeException("Submission not found with id: " + submissionId));
+    }
+
+    /**
+     * Get user submission statistics
+     */
+    public UserStatsDto getUserStats(Long userId) {
+        // Verify user exists
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
+
+        // Count submissions by status
+        Long totalSubmissions = submissionRepository.countByUserId(userId);
+        Long acceptedSubmissions = submissionRepository.countByUserIdAndStatus(userId, SubmissionStatus.ACCEPTED);
+        Long wrongAnswerSubmissions = submissionRepository.countByUserIdAndStatus(userId,
+                SubmissionStatus.WRONG_ANSWER);
+        Long runtimeErrorSubmissions = submissionRepository.countByUserIdAndStatus(userId,
+                SubmissionStatus.RUNTIME_ERROR);
+        Long compilationErrorSubmissions = submissionRepository.countByUserIdAndStatus(userId,
+                SubmissionStatus.COMPILATION_ERROR);
+        Long timeLimitExceededSubmissions = submissionRepository.countByUserIdAndStatus(userId,
+                SubmissionStatus.TIME_LIMIT_EXCEEDED);
+
+        // Count problems
+        Long totalProblemsAttempted = submissionRepository.countDistinctProblemsAttemptedByUserId(userId);
+        Long totalProblemsSolved = submissionRepository.countDistinctProblemsSolvedByUserId(userId);
+
+        // Count by difficulty
+        Long easyProblemsSolved = submissionRepository.countDistinctProblemsSolvedByUserIdAndDifficulty(userId, "EASY");
+        Long mediumProblemsSolved = submissionRepository.countDistinctProblemsSolvedByUserIdAndDifficulty(userId,
+                "MEDIUM");
+        Long hardProblemsSolved = submissionRepository.countDistinctProblemsSolvedByUserIdAndDifficulty(userId, "HARD");
+
+        // Calculate acceptance rate
+        Double acceptanceRate = totalSubmissions > 0
+                ? (acceptedSubmissions * 100.0) / totalSubmissions
+                : 0.0;
+
+        return UserStatsDto.builder()
+                .userId(userId)
+                .username(user.getUsername())
+                .totalSubmissions(totalSubmissions)
+                .acceptedSubmissions(acceptedSubmissions)
+                .wrongAnswerSubmissions(wrongAnswerSubmissions)
+                .runtimeErrorSubmissions(runtimeErrorSubmissions)
+                .compilationErrorSubmissions(compilationErrorSubmissions)
+                .timeLimitExceededSubmissions(timeLimitExceededSubmissions)
+                .totalProblemsAttempted(totalProblemsAttempted)
+                .totalProblemsSolved(totalProblemsSolved)
+                .easyProblemsSolved(easyProblemsSolved)
+                .mediumProblemsSolved(mediumProblemsSolved)
+                .hardProblemsSolved(hardProblemsSolved)
+                .acceptanceRate(Math.round(acceptanceRate * 100.0) / 100.0)
+                .build();
     }
 
     private Language parseLanguage(String language) {
