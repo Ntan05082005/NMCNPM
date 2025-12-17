@@ -2,6 +2,7 @@ package com.Unicode.demo.controller;
 
 import com.Unicode.demo.dto.SubmitRequest;
 import com.Unicode.demo.dto.SubmitResponse;
+import com.Unicode.demo.dto.UserStatsDto;
 import com.Unicode.demo.entity.Submission;
 import com.Unicode.demo.service.SubmissionService;
 import jakarta.validation.Valid;
@@ -71,5 +72,21 @@ public class SubmissionController {
     public ResponseEntity<Submission> getSubmissionById(@PathVariable Long id) {
         Submission submission = submissionService.getSubmissionById(id);
         return ResponseEntity.ok(submission);
+    }
+
+    /**
+     * Get user submission statistics
+     * GET /api/submissions/stats/{userId}
+     * 
+     * Returns statistics including:
+     * - Total submissions, accepted, wrong answer, runtime error, etc.
+     * - Problems solved by difficulty (easy, medium, hard)
+     * - Acceptance rate
+     */
+    @GetMapping("/stats/{userId}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<UserStatsDto> getUserStats(@PathVariable Long userId) {
+        UserStatsDto stats = submissionService.getUserStats(userId);
+        return ResponseEntity.ok(stats);
     }
 }
