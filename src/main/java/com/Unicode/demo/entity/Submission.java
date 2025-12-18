@@ -54,4 +54,10 @@ public class Submission {
     @CreationTimestamp
     @Column(name = "submitted_at", updatable = false)
     private LocalDateTime submittedAt;
+
+    @Column(name = "test_cases_passed")
+    private Integer testCasesPassed;
+
+    @Column(name = "total_test_cases")
+    private Integer totalTestCases;
 }

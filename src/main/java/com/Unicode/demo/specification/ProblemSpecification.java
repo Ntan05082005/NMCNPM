@@ -28,8 +28,8 @@ public class ProblemSpecification {
             // TODO: Fix tag filtering with proper implementation
             if (tagSlugs != null && !tagSlugs.isEmpty()) {
                 // TEMPORARILY COMMENTED OUT - causing ConcurrentModificationException
-                // Join<Problem, Tag> tagJoin = root.join("tags", JoinType.INNER);
-                // predicates.add(tagJoin.get("slug").in(tagSlugs));
+                Join<Problem, Tag> tagJoin = root.join("tags", JoinType.INNER);
+                predicates.add(tagJoin.get("slug").in(tagSlugs));
                 System.out.println("⚠️  Tag filtering temporarily disabled");
             }
 
