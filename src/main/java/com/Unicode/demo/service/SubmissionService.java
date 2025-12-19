@@ -4,6 +4,7 @@ import com.Unicode.demo.dto.SubmitRequest;
 import com.Unicode.demo.dto.SubmitResponse;
 import com.Unicode.demo.dto.TestResultDto;
 import com.Unicode.demo.dto.UserStatsDto;
+import com.Unicode.demo.dto.SubmissionListDto;
 import com.Unicode.demo.dto.SubmissionSummaryDto;
 import com.Unicode.demo.dto.ProblemSummaryDto;
 import com.Unicode.demo.entity.Problem;
@@ -16,6 +17,11 @@ import com.Unicode.demo.repository.ProblemRepository;
 import com.Unicode.demo.repository.SubmissionRepository;
 import com.Unicode.demo.repository.TestCaseRepository;
 import com.Unicode.demo.repository.UserRepository;
+import com.Unicode.demo.mapper.SubmissionMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
+import jakarta.persistence.criteria.Predicate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -28,6 +34,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SubmissionService {
 
+    private final SubmissionMapper submissionMapper;
     private final SubmissionRepository submissionRepository;
     private final ProblemRepository problemRepository;
     private final TestCaseRepository testCaseRepository;
@@ -303,5 +310,38 @@ public class SubmissionService {
             case "cpp", "c++" -> Language.CPP;
             default -> throw new RuntimeException("Unsupported language: " + language);
         };
+    }
+    public Page<SubmissionListDto> getSubmissions(Long userId, Long problemId, SubmissionStatus status, String search, Pageable pageable) {
+        Specification<Submission> spec = (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            // 1. Lọc theo User ID
+            if (userId != null) {
+                predicates.add(cb.equal(root.get("user").get("id"), userId));
+            }
+
+            // 2. Lọc theo Problem ID
+            if (problemId != null) {
+                predicates.add(cb.equal(root.get("problem").get("id"), problemId));
+            }
+
+            // 3. Lọc theo Status (ACCEPTED, WRONG_ANSWER,...)
+            if (status != null) {
+                predicates.add(cb.equal(root.get("status"), status));
+            }
+
+            // 4. Tìm kiếm theo tên bài tập
+            if (search != null && !search.isEmpty()) {
+                String searchLike = "%" + search.toLowerCase() + "%";
+                predicates.add(cb.like(cb.lower(root.get("problem").get("title")), searchLike));
+            }
+
+            // Kết hợp các điều kiện bằng AND
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+
+        // Query Database và Map sang DTO
+        return submissionRepository.findAll(spec, pageable)
+                .map(submissionMapper::toListDto);
     }
 }
