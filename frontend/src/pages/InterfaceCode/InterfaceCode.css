@@ -1,0 +1,427 @@
+/* InterfaceCode.css */
+
+/* --- GLOBAL SCOPE FOR THIS PAGE ONLY --- */
+/* Bắt buộc phải có class cha .interface-code-wrapper để không ảnh hưởng page khác */
+
+.interface-code-wrapper.full-interface-container {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f0f5;
+}
+
+/* --- HEADER --- */
+.interface-code-wrapper .interface-header {
+    background-color: transparent;
+    color: #333;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 30px;
+    height: 60px;
+}
+
+.interface-code-wrapper .logo-box {
+    font-size: 1.8em;
+    font-weight: 700;
+    color: #483d8b;
+    padding: 5px 0;
+}
+
+.interface-code-wrapper .timer-controls {
+    display: flex;
+    align-items: center;
+    color: #333;
+    font-size: 1.2em;
+    font-weight: 600;
+}
+
+.interface-code-wrapper .timer-controls .icon {
+    font-size: 1.5em;
+    margin-right: 5px;
+}
+
+/* --- LAYOUT --- */
+.interface-code-wrapper .problem-container {
+    display: flex;
+    flex-grow: 1;
+}
+
+/* --- SIDEBAR --- */
+.interface-code-wrapper .sidebar {
+    width: 450px;
+    /* Điều chỉnh độ rộng sidebar */
+    background-color: #383151;
+    color: white;
+    padding: 30px 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.interface-code-wrapper .sidebar h2 {
+    margin: 5px 0;
+    line-height: 1.1;
+}
+
+.interface-code-wrapper .sidebar-list-title {
+    color: #8c83a7 !important;
+    font-size: 2em;
+    font-weight: 500 !important;
+    margin-bottom: 5px !important;
+}
+
+.interface-code-wrapper .sidebar-divider {
+    width: 80%;
+    border: none;
+    border-top: 1px solid #5a507d;
+    display: block;
+    margin: 15px auto;
+}
+
+.interface-code-wrapper .sidebar-problem-title {
+    color: #f0f0f5 !important;
+    font-size: 2.5em !important;
+    font-weight: 700 !important;
+    word-break: break-word;
+}
+
+/* --- MAIN CONTENT --- */
+.interface-code-wrapper .main-content {
+    flex-grow: 1;
+    padding: 30px;
+    overflow-y: auto;
+}
+
+/* Khung chứa các thành phần chính */
+.interface-code-wrapper .problem-description,
+.interface-code-wrapper .code-editor,
+.interface-code-wrapper .console-area {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+/* --- PROBLEM DESCRIPTION & EXAMPLES --- */
+.interface-code-wrapper .problem-description {
+    line-height: 1.6;
+    color: #333;
+}
+
+/* SỬA ĐOẠN NÀY */
+.interface-code-wrapper .description-content {
+    margin-bottom: 20px;
+
+    /* 1. Font chữ giống Example */
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+    /* 2. Độ đậm (600 hoặc 700 sẽ giống tiêu đề) */
+    font-weight: 600;
+
+    /* 3. Màu đen tuyền */
+    color: #000000;
+
+    /* 4. Kích thước chữ to hơn một chút cho dễ đọc */
+    font-size: 17px;
+}
+
+/* Đảm bảo tất cả các thẻ con bên trong (p, span, div) cũng nhận style này */
+.interface-code-wrapper .description-content * {
+    font-family: inherit;
+    font-weight: inherit;
+    color: inherit;
+    font-size: inherit;
+}
+
+/* Example Cards */
+.interface-code-wrapper .example-card {
+    background-color: #f8f9fa;
+    border-left: 4px solid #5d4a98;
+    /* Viền tím làm điểm nhấn */
+    border-radius: 4px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.interface-code-wrapper .example-title {
+    margin-top: 0;
+    color: #5d4a98;
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.interface-code-wrapper .example-body {
+    font-size: 0.95em;
+}
+
+.interface-code-wrapper .example-row {
+    margin-bottom: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+}
+
+.interface-code-wrapper .example-row .label {
+    font-weight: 700;
+    min-width: 60px;
+    color: #444;
+    margin-right: 10px;
+}
+
+.interface-code-wrapper .example-row .value {
+    background-color: #eef0f3;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: 'Consolas', monospace;
+    color: #c7254e;
+    /* Màu đỏ cho giá trị code */
+    font-weight: 600;
+}
+
+.interface-code-wrapper .explanation-text {
+    font-style: italic;
+    color: #555;
+    flex: 1;
+}
+
+/* Constraints */
+.interface-code-wrapper .constraint-card {
+    margin-top: 25px;
+    border-top: 1px solid #eee;
+    padding-top: 15px;
+}
+
+.interface-code-wrapper .constraint-title {
+    font-size: 1.1em;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.interface-code-wrapper .constraint-list {
+    padding-left: 20px;
+    margin: 0;
+}
+
+.interface-code-wrapper .constraint-list li {
+    margin-bottom: 5px;
+    color: #555;
+}
+
+.interface-code-wrapper .constraint-list li code {
+    background-color: #f0f0f5;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: 'Consolas', monospace;
+    font-weight: bold;
+    border: 1px solid #ddd;
+    color: #333;
+}
+
+/* --- CODE EDITOR --- */
+.interface-code-wrapper .code-editor-and-console {
+    display: flex;
+    gap: 20px;
+}
+
+.interface-code-wrapper .code-area {
+    flex: 2;
+    position: relative;
+}
+
+.interface-code-wrapper .code-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+    font-weight: bold;
+    color: #333;
+}
+
+.interface-code-wrapper .language-select {
+    padding: 5px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    background-color: white;
+}
+
+.interface-code-wrapper .code-editor-content {
+    min-height: 350px;
+    background-color: #282c34;
+    color: #abb2bf;
+    padding: 15px;
+    border-radius: 4px;
+    font-family: 'Consolas', 'Courier New', monospace;
+    overflow: hidden;
+    font-size: 15px;
+    line-height: 1.5;
+    position: relative;
+}
+
+.interface-code-wrapper .code-line-numbers {
+    float: left;
+    margin-right: 15px;
+    text-align: right;
+    color: #61afef;
+    user-select: none;
+    line-height: 1.5;
+    white-space: pre;
+}
+
+.interface-code-wrapper .code-input-area {
+    width: calc(100% - 40px);
+    /* Chừa chỗ cho line numbers */
+    min-height: 350px;
+    background: transparent;
+    border: none;
+    resize: none;
+    color: #abb2bf;
+    font-family: 'Consolas', 'Courier New', monospace;
+    font-size: 15px;
+    line-height: 1.5;
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    display: block;
+    float: right;
+    outline: none;
+
+    /* Thiết lập Tab size */
+    tab-size: 4;
+    -moz-tab-size: 4;
+}
+
+/* --- CONSOLE --- */
+.interface-code-wrapper .console-area-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.interface-code-wrapper .console-tabs {
+    display: flex;
+    margin-bottom: 10px;
+    border-bottom: 2px solid #ddd;
+}
+
+.interface-code-wrapper .console-tab {
+    padding: 8px 15px;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    font-weight: 500;
+}
+
+.interface-code-wrapper .console-tab.active {
+    border-bottom-color: #5d4a98;
+    font-weight: bold;
+    color: #5d4a98;
+}
+
+.interface-code-wrapper .custom-input-textarea,
+.interface-code-wrapper .console-output-area {
+    width: 100%;
+    min-height: 150px;
+    max-height: 400px;
+    padding: 10px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+    font-family: monospace;
+    font-size: 14px;
+    resize: vertical;
+    outline: none;
+    white-space: pre-wrap;
+    color: #333;
+}
+
+/* --- STATUS & BUTTONS --- */
+.interface-code-wrapper .error-message {
+    background-color: #ffe0e0;
+    border: 1px solid #ff4d4d;
+    color: #ff4d4d;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+
+.interface-code-wrapper .submission-status {
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.interface-code-wrapper .submission-status.ACCEPTED {
+    background-color: #e6ffe6;
+    color: #2f8632;
+}
+
+.interface-code-wrapper .submission-status.WRONG_ANSWER {
+    background-color: #ffe6e6;
+    color: #cc0000;
+}
+
+.interface-code-wrapper .submission-status.TIME_LIMIT_EXCEEDED {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.interface-code-wrapper .button-container {
+    display: flex;
+    margin-top: 20px;
+}
+
+.interface-code-wrapper .run-button-wrapper {
+    position: absolute;
+    bottom: -60px;
+    left: 20px;
+}
+
+.interface-code-wrapper .submit-button-wrapper {
+    justify-content: flex-end;
+}
+
+.interface-code-wrapper .run-button,
+.interface-code-wrapper .submit-button {
+    padding: 10px 30px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: bold;
+    color: white;
+    transition: 0.3s;
+}
+
+.interface-code-wrapper .run-button {
+    background-color: #2f8632;
+}
+
+.interface-code-wrapper .run-button:hover:not(:disabled) {
+    background-color: #1c5f36;
+}
+
+.interface-code-wrapper .submit-button {
+    background-color: #5d4a98;
+}
+
+.interface-code-wrapper .submit-button:hover:not(:disabled) {
+    background-color: #4a3c78;
+}
+
+.interface-code-wrapper .run-button:disabled,
+.interface-code-wrapper .submit-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}

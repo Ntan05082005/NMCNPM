@@ -17,6 +17,12 @@ function ProblemDetail() {
     navigate('/login');
   };
 
+  const handleCodeNowClick = () => {
+    // Chúng ta đã có slug từ useParams(). 
+    // Route đích là: /interface-code/:slug
+    navigate(`/interface-code/${slug}`);
+  };
+
   useEffect(() => {
     setLoading(true);
     setError("");
@@ -32,7 +38,6 @@ function ProblemDetail() {
       })
       .finally(() => setLoading(false));
   }, [slug]);
-
 
   if (loading) {
     return (
@@ -204,7 +209,9 @@ function ProblemDetail() {
 
         {/* CODE NOW BUTTON */}
         <div className="code-now-wrapper">
-          <button className="code-now-btn">CODE NOW</button>
+          <button className="code-now-btn"
+          onClick={handleCodeNowClick}
+          >CODE NOW</button>
         </div>
       </main>
       </div>
@@ -212,6 +219,7 @@ function ProblemDetail() {
   );
 }
 
-
 export { ProblemDetail };
 export default ProblemDetail;
+
+

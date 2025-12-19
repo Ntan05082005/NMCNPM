@@ -12,6 +12,8 @@ import ProblemDetail from './pages/problemDetail/index.jsx';
 import ListExercise from './pages/ListExercise/index.jsx';
 import SpecifiedProblem from './pages/SpecifiedProblem/index.jsx';
 import AboutUs from './pages/aboutUs/index.jsx';
+import InterfaceCode from './pages/InterfaceCode/index.jsx';
+import SubmissionResult from './pages/SubmissionResult/index.jsx';
 
 
 
@@ -33,6 +35,8 @@ createRoot(document.getElementById('root')).render(
         <Route path="/problems" element={<ListExercise />} />
         <Route path="/category/:categoryId" element={<SpecifiedProblem />} />
         <Route path="/problem/:slug" element={<ProblemDetail />} />
+        <Route path="/interface-code/:slug" element={<InterfaceCode />} />
+        <Route path="/submission-result/:slug" element={<SubmissionResult />}/>
 
         <Route path="/about" element={<AboutUs />} />
 
