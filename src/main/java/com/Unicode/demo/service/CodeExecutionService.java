@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import java.io.*;
 import java.nio.file.*;
 import java.util.concurrent.*;
+import java.util.regex.*;
 
 /**
  * Service for executing user code in Docker containers
@@ -19,8 +20,9 @@ import java.util.concurrent.*;
 public class CodeExecutionService {
 
     private static final Logger log = LoggerFactory.getLogger(CodeExecutionService.class);
-    private static final int TIMEOUT_SECONDS = 5;
+    private static final int TIMEOUT_SECONDS = 10; // Increased to allow for Docker startup
     private static final String DOCKER_NETWORK = "none"; // No network access for security
+    private static final Pattern TIME_PATTERN = Pattern.compile("___TIME_MS:(\\d+)___");
 
     private final RuntimeCalculator runtimeCalculator;
     private final ErrorCaptureService errorCaptureService;
@@ -70,18 +72,24 @@ public class CodeExecutionService {
     private String buildDockerCommand(Path tempDir, Language language) {
         String absPath = tempDir.toAbsolutePath().toString().replace("\\", "/");
 
+        // Each command wraps execution with shell timing to measure actual runtime
+        // Output format: normal output followed by ___TIME_MS:123___
         return switch (language) {
             case PYTHON -> String.format(
                     "docker run --rm --network=%s -v \"%s:/code:ro\" -w /code python:3.11-slim " +
-                            "sh -c \"python solution.py < input.txt\"",
+                            "sh -c \"start=$(date +%%s%%N) && python solution.py < input.txt && " +
+                            "end=$(date +%%s%%N) && echo ___TIME_MS:$(((end-start)/1000000))___\"",
                     DOCKER_NETWORK, absPath);
             case JAVASCRIPT -> String.format(
                     "docker run --rm --network=%s -v \"%s:/code:ro\" -w /code node:20-slim " +
-                            "sh -c \"node solution.js < input.txt\"",
+                            "sh -c \"start=$(date +%%s%%N) && node solution.js < input.txt && " +
+                            "end=$(date +%%s%%N) && echo ___TIME_MS:$(((end-start)/1000000))___\"",
                     DOCKER_NETWORK, absPath);
             case CPP -> String.format(
                     "docker run --rm --network=%s -v \"%s:/code\" -w /code gcc:13 " +
-                            "sh -c \"g++ -o solution solution.cpp && ./solution < input.txt\"",
+                            "sh -c \"g++ -O2 -o solution solution.cpp && " +
+                            "start=$(date +%%s%%N) && ./solution < input.txt && " +
+                            "end=$(date +%%s%%N) && echo ___TIME_MS:$(((end-start)/1000000))___\"",
                     DOCKER_NETWORK, absPath);
         };
     }
@@ -99,67 +107,104 @@ public class CodeExecutionService {
         try {
             Process process = pb.start();
 
-            // Use RuntimeCalculator for accurate timing
-            RuntimeCalculator.RuntimeResult runtimeResult = 
-                runtimeCalculator.measureExecutionTime(process, TIMEOUT_SECONDS * 1000L);
+            // Use RuntimeCalculator for external timing (fallback)
+            RuntimeCalculator.RuntimeResult runtimeResult = runtimeCalculator.measureExecutionTime(process,
+                    TIMEOUT_SECONDS * 1000L);
 
             // Use ErrorCaptureService to capture output
-            ErrorCaptureService.CapturedOutput captured = 
-                errorCaptureService.captureOutput(process, TIMEOUT_SECONDS * 1000L);
+            ErrorCaptureService.CapturedOutput captured = errorCaptureService.captureOutput(process,
+                    TIMEOUT_SECONDS * 1000L);
 
             // Check for timeout
             if (runtimeResult.isTimedOut()) {
                 return new ExecutionResult(
-                    false, 
-                    captured.getStdout(), 
-                    "Time Limit Exceeded", 
-                    runtimeResult.getExecutionTimeMs(),
-                    captured.getStderr(),
-                    "",
-                    true
-                );
+                        false,
+                        captured.getStdout(),
+                        "Time Limit Exceeded",
+                        runtimeResult.getExecutionTimeMs(),
+                        captured.getStderr(),
+                        "",
+                        true);
             }
 
             // Check exit code
             if (runtimeResult.getExitCode() != 0) {
-                String errorMsg = captured.hasError() ? 
-                    errorCaptureService.formatErrorMessage(captured) : 
-                    "Runtime Error";
-                
+                String errorMsg = captured.hasError() ? errorCaptureService.formatErrorMessage(captured)
+                        : "Runtime Error";
+
                 return new ExecutionResult(
-                    false, 
-                    captured.getStdout(), 
-                    errorMsg, 
-                    runtimeResult.getExecutionTimeMs(),
-                    captured.getStderr(),
-                    "",
-                    false
-                );
+                        false,
+                        captured.getStdout(),
+                        errorMsg,
+                        runtimeResult.getExecutionTimeMs(),
+                        captured.getStderr(),
+                        "",
+                        false);
             }
+
+            // Parse internal timing from output
+            String rawOutput = captured.getCleanOutput();
+            long internalTimeMs = parseInternalTiming(rawOutput);
+            String cleanOutput = stripTimingMarker(rawOutput);
+
+            // Use internal timing if available, otherwise fall back to external
+            long finalTime = internalTimeMs >= 0 ? internalTimeMs : runtimeResult.getExecutionTimeMs();
+
+            log.debug("Internal execution time: {}ms (external: {}ms)",
+                    internalTimeMs, runtimeResult.getExecutionTimeMs());
 
             // Success
             return new ExecutionResult(
-                true, 
-                captured.getCleanOutput(), 
-                "", 
-                runtimeResult.getExecutionTimeMs(),
-                "",
-                "",
-                false
-            );
+                    true,
+                    cleanOutput,
+                    "",
+                    finalTime,
+                    "",
+                    "",
+                    false);
 
         } catch (Exception e) {
             log.error("Docker execution failed", e);
             return new ExecutionResult(
-                false, 
-                "", 
-                "Failed to execute: " + e.getMessage(), 
-                0,
-                "",
-                "",
-                false
-            );
+                    false,
+                    "",
+                    "Failed to execute: " + e.getMessage(),
+                    0,
+                    "",
+                    "",
+                    false);
         }
+    }
+
+    /**
+     * Parse internal timing marker from output
+     * 
+     * @return execution time in ms, or -1 if not found
+     */
+    private long parseInternalTiming(String output) {
+        if (output == null || output.isEmpty()) {
+            return -1;
+        }
+        Matcher matcher = TIME_PATTERN.matcher(output);
+        if (matcher.find()) {
+            try {
+                return Long.parseLong(matcher.group(1));
+            } catch (NumberFormatException e) {
+                log.warn("Failed to parse internal timing: {}", matcher.group(1));
+                return -1;
+            }
+        }
+        return -1;
+    }
+
+    /**
+     * Remove timing marker from output
+     */
+    private String stripTimingMarker(String output) {
+        if (output == null) {
+            return "";
+        }
+        return TIME_PATTERN.matcher(output).replaceAll("").trim();
     }
 
     private void cleanupTempDir(Path tempDir) {
@@ -182,23 +227,22 @@ public class CodeExecutionService {
      * Result of code execution
      */
     public record ExecutionResult(
-        boolean success, 
-        String output, 
-        String error, 
-        long executionTimeMs,
-        String stderr,
-        String compilerError,
-        boolean timedOut
-    ) {
+            boolean success,
+            String output,
+            String error,
+            long executionTimeMs,
+            String stderr,
+            String compilerError,
+            boolean timedOut) {
         // Constructor for backward compatibility
         public ExecutionResult(boolean success, String output, String error, long executionTimeMs) {
             this(success, output, error, executionTimeMs, "", "", false);
         }
-        
+
         public boolean hasCompilationError() {
             return compilerError != null && !compilerError.isEmpty();
         }
-        
+
         public boolean hasRuntimeError() {
             return !success && !timedOut && !hasCompilationError();
         }
