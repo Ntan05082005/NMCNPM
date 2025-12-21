@@ -190,7 +190,7 @@ public class SubmissionService {
                 .testCasesPassed(passedCount)
                 .totalTestCases(testCases.size())
                 .stderr(lastStderr)
-                .compilerError(hasCompilationError ? errorMessage : null)
+                .compilerError(hasCompilationError ? lastStderr : null)
                 .build();
     }
 
