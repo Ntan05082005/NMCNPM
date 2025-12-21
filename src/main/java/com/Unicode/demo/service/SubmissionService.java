@@ -34,6 +34,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SubmissionService {
 
+    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(SubmissionService.class);
+
     private final SubmissionMapper submissionMapper;
     private final SubmissionRepository submissionRepository;
     private final ProblemRepository problemRepository;
@@ -86,10 +88,14 @@ public class SubmissionService {
         for (int i = 0; i < testCases.size(); i++) {
             TestCase testCase = testCases.get(i);
 
+            // Get driver template for the language (LeetCode-style execution)
+            String driverTemplate = getDriverTemplate(problem, language);
+
             CodeExecutionService.ExecutionResult result = codeExecutionService.execute(
                     request.getCode(),
                     language,
-                    testCase.getInput());
+                    testCase.getInput(),
+                    driverTemplate);
 
             totalExecutionTime += result.executionTimeMs();
             lastOutput = result.output();
@@ -131,6 +137,15 @@ public class SubmissionService {
 
             // Compare output with expected output using JudgeService
             boolean passed = judgeService.compareOutputs(testCase.getExpectedOutput(), result.output());
+
+            // Debug logging for troubleshooting
+            log.debug("Test case {}: input='{}', expected='{}', actual='{}', passed={}",
+                    i + 1,
+                    testCase.getInput().replace("\n", "\\n"),
+                    testCase.getExpectedOutput().replace("\n", "\\n"),
+                    result.output().replace("\n", "\\n"),
+                    passed);
+            log.debug("Driver template present: {}", driverTemplate != null && !driverTemplate.isEmpty());
 
             if (passed) {
                 passedCount++;
@@ -311,7 +326,22 @@ public class SubmissionService {
             default -> throw new RuntimeException("Unsupported language: " + language);
         };
     }
-    public Page<SubmissionListDto> getSubmissions(Long userId, Long problemId, SubmissionStatus status, String search, Pageable pageable) {
+
+    /**
+     * Get driver template for LeetCode-style execution
+     * Returns null if no driver template is configured (falls back to full program
+     * mode)
+     */
+    private String getDriverTemplate(Problem problem, Language language) {
+        return switch (language) {
+            case CPP -> problem.getDriverCodeCpp();
+            case PYTHON -> problem.getDriverCodePython();
+            case JAVASCRIPT -> problem.getDriverCodeJavascript();
+        };
+    }
+
+    public Page<SubmissionListDto> getSubmissions(Long userId, Long problemId, SubmissionStatus status, String search,
+            Pageable pageable) {
         Specification<Submission> spec = (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
