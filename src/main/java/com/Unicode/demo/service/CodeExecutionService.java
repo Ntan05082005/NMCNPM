@@ -31,15 +31,30 @@ public class CodeExecutionService {
      * Execute code and return the result
      */
     public ExecutionResult execute(String code, Language language, String input) {
+        return execute(code, language, input, null);
+    }
+
+    /**
+     * Execute code with optional driver template (LeetCode-style)
+     * If driverTemplate is provided, user code is wrapped with it before execution
+     */
+    public ExecutionResult execute(String code, Language language, String input, String driverTemplate) {
         Path tempDir = null;
         try {
             // Create temporary directory for code execution
             tempDir = Files.createTempDirectory("code_exec_");
 
+            // Wrap user code with driver template if provided
+            String executableCode = code;
+            if (driverTemplate != null && !driverTemplate.isEmpty()) {
+                executableCode = wrapWithDriver(code, driverTemplate);
+                log.debug("Wrapped user code with driver template");
+            }
+
             // Write code to file
             String fileName = getFileName(language);
             Path codeFile = tempDir.resolve(fileName);
-            Files.writeString(codeFile, code);
+            Files.writeString(codeFile, executableCode);
 
             // Write input to file
             Path inputFile = tempDir.resolve("input.txt");
@@ -59,6 +74,13 @@ public class CodeExecutionService {
                 cleanupTempDir(tempDir);
             }
         }
+    }
+
+    /**
+     * Wrap user solution code with driver template
+     */
+    private String wrapWithDriver(String userCode, String driverTemplate) {
+        return driverTemplate.replace("{{USER_SOLUTION}}", userCode);
     }
 
     private String getFileName(Language language) {

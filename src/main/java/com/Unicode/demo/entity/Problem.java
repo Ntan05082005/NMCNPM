@@ -116,16 +116,26 @@ public class Problem {
     @Column(name = "starter_code_javascript", columnDefinition = "TEXT")
     private String starterCodeJavascript;
 
+    // Driver templates for LeetCode-style execution
+    // These wrap user's solution function with input parsing and output formatting
+    @Column(name = "driver_code_cpp", columnDefinition = "TEXT")
+    private String driverCodeCpp;
+
+    @Column(name = "driver_code_python", columnDefinition = "TEXT")
+    private String driverCodePython;
+
+    @Column(name = "driver_code_javascript", columnDefinition = "TEXT")
+    private String driverCodeJavascript;
+
+    @Column(name = "function_name")
+    private String functionName;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id")
     private User author;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-        name = "problem_tags",
-        joinColumns = @JoinColumn(name = "problem_id"),
-        inverseJoinColumns = @JoinColumn(name = "tag_id")
-    )
+    @JoinTable(name = "problem_tags", joinColumns = @JoinColumn(name = "problem_id"), inverseJoinColumns = @JoinColumn(name = "tag_id"))
     private Set<Tag> tags = new HashSet<>();
 
     @OneToMany(mappedBy = "problem", cascade = CascadeType.ALL, orphanRemoval = true)
