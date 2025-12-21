@@ -25,7 +25,12 @@ export default function Start() {
             >
               Practice
             </Link>
-            <a href="#about" style={{color: '#666'}}>About Us</a>
+            <Link 
+              to="/about" 
+              style={{color: '#666'}}
+            >
+              About Us
+            </Link>
             <Link 
               to="/login" 
               style={{
