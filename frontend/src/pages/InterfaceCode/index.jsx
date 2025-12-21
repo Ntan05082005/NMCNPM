@@ -47,7 +47,7 @@ const CodeEditor = ({ defaultCode, submissionStatus, currentCode, onCodeChange, 
             let extraIndent = "";
             const trimmedLine = currentLine.trim();
             if (trimmedLine.endsWith("{") || trimmedLine.endsWith("(") || trimmedLine.endsWith(":")) {
-                extraIndent = "    "; 
+                extraIndent = "    ";
             }
             const newIndent = currentIndent + extraIndent;
             const newValue = value.substring(0, selectionStart) + "\n" + newIndent + value.substring(selectionEnd);
@@ -143,45 +143,50 @@ export default function InterfaceCode() {
             setIsSubmitting(false);
         }
     };
-// Trong component InterfaceCode:
-const handleSubmitCode = async () => {
-    if (!problem || isSubmitting) return;
-    setIsSubmitting(true);
-    setSubmissionResult(null);
-    
-    try {
-        const response = await submitCode({
-            problemId: problem.id,
-            language: selectedLanguage.toLowerCase(),
-            code: currentCode
-        });
-        // Thêm `${slug}` vào đường dẫn để khớp với Route "/submission-result/:slug"
-        navigate(`/submission-result/${slug}`, { 
-            state: {
-                status: response.data.status || "Compile Error",
-                errorMessage: response.data.errorMessage || "No error details provided.",
-                timeLimit: response.data.executionTimeMs ? `${response.data.executionTimeMs} ms` : "N/A",
-                memoryLimit: response.data.memoryUsed ? `${response.data.memoryUsed} MB` : "N/A",
-                testcasesPassed: response.data.testCasesPassed ? `${response.data.testCasesPassed} / ${response.data.totalTestCases}` : "0 / 0"
-            } 
-        });
+    // Trong component InterfaceCode:
+    const handleSubmitCode = async () => {
+        if (!problem || isSubmitting) return;
+        setIsSubmitting(true);
+        setSubmissionResult(null);
 
-    } catch (error) {
-        console.error(error);
-        // Cũng phải thêm slug vào đây
-        navigate(`/submission-result/${slug}`, {
-            state: {
-                status: "Compile Error",
-                errorMessage: "Line 5: Char 5: Error: Non-Void Function Does Not Return A Value [-Werror,-Wreturn-Type]\n  5 |   }\n    |   ^\n1 Error Generated.",
-                timeLimit: "54 Ms",
-                memoryLimit: "12MB",
-                testcasesPassed: "0 / 0"
-            }
-        });
-    } finally {
-        setIsSubmitting(false);
-    }
-};
+        try {
+            const response = await submitCode({
+                problemId: problem.id,
+                language: selectedLanguage.toLowerCase(),
+                code: currentCode
+            });
+            // Get error details - prefer compilerError for compilation errors, then stderr, then errorMessage
+            const errorDetails = response.data.compilerError ||
+                response.data.stderr ||
+                response.data.errorMessage ||
+                "No error details provided.";
+            // Thêm `${slug}` vào đường dẫn để khớp với Route "/submission-result/:slug"
+            navigate(`/submission-result/${slug}`, {
+                state: {
+                    status: response.data.status || "Compile Error",
+                    errorMessage: errorDetails,
+                    timeLimit: response.data.executionTimeMs ? `${response.data.executionTimeMs} ms` : "N/A",
+                    memoryLimit: response.data.memoryUsed ? `${response.data.memoryUsed} MB` : "N/A",
+                    testcasesPassed: response.data.testCasesPassed ? `${response.data.testCasesPassed} / ${response.data.totalTestCases}` : "0 / 0"
+                }
+            });
+
+        } catch (error) {
+            console.error(error);
+            // Cũng phải thêm slug vào đây
+            navigate(`/submission-result/${slug}`, {
+                state: {
+                    status: "Compile Error",
+                    errorMessage: "Line 5: Char 5: Error: Non-Void Function Does Not Return A Value [-Werror,-Wreturn-Type]\n  5 |   }\n    |   ^\n1 Error Generated.",
+                    timeLimit: "54 Ms",
+                    memoryLimit: "12MB",
+                    testcasesPassed: "0 / 0"
+                }
+            });
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
 
     if (isLoading) return <div className="loading-state">Đang tải chi tiết bài tập...</div>;
     if (!problem) return <div className="error-state">Không tìm thấy bài tập.</div>;

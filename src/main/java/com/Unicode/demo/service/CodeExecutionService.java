@@ -154,13 +154,33 @@ public class CodeExecutionService {
                 String errorMsg = captured.hasError() ? errorCaptureService.formatErrorMessage(captured)
                         : "Runtime Error";
 
+                // Detect if this is a compilation error (C++/Java) vs runtime error
+                String compilerError = "";
+                String stderr = captured.getStderr();
+                if (stderr != null && !stderr.isEmpty()) {
+                    String lowerStderr = stderr.toLowerCase();
+                    // Check for common compilation error patterns
+                    if (lowerStderr.contains("error:") &&
+                            (lowerStderr.contains(".cpp") || lowerStderr.contains(".c") ||
+                                    lowerStderr.contains("solution.cpp") || lowerStderr.contains("expected"))) {
+                        compilerError = stderr;
+                        errorMsg = "Compilation Error";
+                    } else if (lowerStderr.contains("undefined reference") ||
+                            lowerStderr.contains("syntax error") ||
+                            lowerStderr.contains("cannot find symbol") ||
+                            lowerStderr.contains("fatal error")) {
+                        compilerError = stderr;
+                        errorMsg = "Compilation Error";
+                    }
+                }
+
                 return new ExecutionResult(
                         false,
                         captured.getStdout(),
                         errorMsg,
                         runtimeResult.getExecutionTimeMs(),
                         captured.getStderr(),
-                        "",
+                        compilerError,
                         false);
             }
 
