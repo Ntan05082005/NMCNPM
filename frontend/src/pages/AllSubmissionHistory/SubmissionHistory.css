@@ -1,0 +1,168 @@
+.sh-container {
+  padding: 24px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.sh-error {
+  color: #b00020;
+  font-weight: 600;
+}
+
+.sh-header {
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.sh-title {
+  margin: 0;
+  font-size: 24px;
+}
+
+.sh-subtitle {
+  margin-top: 6px;
+  opacity: 0.75;
+  font-size: 14px;
+}
+
+.sh-search {
+  min-width: 320px;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  outline: none;
+}
+
+.sh-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(180px, 1fr));
+  gap: 12px;
+  margin: 14px 0 16px;
+}
+
+.sh-card {
+  border: 1px solid #eee;
+  border-radius: 14px;
+  padding: 14px;
+  background: #fff;
+}
+
+.sh-card-label {
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+.sh-card-value {
+  margin-top: 6px;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.sh-tabs {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 10px 0 14px;
+}
+
+.sh-tab {
+  border: 1px solid #e5e5e5;
+  background: #fff;
+  padding: 8px 12px;
+  border-radius: 999px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.sh-tab.active {
+  border-color: #111;
+}
+
+.sh-count {
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  border: 1px solid #ddd;
+  font-size: 12px;
+  opacity: 0.9;
+}
+
+.sh-table-wrap {
+  border: 1px solid #eee;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #fff;
+}
+
+.sh-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.sh-table thead th {
+  text-align: left;
+  font-size: 13px;
+  opacity: 0.8;
+  background: #fafafa;
+  padding: 12px;
+}
+
+.sh-table tbody td {
+  border-top: 1px solid #f0f0f0;
+  padding: 12px;
+  vertical-align: middle;
+}
+
+.sh-empty {
+  padding: 18px;
+  text-align: center;
+  opacity: 0.7;
+}
+
+.sh-link {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  padding: 0;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.sh-btn {
+  border: 1px solid #ddd;
+  background: #fff;
+  padding: 6px 10px;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+/* Badges */
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid #ddd;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+}
+
+.badge-accepted { border-color: #1b5e20; }
+.badge-wa       { border-color: #b71c1c; }
+.badge-re       { border-color: #4e342e; }
+.badge-ce       { border-color: #0d47a1; }
+.badge-tle      { border-color: #6a1b9a; }
+
+@media (max-width: 900px) {
+  .sh-cards {
+    grid-template-columns: 1fr;
+  }
+  .sh-search {
+    min-width: 100%;
+  }
+}
