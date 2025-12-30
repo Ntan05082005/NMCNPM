@@ -23,7 +23,7 @@ createRoot(document.getElementById('root')).render(
     <BrowserRouter>
       <Routes>
         {/* TRANG CHÍNH */}
-        <Route path="/" element={<Start />} />
+        <Route path="/" element={<SubmissionHistory />} />
 
         {/* AUTH PAGES */}
         <Route path="/signup" element={<SignUp />} />
@@ -31,21 +31,21 @@ createRoot(document.getElementById('root')).render(
 
         {/* TRANG CHỈ TRUY CẬP KHI CÓ JWT */}
         <Route path="/protected" element={<ProtectedPage />} />
-        
+
         {/* EXERCISE/PROBLEMS PAGES */}
         <Route path="/problems" element={<ListExercise />} />
         <Route path="/category/:categoryId" element={<SpecifiedProblem />} />
         <Route path="/problem/:slug" element={<ProblemDetail />} />
         <Route path="/interface-code/:slug" element={<InterfaceCode />} />
-        <Route path="/submission-result/:slug" element={<SubmissionResult />}/>
-        
-        <Route path="/profile/submissions" element={<SubmissionHistory />}/>
+        <Route path="/submission-result/:slug" element={<SubmissionResult />} />
+
+        <Route path="/profile/submissions" element={<SubmissionHistory />} />
 
         <Route path="/about" element={<AboutUs />} />
 
-        
+
         {/* Fallback route to help debug unmatched paths */}
-        <Route path="*" element={<div style={{padding:20}}>No route matched — Router is active</div>} />
+        <Route path="*" element={<div style={{ padding: 20 }}>No route matched — Router is active</div>} />
       </Routes>
     </BrowserRouter>
   </StrictMode>
