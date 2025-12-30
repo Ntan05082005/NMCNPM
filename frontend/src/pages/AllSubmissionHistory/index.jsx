@@ -195,22 +195,29 @@ export default function SubmissionHistory({ userId }) {
       </div>
 
       {summary && (
-        <div className="sh-cards">
-          <div className="sh-card">
-            <div className="sh-card-label">Total submissions</div>
-            <div className="sh-card-value">{summary.totalSubmissions}</div>
-          </div>
-          <div className="sh-card">
-            <div className="sh-card-label">Acceptance rate</div>
-            <div className="sh-card-value">{Number(summary.acceptanceRate).toFixed(1)}%</div>
-          </div>
-          <div className="sh-card">
-            <div className="sh-card-label">Solved / Attempted</div>
-            <div className="sh-card-value">
-              {summary.solved} / {summary.attempted}
-            </div>
+      <div className="sh-cards">
+        {/* 🔵 Total submissions */}
+        <div className="sh-card card-total">
+          <div className="sh-card-label">Total submissions</div>
+          <div className="sh-card-value">{summary.totalSubmissions}</div>
+        </div>
+
+        {/* 🟢 Acceptance rate */}
+        <div className="sh-card card-acceptance">
+          <div className="sh-card-label">Acceptance rate</div>
+          <div className="sh-card-value">
+            {Number(summary.acceptanceRate).toFixed(1)}%
           </div>
         </div>
+
+        {/* 🟣 Solved / Attempted */}
+        <div className="sh-card card-progress">
+          <div className="sh-card-label">Solved / Attempted</div>
+          <div className="sh-card-value">
+            {summary.solved} / {summary.attempted}
+          </div>
+        </div>
+      </div>
       )}
 
       <div className="sh-tabs">
