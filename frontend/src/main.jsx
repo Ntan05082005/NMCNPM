@@ -13,8 +13,8 @@ import ListExercise from './pages/ListExercise/index.jsx';
 import SpecifiedProblem from './pages/SpecifiedProblem/index.jsx';
 import AboutUs from './pages/aboutUs/index.jsx';
 import InterfaceCode from './pages/InterfaceCode/index.jsx';
-import SubmissionResult from './pages/SubmissionResult/index.jsx';
 import SubmissionHistory from './pages/AllSubmissionHistory/index.jsx';
+import Dashboard from './pages/Dashboard/index.jsx';
 
 
 
@@ -23,11 +23,14 @@ createRoot(document.getElementById('root')).render(
     <BrowserRouter>
       <Routes>
         {/* TRANG CHÍNH */}
-        <Route path="/" element={<SubmissionHistory />} />
+        <Route path="/" element={<Start />} />
 
         {/* AUTH PAGES */}
         <Route path="/signup" element={<SignUp />} />
         <Route path="/login" element={<LogIn />} />
+
+        {/* DASHBOARD */}
+        <Route path="/dashboard" element={<Dashboard />} />
 
         {/* TRANG CHỈ TRUY CẬP KHI CÓ JWT */}
         <Route path="/protected" element={<ProtectedPage />} />
@@ -37,8 +40,6 @@ createRoot(document.getElementById('root')).render(
         <Route path="/category/:categoryId" element={<SpecifiedProblem />} />
         <Route path="/problem/:slug" element={<ProblemDetail />} />
         <Route path="/interface-code/:slug" element={<InterfaceCode />} />
-        <Route path="/submission-result/:slug" element={<SubmissionResult />} />
-
         <Route path="/profile/submissions" element={<SubmissionHistory />} />
 
         <Route path="/about" element={<AboutUs />} />

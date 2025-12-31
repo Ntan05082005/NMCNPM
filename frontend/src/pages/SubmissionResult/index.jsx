@@ -31,10 +31,14 @@ const SubmissionResult = () => {
 
                 {/* Khu vực hiển thị Lỗi hoặc Kết quả chính */}
                 <div className="main-status-area">
-                    <div className={`status-box ${resultData.status === 'Compile Error' ? 'error-box' : 'success-box'}`}>
+                    <div className={`status-box ${
+                        resultData.status === 'ACCEPTED' || resultData.status === 'Accepted' ? 'success-box' : 
+                        resultData.status === 'Compile Error' || resultData.status.includes('ERROR') ? 'error-box' : 
+                        'warning-box'
+                    }`}>
                         <h3 className="status-title">{resultData.status}</h3>
                         <pre className="error-detail">
-                            {resultData.errorMessage}
+                            {resultData.errorMessage || resultData.message || 'All test cases passed!'}
                         </pre>
                         <div className="status-footer">
                             <span>Time Limit: {resultData.timeLimit}</span>
@@ -66,8 +70,11 @@ const SubmissionResult = () => {
                         </thead>
                         <tbody>
                             <tr>
-                                <td className="status-cell-error">{resultData.status}</td>
-                                <td>C++</td>
+                                <td className={
+                                    resultData.status === 'ACCEPTED' || resultData.status === 'Accepted' ? 'status-cell-success' : 
+                                    'status-cell-error'
+                                }>{resultData.status}</td>
+                                <td>{resultData.language || 'C++'}</td>
                                 <td>{resultData.timeLimit}</td>
                                 <td>{resultData.memoryLimit}</td>
                             </tr>

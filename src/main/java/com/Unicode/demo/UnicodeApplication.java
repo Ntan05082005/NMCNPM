@@ -9,5 +9,4 @@ public class UnicodeApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(UnicodeApplication.class, args);
 	}
-
 }
