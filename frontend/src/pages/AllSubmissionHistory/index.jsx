@@ -210,13 +210,13 @@ export default function SubmissionHistory({ userId }) {
               <div className="sh-nav-item active"> 
                 <FiSend className="sh-nav-icon" /> Submissions 
               </div>
-              <div className="sh-nav-item"> 
+              <div className="sh-nav-item" onClick={() => navigate('/profile')}>
                 <FiUser className="sh-nav-icon" /> Profile 
               </div>
             </nav>
           </div>
           <div className="sh-sidebar-bottom">
-            <div className="sh-nav-item"> 
+            <div className="sh-nav-item" onClick={() => navigate('/settings')}>
               <FiSettings className="sh-nav-icon" /> Settings 
             </div>
             <div className="sh-nav-item" onClick={handleLogout}> 

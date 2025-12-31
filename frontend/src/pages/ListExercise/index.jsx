@@ -118,11 +118,11 @@ export default function ListExercise() {
               <div className="nav-item" onClick={() => navigate('/dashboard')}> <FiGrid className="nav-icon" /> Dashboard </div>
               <div className="nav-item active"> <FiFileText className="nav-icon" /> Problems </div>
               <div className="nav-item" onClick={() => navigate('/profile/submissions')}> <FiSend className="nav-icon" /> Submissions </div>
-              <div className="nav-item"> <FiUser className="nav-icon" /> Profile </div>
+              <div className="nav-item" onClick={() => navigate('/profile')}> <FiUser className="nav-icon" /> Profile </div>
             </nav>
           </div>
           <div className="sidebar-bottom">
-            <div className="nav-item"> <FiSettings className="nav-icon" /> Settings </div>
+            <div className="nav-item" onClick={() => navigate('/settings')}> <FiSettings className="nav-icon" /> Settings </div>
             <div className="nav-item" onClick={handleLogout}> <FiLogOut className="nav-icon" /> Log Out </div>
           </div>
         </aside>
