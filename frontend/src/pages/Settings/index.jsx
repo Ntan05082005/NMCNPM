@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react"; // 1. Import useState
 import { Card, message } from "antd";
 import { CheckCircleFilled } from "@ant-design/icons";
 // Import icons cho Sidebar
@@ -17,7 +17,11 @@ const THEMES = [
 
 const Settings = () => {
   const navigate = useNavigate();
-  const currentTheme = document.body.className.replace('theme-', '') || 'light';
+
+  // 2. KHỞI TẠO STATE: Lấy theme hiện tại từ body class khi trang vừa load
+  const [currentTheme, setCurrentTheme] = useState(() => {
+    return document.body.className.replace('theme-', '') || 'light';
+  });
 
   const handleLogout = () => {
     localStorage.clear();
@@ -25,12 +29,17 @@ const Settings = () => {
   };
 
   const changeTheme = async (themeId) => {
+    // Cập nhật DOM
     document.body.className = `theme-${themeId}`;
+
+    // 3. CẬP NHẬT STATE: Để React render lại dấu tích
+    setCurrentTheme(themeId);
+
     try {
       await updateUserProfile({ themePreference: themeId });
       message.success(`Theme changed to ${themeId}`);
     } catch (e) {
-      message.error("Failed to save preference");
+      // message.error("Failed to save preference"); // Có thể bỏ qua lỗi nếu muốn
     }
   };
 
@@ -93,12 +102,17 @@ const Settings = () => {
                    justifyContent: 'center',
                    position: 'relative',
                    boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-                   transition: 'transform 0.2s'
+                   transition: 'transform 0.2s',
+                   // Thêm viền nổi bật cho theme đang chọn
+                   transform: currentTheme === theme.id ? 'scale(1.05)' : 'scale(1)',
+                   borderColor: currentTheme === theme.id ? 'var(--accent-color)' : (theme.border ? 'transparent' : '#ddd')
                  }}
-                 onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
-                 onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                 onMouseEnter={(e) => { if(currentTheme !== theme.id) e.currentTarget.style.transform = 'scale(1.05)' }}
+                 onMouseLeave={(e) => { if(currentTheme !== theme.id) e.currentTarget.style.transform = 'scale(1)' }}
                >
                  <span style={{ color: theme.textColor, fontWeight: 'bold' }}>{theme.name}</span>
+
+                 {/* Dấu tích sẽ hiện đúng nhờ State currentTheme */}
                  {currentTheme === theme.id && (
                    <CheckCircleFilled style={{ position: 'absolute', top: 10, right: 10, color: 'var(--accent-color)', fontSize: 20 }} />
                  )}
