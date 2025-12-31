@@ -1,0 +1,66 @@
+/* Layout chung */
+.profile-page-container {
+    width: 100%;
+    min-height: 100vh;
+    background-color: var(--bg-primary); /* Sử dụng biến màu từ index.css */
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+/* Sidebar (nếu bạn dùng thẻ div thay vì component Sidebar) */
+.profile-sidebar {
+    border-right: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Nội dung chính */
+.profile-content {
+    background-color: var(--bg-primary);
+}
+
+.profile-header h2 {
+    font-weight: 700;
+}
+
+/* Tùy chỉnh Ant Design Tabs để hợp với Theme */
+.profile-card .ant-tabs-tab {
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+.profile-card .ant-tabs-tab:hover {
+    color: var(--accent-color);
+}
+
+.profile-card .ant-tabs-tab.ant-tabs-tab-active .ant-tabs-tab-btn {
+    color: var(--accent-color);
+    text-shadow: 0 0 0.25px currentColor;
+}
+
+.profile-card .ant-tabs-ink-bar {
+    background: var(--accent-color);
+}
+
+/* --- Hỗ trợ Dark Mode cho Form Ant Design --- */
+body.theme-dark .ant-form-item-label > label {
+    color: var(--text-primary);
+}
+
+body.theme-dark .ant-input,
+body.theme-dark .ant-input-password,
+body.theme-dark .ant-input-affix-wrapper {
+    background-color: rgba(255, 255, 255, 0.05);
+    border-color: #4b5563;
+    color: var(--text-primary);
+}
+
+body.theme-dark .ant-input::placeholder {
+    color: #6b7280;
+}
+
+body.theme-dark .ant-card {
+    border-color: #334155;
+}
+
+body.theme-dark .ant-card-head {
+    border-bottom-color: #334155;
+    color: var(--text-primary);
+}

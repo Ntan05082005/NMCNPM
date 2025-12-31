@@ -3,6 +3,9 @@ package com.Unicode.demo.entity;
 import com.Unicode.demo.enums.Role;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -10,6 +13,9 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
+@Data // <--- QUAN TRỌNG: Tự động sinh Getters, Setters, toString, hashCode, equals
+@NoArgsConstructor // Tự động sinh Constructor không tham số
+@AllArgsConstructor // Tự động sinh Constructor đầy đủ tham số
 public class User {
 
     @Id
@@ -22,60 +28,39 @@ public class User {
     @Column(unique = true, nullable = false)
     private String email;
 
-    @JsonIgnore // Hide password in API responses
+    @JsonIgnore
     @Column(nullable = false)
     private String password;
 
-    @JsonIgnore // Hide role in API responses
+    @JsonIgnore
     @Enumerated(EnumType.STRING)
     private Role role = Role.USER;
 
-    @JsonIgnore // Hide createdAt in API responses
+    @JsonIgnore
     @CreationTimestamp
+    @Column(updatable = false)
     private LocalDateTime createdAt;
 
-    @JsonIgnore // Hide updatedAt in API responses
+    @JsonIgnore
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    // Getters & Setters
-    public Long getId() {
-        return id;
-    }
+    // =================================================================
+    // CÁC TRƯỜNG MỚI (Lombok @Data sẽ tự tạo getter/setter cho các trường này)
+    // =================================================================
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+    @Column(name = "github_link")
+    private String githubLink;
 
-    public String getUsername() {
-        return username;
-    }
+    @Column(name = "linkedin_link")
+    private String linkedinLink;
 
-    public void setUsername(String username) {
-        this.username = username;
-    }
+    @Column(name = "theme_preference")
+    private String themePreference;
 
-    public String getEmail() {
-        return email;
-    }
+    @Column(name = "full_name")
+    private String fullName;
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public Role getRole() {
-        return role;
-    }
-
-    public void setRole(Role role) {
-        this.role = role;
-    }
+    @Column(name = "avatar_url")
+    private String avatarUrl;
 }
