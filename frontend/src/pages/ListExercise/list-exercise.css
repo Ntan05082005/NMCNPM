@@ -67,17 +67,27 @@
   font-weight: 500;
   color: #64748b;
   cursor: pointer;
-  transition: all 0.2s ease;
-  padding-left: 10px;
+  transition: all 0.3s ease;
+  padding: 0.875rem 1rem;
+  border-radius: 10px;
+  margin-bottom: 0.5rem;
 }
 
 .list-exercise-page .nav-item:hover {
+  background: rgba(59, 130, 246, 0.1);
   color: #2563eb;
+  transform: translateX(5px);
 }
 
 .list-exercise-page .nav-item.active {
-  color: #2563eb;
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: #fff;
   font-weight: 600;
+  border-radius: 10px;
+  padding: 0.875rem 1rem;
+  margin-left: -10px;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+  transform: translateX(5px);
 }
 
 .list-exercise-page .nav-icon {

@@ -40,17 +40,46 @@
 
 /* Box hiển thị lỗi (Màu đỏ nhạt) */
 .status-box {
-    background-color: #f8d7da; /* Màu nền đỏ nhạt */
-    border: 1px solid #f5c6cb;
     border-radius: 8px;
     padding: 20px;
     width: 60%;
+}
+
+/* Success box - Màu xanh lá */
+.status-box.success-box {
+    background-color: #d4edda; /* Màu nền xanh lá nhạt */
+    border: 2px solid #28a745;
+    color: #155724;
+}
+
+.status-box.success-box .status-title {
+    color: #28a745; /* Màu xanh lá đậm cho tiêu đề */
+}
+
+/* Error box - Màu đỏ */
+.status-box.error-box {
+    background-color: #f8d7da; /* Màu nền đỏ nhạt */
+    border: 2px solid #dc3545;
     color: #721c24;
+}
+
+.status-box.error-box .status-title {
+    color: #dc3545; /* Màu đỏ đậm cho tiêu đề */
+}
+
+/* Warning box - Màu vàng cam */
+.status-box.warning-box {
+    background-color: #fff3cd;
+    border: 2px solid #ffc107;
+    color: #856404;
+}
+
+.status-box.warning-box .status-title {
+    color: #ff9800;
 }
 
 .status-title {
     margin-top: 0;
-    color: #d9534f; /* Màu đỏ đậm cho tiêu đề */
     font-size: 1.1em;
     font-weight: bold;
 }
@@ -150,7 +179,13 @@
     font-weight: 600;
 }
 
-/* Status Compile Error màu đỏ trong bảng */
+/* Status colors trong bảng */
 .status-cell-error {
-    color: #d9534f !important;
+    color: #dc3545 !important;
+    font-weight: bold;
+}
+
+.status-cell-success {
+    color: #28a745 !important;
+    font-weight: bold;
 }

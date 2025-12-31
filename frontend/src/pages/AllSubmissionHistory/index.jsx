@@ -1,16 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./SubmissionHistory.css";
-
-/**
- * MOCK API:
- * - Nếu bạn call /user-stats  => trả mảng: [ {...}, {...} ]
- * - Nếu bạn call /user-stats/3 => trả object: { ... }
- *
- * ✅ Khuyên dùng (dễ nhất):
- * - Dùng /user-stats (list) và filter theo userId trong FE
- */
-const MOCK_API_LIST_URL = "https://6947b877ca6715d122fae528.mockapi.io/submission"; // <-- đổi link của bạn
+import { FiGrid, FiFileText, FiSend, FiUser, FiSettings, FiLogOut } from 'react-icons/fi';
 
 const TABS = [
   { key: "ALL", label: "All" },
@@ -56,43 +47,58 @@ export default function SubmissionHistory({ userId }) {
 
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
+  
+  // Track current username to detect user changes
+  const [currentUser, setCurrentUser] = useState(localStorage.getItem("username"));
 
   useEffect(() => {
     let ignore = false;
+    
+    // Check if user has changed
+    const username = localStorage.getItem("username");
+    if (username !== currentUser) {
+      // User changed, reset everything
+      setStats(null);
+      setTab("ALL");
+      setSearch("");
+      setCurrentUser(username);
+    }
 
     async function load() {
       setLoading(true);
       setErr("");
 
       try {
-        const res = await fetch(MOCK_API_LIST_URL);
-        const text = await res.text();
-        if (!res.ok) throw new Error(`HTTP ${res.status}: ${text}`);
+        // TODO: Replace with real backend API when ready
+        // For now, always show empty state instead of Mock API data
+        
+        // Create empty stats with current user info
+        const emptyStats = {
+          userId: userId || 1,
+          username: localStorage.getItem("username") || "Guest",
+          totalSubmissions: 0,
+          acceptanceRate: 0,
+          totalProblemsSolved: 0,
+          totalProblemsAttempted: 0,
+          acceptedCount: 0,
+          wrongAnswerCount: 0,
+          runtimeErrorCount: 0,
+          compilationErrorCount: 0,
+          timeLimitExceededCount: 0,
+          acceptedSubmissions: [],
+          wrongAnswerSubmissions: [],
+          runtimeErrorSubmissions: [],
+          compilationErrorSubmissions: [],
+          timeLimitExceededSubmissions: []
+        };
 
-        const data = JSON.parse(text);
-
-        // ✅ data có thể là object hoặc array
-        let picked = null;
-
-        if (Array.isArray(data)) {
-          // nếu userId có => find đúng user
-          if (userId != null) {
-            picked =
-              data.find((x) => String(x.userId) === String(userId)) ||
-              data.find((x) => String(x.id) === String(userId));
-          }
-          // nếu vẫn chưa có => lấy phần tử đầu (để khỏi Missing userId)
-          if (!picked) picked = data[0] || null;
-        } else {
-          // object
-          picked = data;
-        }
-
-        if (!picked) throw new Error("No mock data found (user-stats is empty).");
-
-        if (!ignore) setStats(picked);
+        if (!ignore) setStats(emptyStats);
       } catch (e) {
-        if (!ignore) setErr(`Không tải được dữ liệu MockAPI. ${e.message}`);
+        console.error("Error loading submission history:", e);
+        if (!ignore) {
+          // Even on error, show empty state
+          setStats(emptyStats);
+        }
       } finally {
         if (!ignore) setLoading(false);
       }
@@ -100,7 +106,7 @@ export default function SubmissionHistory({ userId }) {
 
     load();
     return () => (ignore = true);
-  }, [userId]);
+  }, [userId, currentUser]);
 
   const allRows = useMemo(() => {
     if (!stats) return [];
@@ -150,8 +156,10 @@ export default function SubmissionHistory({ userId }) {
 
   const summary = useMemo(() => {
     if (!stats) return null;
+    // Get username from localStorage (current logged in user)
+    const currentUsername = localStorage.getItem("username") || stats.username || "Guest";
     return {
-      username: stats.username,
+      username: currentUsername,
       totalSubmissions: stats.totalSubmissions ?? 0,
       acceptanceRate: stats.acceptanceRate ?? 0,
       solved: stats.totalProblemsSolved ?? 0,
@@ -173,11 +181,52 @@ export default function SubmissionHistory({ userId }) {
     navigate(`/submissions/${id}`);
   };
 
-  if (loading) return <div className="sh-container">Loading...</div>;
-  if (err) return <div className="sh-container sh-error">{err}</div>;
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate('/login');
+  };
+
+  if (loading) return <div className="sh-container">Loading submission history...</div>;
+  
+  // Don't show error if we have empty stats - just show the page with empty data
+  // if (err && !stats) return <div className="sh-container sh-error">{err}</div>;
 
   return (
-    <div className="sh-container">
+    <div className="sh-page">
+      <div className="sh-dashboard-container">
+        {/* SIDEBAR */}
+        <aside className="sh-sidebar">
+          <div className="sh-sidebar-top">
+            <div className="sh-logo">
+              <span className="sh-logo-uni">Uni</span>Code
+            </div>
+            <nav className="sh-nav-menu">
+              <div className="sh-nav-item" onClick={() => navigate('/dashboard')}> 
+                <FiGrid className="sh-nav-icon" /> Dashboard 
+              </div>
+              <div className="sh-nav-item" onClick={() => navigate('/problems')}> 
+                <FiFileText className="sh-nav-icon" /> Problems 
+              </div>
+              <div className="sh-nav-item active"> 
+                <FiSend className="sh-nav-icon" /> Submissions 
+              </div>
+              <div className="sh-nav-item"> 
+                <FiUser className="sh-nav-icon" /> Profile 
+              </div>
+            </nav>
+          </div>
+          <div className="sh-sidebar-bottom">
+            <div className="sh-nav-item"> 
+              <FiSettings className="sh-nav-icon" /> Settings 
+            </div>
+            <div className="sh-nav-item" onClick={handleLogout}> 
+              <FiLogOut className="sh-nav-icon" /> Log Out 
+            </div>
+          </div>
+        </aside>
+
+        {/* MAIN CONTENT */}
+        <div className="sh-container">
       <div className="sh-header">
         <div>
           <h2 className="sh-title">Submission History</h2>
@@ -293,6 +342,8 @@ export default function SubmissionHistory({ userId }) {
             )}
           </tbody>
         </table>
+      </div>
+    </div>
       </div>
     </div>
   );

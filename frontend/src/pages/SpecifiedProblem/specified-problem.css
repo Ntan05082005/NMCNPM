@@ -5,13 +5,14 @@
 .specified-problem-page { font-family: 'Poppins', sans-serif; color: #333; height: 100vh; width: 100%; overflow: hidden; }
 .specified-problem-page .dashboard-container { display: flex; height: 100vh; background: linear-gradient(90deg, #eef4ff 0%, #f4f6ff 50%, #fdfdff 100%); }
 
-/* Sidebar & Header (Giữ nguyên) */
+/* Sidebar & Header */
 .specified-problem-page .sidebar { width: 280px; background: linear-gradient(180deg, #dceaff 0%, #edf3ff 100%); display: flex; flex-direction: column; justify-content: space-between; padding: 40px 30px; flex-shrink: 0; }
 .specified-problem-page .logo { font-size: 36px; font-weight: 800; color: #1e3a8a; margin-bottom: 60px; letter-spacing: -1px; display: flex; align-items: center; }
 .specified-problem-page .logo-uni { color: #2563eb; margin-right: 2px; }
 .specified-problem-page .nav-menu { display: flex; flex-direction: column; gap: 25px; }
-.specified-problem-page .nav-item { display: flex; align-items: center; gap: 18px; font-size: 16px; font-weight: 500; color: #64748b; cursor: pointer; transition: all 0.2s ease; padding-left: 10px; }
-.specified-problem-page .nav-item:hover, .specified-problem-page .nav-item.active { color: #2563eb; font-weight: 600; }
+.specified-problem-page .nav-item { display: flex; align-items: center; gap: 18px; font-size: 16px; font-weight: 500; color: #64748b; cursor: pointer; transition: all 0.3s ease; padding: 0.875rem 1rem; border-radius: 10px; margin-bottom: 0.5rem; }
+.specified-problem-page .nav-item:hover { background: rgba(59, 130, 246, 0.1); color: #2563eb; transform: translateX(5px); }
+.specified-problem-page .nav-item.active { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); color: #fff; font-weight: 600; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4); }
 .specified-problem-page .nav-icon { font-size: 22px; }
 .specified-problem-page .sidebar-bottom { display: flex; flex-direction: column; gap: 25px; }
 .specified-problem-page .main-content { flex: 1; padding: 40px 60px; overflow-y: auto; }

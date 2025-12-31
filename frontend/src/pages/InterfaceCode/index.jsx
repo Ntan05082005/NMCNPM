@@ -155,32 +155,29 @@ export default function InterfaceCode() {
                 language: selectedLanguage.toLowerCase(),
                 code: currentCode
             });
-            // Get error details - prefer compilerError for compilation errors, then stderr, then errorMessage
-            const errorDetails = response.data.compilerError ||
-                response.data.stderr ||
-                response.data.errorMessage ||
-                "No error details provided.";
-            // Thêm `${slug}` vào đường dẫn để khớp với Route "/submission-result/:slug"
-            navigate(`/submission-result/${slug}`, {
+            
+            // Sau khi submit thành công, chuyển đến trang submission history
+            navigate('/profile/submissions', {
                 state: {
-                    status: response.data.status || "Compile Error",
-                    errorMessage: errorDetails,
-                    timeLimit: response.data.executionTimeMs ? `${response.data.executionTimeMs} ms` : "N/A",
-                    memoryLimit: response.data.memoryUsed ? `${response.data.memoryUsed} MB` : "N/A",
-                    testcasesPassed: response.data.testCasesPassed ? `${response.data.testCasesPassed} / ${response.data.totalTestCases}` : "0 / 0"
+                    fromSubmit: true,
+                    latestSubmission: {
+                        status: response.data.status,
+                        problemTitle: problem.title,
+                        language: selectedLanguage,
+                        executionTimeMs: response.data.executionTimeMs,
+                        testCasesPassed: response.data.testCasesPassed,
+                        totalTestCases: response.data.totalTestCases
+                    }
                 }
             });
 
         } catch (error) {
-            console.error(error);
-            // Cũng phải thêm slug vào đây
-            navigate(`/submission-result/${slug}`, {
+            console.error('Error submitting code:', error);
+            // Nếu có lỗi, vẫn chuyển đến submission history
+            navigate('/profile/submissions', {
                 state: {
-                    status: "Compile Error",
-                    errorMessage: "Line 5: Char 5: Error: Non-Void Function Does Not Return A Value [-Werror,-Wreturn-Type]\n  5 |   }\n    |   ^\n1 Error Generated.",
-                    timeLimit: "54 Ms",
-                    memoryLimit: "12MB",
-                    testcasesPassed: "0 / 0"
+                    fromSubmit: true,
+                    error: 'Failed to submit code. Please try again.'
                 }
             });
         } finally {

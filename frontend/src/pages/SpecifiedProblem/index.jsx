@@ -69,6 +69,9 @@ export default function SpecifiedProblem() {
   }, [categoryId]);
 
   const handleLogout = () => {
+    // Clear all user data from localStorage
+    localStorage.clear();
+    // Redirect to login page
     navigate('/login');
   };
 
@@ -92,9 +95,9 @@ export default function SpecifiedProblem() {
               <span className="logo-uni">Uni</span>Code
             </div>
             <nav className="nav-menu">
-              <div className="nav-item"> <FiGrid className="nav-icon" /> Dashboard </div>
+              <div className="nav-item" onClick={() => navigate('/dashboard')}> <FiGrid className="nav-icon" /> Dashboard </div>
               <div className="nav-item active"> <FiFileText className="nav-icon" /> Problems </div>
-              <div className="nav-item"> <FiSend className="nav-icon" /> Submission </div>
+              <div className="nav-item" onClick={() => navigate('/profile/submissions')}> <FiSend className="nav-icon" /> Submissions </div>
               <div className="nav-item"> <FiUser className="nav-icon" /> Profile </div>
             </nav>
           </div>

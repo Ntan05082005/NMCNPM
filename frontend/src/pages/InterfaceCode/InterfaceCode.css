@@ -363,8 +363,10 @@
 }
 
 .interface-code-wrapper .submission-status.ACCEPTED {
-    background-color: #e6ffe6;
-    color: #2f8632;
+    background-color: #d4edda;
+    color: #28a745;
+    border: 2px solid #28a745;
+    font-weight: bold;
 }
 
 .interface-code-wrapper .submission-status.WRONG_ANSWER {
