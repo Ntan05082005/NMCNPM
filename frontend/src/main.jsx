@@ -1,8 +1,8 @@
 import "./index.css";
-import { StrictMode, useEffect } from 'react';
+import { StrictMode, useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { getUserProfile } from './API/api-user';
+import { getUserProfile } from './API/api-user'; // Đảm bảo đường dẫn đúng
 
 // Pages
 import Start from './pages/Start/index.jsx';
@@ -19,10 +19,63 @@ import Dashboard from './pages/Dashboard/index.jsx';
 import Profile from './pages/Profile/index.jsx';
 import Settings from './pages/Settings/index.jsx';
 
-// --- COMPONENT HIỆU ỨNG (Tạo thẻ HTML cho CSS style) ---
 const ThemeEffects = () => {
   const snowFlakes = Array.from({ length: 18 }, (_, i) => i + 1);
-  const fireworks = Array.from({ length: 12 }, (_, i) => i + 1);
+  const [fireworks, setFireworks] = useState([]);
+
+  useEffect(() => {
+    const spawnFireworkBatch = () => {
+      if (!document.body.classList.contains('theme-newyear')) {
+        setFireworks([]);
+        return;
+      }
+
+      const count = Math.floor(Math.random() * 3) + 2;
+      const newBatch = [];
+
+      for (let i = 0; i < count; i++) {
+        const id = Date.now() + i + Math.random();
+        const types = ['gold', 'cyan', 'red'];
+        const type = types[Math.floor(Math.random() * types.length)];
+
+        let left = Math.random() * 90 + 5;
+        let top = Math.random() * 80 + 10;
+
+        // Safe zone logic
+        if (left > 25 && left < 75 && top > 30 && top < 70) {
+           if (Math.random() > 0.5) top = Math.random() * 25;
+           else top = 75 + Math.random() * 20;
+        }
+
+        // --- UPDATE MỚI: RANDOM THỜI GIAN (2s đến 3.5s) ---
+        const duration = 5 + Math.random() * 2;
+
+        newBatch.push({
+          id,
+          type,
+          style: {
+            left: `${left}%`,
+            top: `${top}%`,
+            transform: `scale(${1.6 + Math.random() * 1.9})`,
+            animationDelay: `${Math.random() * 0.2}s`,
+            // Truyền biến CSS custom vào để style hứng
+            '--fw-duration': `${duration}s`
+          }
+        });
+      }
+
+      setFireworks(prev => [...prev, ...newBatch]);
+
+      newBatch.forEach(fw => {
+        setTimeout(() => {
+          setFireworks(prev => prev.filter(item => item.id !== fw.id));
+        }, 6000);
+      });
+    };
+
+    const interval = setInterval(spawnFireworkBatch, 2000); // 1s bắn 1 đợt
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <>
@@ -31,10 +84,9 @@ const ThemeEffects = () => {
           <div key={`snow-${i}`} className={`christmas-snow snow-${i}`}>❄</div>
         ))}
       </div>
-
       <div className="newyear-fireworks-container">
-        {fireworks.map((i) => (
-          <div key={`firework-${i}`} className={`firework firework-${i}`}></div>
+        {fireworks.map((fw) => (
+          <div key={fw.id} className={`firework firework-${fw.type}`} style={fw.style}></div>
         ))}
       </div>
     </>
@@ -50,18 +102,14 @@ function App() {
         if (res.data && res.data.themePreference) {
           document.body.className = `theme-${res.data.themePreference}`;
         }
-      } catch (e) {
-        console.log("Using default theme");
-      }
+      } catch (e) { console.log("Default theme"); }
     };
     initTheme();
   }, []);
 
   return (
     <BrowserRouter>
-      {/* Nhúng ThemeEffects vào đây để nó luôn hiển thị trên mọi trang */}
       <ThemeEffects />
-
       <Routes>
         <Route path="/" element={<Start />} />
         <Route path="/signup" element={<SignUp />} />
@@ -76,7 +124,7 @@ function App() {
         <Route path="/about" element={<AboutUs />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/settings" element={<Settings />} />
-        <Route path="*" element={<div style={{ padding: 20 }}>No route matched — Router is active</div>} />
+        <Route path="*" element={<div style={{ padding: 20 }}>No route matched</div>} />
       </Routes>
     </BrowserRouter>
   );
