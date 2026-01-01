@@ -1,45 +1,35 @@
 @import "tailwindcss";
 
 /* ====================== RESET & GLOBAL ====================== */
-*, *::before, *::after {
-  box-sizing: border-box; margin: 0; padding: 0;
-  transition: background 0.25s ease, color 0.25s ease, box-shadow 0.25s ease, border 0.25s ease;
-}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html, body, #root { width: 100%; height: 100%; }
 body { font-family: system-ui, -apple-system, sans-serif; background: white; overflow-x: hidden; }
 
-/* ====================== THEME VARIABLES ====================== */
-:root {
-  --bg-primary: #f5f7fa; --bg-secondary: #ffffff; --text-primary: #333333; --text-secondary: #64748b; --accent-color: #2563eb;
-  --sidebar-bg: linear-gradient(180deg, #dceaff 0%, #edf3ff 100%);
-}
+/* Variables */
+:root { --bg-primary: #f5f7fa; --bg-secondary: #ffffff; --text-primary: #333333; --text-secondary: #64748b; --accent-color: #2563eb; --sidebar-bg: linear-gradient(180deg, #dceaff 0%, #edf3ff 100%); }
 body { background: var(--bg-primary); color: var(--text-primary); }
-.dashboard-page, .sh-page, .list-exercise-page { background: var(--bg-primary) !important; }
-.sidebar, .sh-sidebar { background: var(--sidebar-bg) !important; }
 
 /* Sidebar & Cards */
+.dashboard-page, .sh-page, .list-exercise-page { background: var(--bg-primary) !important; }
+.sidebar, .sh-sidebar { background: var(--sidebar-bg) !important; }
 .sidebar a, .sidebar button { color: #1e293b !important; font-weight: 600; padding: 0.75rem 1.25rem; border-radius: 12px; }
 .sidebar a:hover { color: #2563eb !important; background: rgba(37, 99, 235, 0.1); }
 .sidebar a.active { color: #ffffff !important; background: #2563eb; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
-.stat-card, .problem-card, .sh-card, .difficulty-card, .profile-card {
-  background: var(--bg-secondary) !important; color: var(--text-primary) !important;
-  border-radius: 18px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 10px 24px rgba(0,0,0,0.05);
-}
+.stat-card, .problem-card, .sh-card, .difficulty-card, .profile-card { background: var(--bg-secondary) !important; color: var(--text-primary) !important; border-radius: 18px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 10px 24px rgba(0,0,0,0.05); }
 
-/* ====================== THEME STYLES ====================== */
-/* Dark */
+/* Theme Configs */
 body.theme-dark { --bg-primary: #0f172a; --bg-secondary: #1e293b; --text-primary: #f8fafc; --text-secondary: #94a3b8; --accent-color: #60a5fa; --sidebar-bg: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); }
 body.theme-dark .sidebar a { color: #e2e8f0 !important; }
 body.theme-dark .sidebar a:hover { color: #60a5fa !important; background: rgba(96, 165, 250, 0.15); }
 body.theme-dark .sidebar a.active { color: #0f172a !important; background: #60a5fa; }
-/* Christmas */
+
 body.theme-christmas { --bg-primary: #1a3d2e; --bg-secondary: #2d5a47; --text-primary: #ffffff; --text-secondary: #a7f3d0; --accent-color: #dc2626; --sidebar-bg: linear-gradient(135deg, #2d5a47 0%, #1a3d2e 100%); }
 body.theme-christmas::before { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 1; background-image: radial-gradient(circle at 20% 80%, rgba(220, 38, 38, 0.1) 0%, transparent 40%); }
 body.theme-christmas .stat-card { background: rgba(45, 90, 71, 0.95) !important; border: 1px solid rgba(167, 243, 208, 0.25); }
 body.theme-christmas label, body.theme-christmas h3, body.theme-christmas .sidebar a { color: #ffffff !important; }
 body.theme-christmas .sidebar a:hover { background: rgba(220, 38, 38, 0.2); }
 body.theme-christmas .sidebar a.active { background: #dc2626; }
-/* New Year */
+
 body.theme-newyear { --bg-primary: #2d2d2d; --bg-secondary: #3d3d3d; --text-primary: #ffffff; --text-secondary: #fbbf24; --accent-color: #fbbf24; --sidebar-bg: linear-gradient(135deg, #3d3d3d 0%, #2d2d2d 100%); }
 body.theme-newyear::before { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 1; opacity: 0.7; background-image: radial-gradient(circle at 25% 30%, rgba(251, 191, 36, 0.15) 0%, transparent 25%); }
 body.theme-newyear .stat-card { background: rgba(61, 61, 61, 0.98) !important; border: 1px solid rgba(251, 191, 36, 0.35); }
@@ -48,13 +38,13 @@ body.theme-newyear .sidebar a { color: #fde68a !important; }
 body.theme-newyear .sidebar a:hover { background: rgba(251, 191, 36, 0.15); }
 body.theme-newyear .sidebar a.active { color: #2d2d2d !important; background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); }
 
-/* ====================== EFFECTS LOGIC ====================== */
 .christmas-snow-container, .newyear-fireworks-container { display: none; position: fixed; inset: 0; pointer-events: none; z-index: 9999; overflow: hidden; }
 body.theme-christmas .christmas-snow-container { display: block; }
 body.theme-newyear .newyear-fireworks-container { display: block; }
 
-/* SNOW */
+/* ================== SNOW ANIMATION (ĐÃ KHÔI PHỤC VỀ CODE CŨ) ================== */
 .christmas-snow { position: absolute; opacity: 0.7; text-shadow: 0 0 8px rgba(255,255,255,0.6); color: white; }
+
 .snow-1 { left: 8%; animation: snow-fall-1 9.5s linear infinite; font-size: 24px; }
 .snow-2 { left: 18%; animation: snow-fall-2 10.2s linear infinite 0.2s; font-size: 20px; }
 .snow-3 { left: 32%; animation: snow-fall-3 11s linear infinite 0.5s; font-size: 26px; }
@@ -73,94 +63,101 @@ body.theme-newyear .newyear-fireworks-container { display: block; }
 .snow-16 { left: 52%; animation: snow-fall-2 11.1s linear infinite 9.8s; font-size: 25px; }
 .snow-17 { left: 68%; animation: snow-fall-3 10.4s linear infinite 10.2s; font-size: 21px; }
 .snow-18 { left: 92%; animation: snow-fall-1 9.9s linear infinite 10.6s; font-size: 23px; }
+
 @keyframes snow-fall-1 { 0% { transform: translateY(-50px); opacity: 0; } 10% { opacity: 0.7; } 100% { transform: translateY(100vh) translateX(30px) rotate(360deg); opacity: 0; } }
 @keyframes snow-fall-2 { 0% { transform: translateY(-50px); opacity: 0; } 10% { opacity: 0.6; } 100% { transform: translateY(100vh) translateX(-40px) rotate(-360deg); opacity: 0; } }
 @keyframes snow-fall-3 { 0% { transform: translateY(-50px); opacity: 0; } 10% { opacity: 0.65; } 100% { transform: translateY(100vh) translateX(20px) rotate(180deg); opacity: 0; } }
 
 
-/* ================== FIREWORKS (IMPROVED COLORS & TIMING) ================== */
+/* ================== FIREWORKS (CODE MỚI NHẤT - TIA SÁNG GRADIENT) ================== */
 
+/* 1. Điểm neo */
 .firework {
-  position: absolute; width: 0; height: 0; z-index: 9999;
+  position: absolute;
+  /* Kích thước tia 80px */
+  --burst-radius: 80px;
+  --streak-width: 3px;
+  z-index: 9999;
 }
-.firework::before {
-  content: ""; position: absolute; top: 0; left: 0; width: 0; height: 0; border-radius: 50%; opacity: 0;
+
+/* 2. Container */
+.explosion {
+  position: absolute; top: 0; left: 0; width: 0; height: 0;
 }
-.firework::after {
-  content: ""; position: absolute; top: 0; left: 0; width: 14px; height: 14px;
-  transform: translate(-50%, -50%) scale(0);
-  background-color: #fff; border-radius: 50%;
-  box-shadow: 0 0 20px 5px #ffeb3b, 0 0 40px 10px #ff9800;
+
+/* 3. CÁC TIA SÁNG (RAYS) */
+.ray {
+  position: absolute;
+  bottom: 0; left: 50%;
+  width: var(--streak-width);
+  height: 0px;
+  transform-origin: bottom center;
+  transform: translateX(-50%) rotate(var(--angle));
   opacity: 0;
-  /* Dùng biến thời gian từ React, mặc định 2.5s nếu không có */
-  animation: ignition-flash var(--fw-duration, 2.5s) ease-out forwards;
+  border-radius: 50% 50% 0 0;
+  /* Animation 5.5s */
+  animation: firework-burst 5.5s ease-out forwards;
 }
 
-/* MÀU SẮC NEON (Giữ nguyên vì đã đẹp) */
-.firework-gold::before {
-  box-shadow: 0 -100px 0 0 #ffeb3b, 80px -80px 0 0 #ff9800, 110px 0 0 0 #ffeb3b, 80px 70px 0 0 #ff6d00, 0 90px 0 0 #ffeb3b, -80px 70px 0 0 #ff9800, -110px 0 0 0 #ffeb3b, -80px -80px 0 0 #ff6d00;
-  animation: particles-bang var(--fw-duration, 2.5s) ease-out forwards;
-}
-.firework-cyan::before {
-  box-shadow: 0 -90px 0 0 #00e5ff, 70px -70px 0 0 #2979ff, 100px 0 0 0 #00e5ff, 70px 60px 0 0 #2962ff, 0 80px 0 0 #00e5ff, -70px 60px 0 0 #2979ff, -100px 0 0 0 #00e5ff, -70px -70px 0 0 #2962ff;
-  animation: particles-bang var(--fw-duration, 2.5s) ease-out forwards;
-}
-.firework-red::before {
-  box-shadow: 0 -95px 0 0 #ff4081, 75px -75px 0 0 #f50057, 105px 0 0 0 #ff4081, 75px 65px 0 0 #c51162, 0 85px 0 0 #ff4081, -75px 65px 0 0 #f50057, -105px 0 0 0 #ff4081, -75px -75px 0 0 #c51162;
-  animation: particles-bang var(--fw-duration, 2.5s) ease-out forwards;
+/* 4. TÂM SÁNG (FLASH) */
+.flash {
+  position: absolute; top: 0; left: 0;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fffdd0;
+  box-shadow: 0 0 25px 8px #ffeb3b, 0 0 50px 15px #ffc107;
+  opacity: 0;
+  z-index: 10;
+  animation: flash-animation 5.5s ease-out forwards;
 }
 
-/* KEYFRAMES: MÔ PHỎNG VẬT LÝ */
+/* 5. MÀU SẮC NEON VỚI GRADIENT */
+.firework--gold .ray {
+  background: linear-gradient(to top, rgba(255, 235, 59, 0) 0%, #ffeb3b 50%, #ffffff 100%);
+  box-shadow: 0 0 8px #ffeb3b, 0 0 16px #ffc107;
+}
+.firework--cyan .ray {
+  background: linear-gradient(to top, rgba(0, 229, 255, 0) 0%, #00e5ff 50%, #ffffff 100%);
+  box-shadow: 0 0 8px #00e5ff, 0 0 16px #00b0ff;
+}
+.firework--red .ray {
+  background: linear-gradient(to top, rgba(255, 64, 129, 0) 0%, #ff4081 50%, #ffffff 100%);
+  box-shadow: 0 0 8px #ff4081, 0 0 16px #f50057;
+}
 
-/* IGNITION: Nổ nhanh, tắt sớm */
-@keyframes ignition-flash {
+/* KEYFRAMES PHÁO HOA */
+@keyframes flash-animation {
   0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
-  10% { transform: translate(-50%, -50%) scale(1.5); opacity: 1; } /* Bùm max sáng */
-  25% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; } /* Tắt nhanh hơn cũ */
-  100% { opacity: 0; }
+  5% { transform: translate(-50%, -50%) scale(1.5); opacity: 1; }
+  40% { transform: translate(-50%, -50%) scale(1); opacity: 0.9; }
+  100% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
 }
 
-/* PARTICLES: Nổ nhanh -> Khựng lại -> Rơi nhanh */
-@keyframes particles-bang {
-  0% {
-    transform: scale(0);
-    opacity: 0;
-  }
-  10% {
-    /* GIAI ĐOẠN 1: BÙM (Explosion) - Rất nhanh */
-    opacity: 1;
-    transform: scale(1); /* Bung ra hết cỡ ngay lập tức */
-  }
-  40% {
-    /* GIAI ĐOẠN 2: KHỰNG (Inertia) - Treo lơ lửng, bắt đầu rơi nhẹ */
-    opacity: 1;
-    transform: scale(1.05) translateY(10px);
-  }
+@keyframes firework-burst {
+  0% { height: 0; opacity: 0; }
+  10% { height: var(--burst-radius); opacity: 1; }
+  60% { height: var(--burst-radius); opacity: 1; }
   100% {
-    /* GIAI ĐOẠN 3: RƠI (Gravity) - Rơi nhanh và mờ dần */
-    /* translateY 180px tạo cảm giác nặng hơn */
-    transform: scale(1.1) translateY(180px);
     opacity: 0;
+    height: var(--burst-radius);
+    transform: translateX(-50%) rotate(var(--angle)) translateY(-100px);
   }
 }
 
-/* ====================== SOCIAL LINKS ====================== */
+/* Social Links */
 .social-links-section { margin-top: 2rem; padding-top: 2rem; border-top: 2px dashed rgba(0,0,0,0.1); }
 .social-links-section h3 { font-size: 1.1rem; text-transform: uppercase; font-weight: 800; border-bottom: 3px solid; display: inline-block; padding-bottom: 5px; margin-bottom: 1.5rem; }
-/* Themes Colors */
 .social-links-section h3 { color: #7e22ce; border-color: #d8b4fe; }
 .social-links-section input { border: 2px solid #a855f7 !important; background: #f3e8ff !important; }
-
 body.theme-christmas .social-links-section { border-top-color: rgba(255,255,255,0.3); }
 body.theme-christmas .social-links-section h3 { color: #fcd34d !important; border-color: #ef4444; }
 body.theme-christmas .ant-form-item-label > label { color: #fca5a5 !important; }
 body.theme-christmas .social-links-section input { background: rgba(20,50,35,0.8) !important; border: 2px solid #fca5a5 !important; color: white !important; }
-
 body.theme-newyear .social-links-section { border-top-color: rgba(251,191,36,0.3); }
 body.theme-newyear .social-links-section h3 { color: #22d3ee !important; border-color: #22d3ee; }
 body.theme-newyear .ant-form-item-label > label { color: #67e8f9 !important; }
 body.theme-newyear .social-links-section input { background: rgba(0,0,0,0.6) !important; border: 2px solid #22d3ee !important; color: #22d3ee !important; }
-
 body.theme-dark .social-links-section { border-top-color: rgba(255,255,255,0.1); }
 body.theme-dark .social-links-section h3 { color: #f472b6 !important; border-color: #be185d; }
 body.theme-dark .ant-form-item-label > label { color: #fbcfe8 !important; }

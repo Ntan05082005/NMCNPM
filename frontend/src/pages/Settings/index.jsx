@@ -83,43 +83,54 @@ const Settings = () => {
        <div className="main-content" style={{ flex: 1, padding: '40px', overflowY: 'auto' }}>
          <h1 style={{ color: 'var(--text-primary)', marginBottom: '30px' }}>Settings</h1>
 
-         <Card title="Appearance" bordered={false} style={{ background: 'var(--bg-secondary)', color: 'var(--text-primary)', boxShadow: '0 4px 6px rgba(0,0,0,0.05)' }}>
-           <h3 style={{ color: 'var(--text-primary)', marginTop: 0 }}>Select Theme</h3>
-           <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', marginTop: 20 }}>
-             {THEMES.map(theme => (
-               <div
-                 key={theme.id}
-                 onClick={() => changeTheme(theme.id)}
-                 style={{
-                   width: 150,
-                   height: 100,
-                   background: theme.color,
-                   border: theme.border || '1px solid #ddd',
-                   borderRadius: 12,
-                   cursor: 'pointer',
-                   display: 'flex',
-                   alignItems: 'center',
-                   justifyContent: 'center',
-                   position: 'relative',
-                   boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-                   transition: 'transform 0.2s',
-                   // Thêm viền nổi bật cho theme đang chọn
-                   transform: currentTheme === theme.id ? 'scale(1.05)' : 'scale(1)',
-                   borderColor: currentTheme === theme.id ? 'var(--accent-color)' : (theme.border ? 'transparent' : '#ddd')
-                 }}
-                 onMouseEnter={(e) => { if(currentTheme !== theme.id) e.currentTarget.style.transform = 'scale(1.05)' }}
-                 onMouseLeave={(e) => { if(currentTheme !== theme.id) e.currentTarget.style.transform = 'scale(1)' }}
-               >
-                 <span style={{ color: theme.textColor, fontWeight: 'bold' }}>{theme.name}</span>
+         <Card
+            title="Appearance"
+            bordered={false}
+            headStyle={{ color: '#ffffff', borderBottom: '1px solid rgba(255,255,255,0.2)' }}
+            style={{
+              background: 'rgba(255, 255, 255, 0.1)', // Giữ hiệu ứng kính mờ nếu bạn đang dùng
+              backdropFilter: 'blur(10px)',
+              color: 'var(--text-primary)',
+              boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
+              border: '1px solid rgba(255, 255, 255, 0.1)'
+            }}
+          >
+            {/* Phần bên dưới giữ nguyên, nhưng mình sửa luôn màu chữ "Select Theme" thành trắng cho đồng bộ nếu cần */}
+            <h3 style={{ color: '#ffffff', marginTop: 0 }}>Select Theme</h3>
 
-                 {/* Dấu tích sẽ hiện đúng nhờ State currentTheme */}
-                 {currentTheme === theme.id && (
-                   <CheckCircleFilled style={{ position: 'absolute', top: 10, right: 10, color: 'var(--accent-color)', fontSize: 20 }} />
-                 )}
-               </div>
-             ))}
-           </div>
-         </Card>
+            <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', marginTop: 20 }}>
+              {THEMES.map(theme => (
+                <div
+                  key={theme.id}
+                  onClick={() => changeTheme(theme.id)}
+                  style={{
+                    width: 150,
+                    height: 100,
+                    background: theme.color,
+                    border: theme.border || '1px solid #ddd',
+                    borderRadius: 12,
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    position: 'relative',
+                    boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
+                    transition: 'transform 0.2s',
+                    transform: currentTheme === theme.id ? 'scale(1.05)' : 'scale(1)',
+                    borderColor: currentTheme === theme.id ? 'var(--accent-color)' : (theme.border ? 'transparent' : '#ddd')
+                  }}
+                  onMouseEnter={(e) => { if(currentTheme !== theme.id) e.currentTarget.style.transform = 'scale(1.05)' }}
+                  onMouseLeave={(e) => { if(currentTheme !== theme.id) e.currentTarget.style.transform = 'scale(1)' }}
+                >
+                  <span style={{ color: theme.textColor, fontWeight: 'bold' }}>{theme.name}</span>
+
+                  {currentTheme === theme.id && (
+                    <CheckCircleFilled style={{ position: 'absolute', top: 10, right: 10, color: 'var(--accent-color)', fontSize: 20 }} />
+                  )}
+                </div>
+              ))}
+            </div>
+          </Card>
        </div>
        </div>
     </div>
