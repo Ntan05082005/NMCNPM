@@ -286,7 +286,7 @@ export default function SubmissionHistory({ userId }) {
         {/* SIDEBAR */}
         <aside className="sh-sidebar">
           <div className="sh-sidebar-top">
-            <div className="sh-logo">
+            <div className="sh-logo" onClick={() => navigate('/dashboard')} style={{ cursor: 'pointer' }} title="Go to Dashboard">
               <span className="sh-logo-uni">Uni</span>Code
             </div>
             <nav className="sh-nav-menu">

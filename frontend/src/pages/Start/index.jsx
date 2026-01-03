@@ -10,7 +10,7 @@ export default function Start() {
       <div className="hero-card">
         {/* NAVBAR */}
         <header className="navbar">
-          <div className="logo">UniCode</div>
+          <div className="logo" onClick={() => window.location.href = '/dashboard'} style={{ cursor: 'pointer' }} title="Go to Dashboard">UniCode</div>
 
           <nav className="nav-links">
             <Link 

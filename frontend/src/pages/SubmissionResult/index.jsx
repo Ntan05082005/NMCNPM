@@ -49,7 +49,7 @@ const SubmissionResult = () => {
         <div className="result-page-container">
             {/* Header Logo */}
             <div className="result-header">
-                <div className="unicode-logo" onClick={() => navigate('/')}>
+                <div className="unicode-logo" onClick={() => navigate('/dashboard')} style={{ cursor: 'pointer' }} title="Go to Dashboard">
                     UniCode
                 </div>
                 {resultData.problemTitle && (

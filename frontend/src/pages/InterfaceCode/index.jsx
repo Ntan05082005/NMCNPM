@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom'; // THÊM useNavigate
 import { getProblemDetail, runCode, submitCode } from "../../API/api-InterfaceCode.js";
+import { FiArrowLeft } from 'react-icons/fi';
 import './InterfaceCode.css';
 
 // --- HÀM TIỆN ÍCH ---
@@ -215,10 +216,21 @@ export default function InterfaceCode() {
             <div className="split-container">
                 {/* LEFT PANEL - Problem Description */}
                 <div className="left-panel">
-                    <div className="problem-header">
-                        <div className="problem-title-row">
-                            <h1 className="problem-title">{problem.title}</h1>
+                    {/* Top Navigation Bar - inside left panel */}
+                    <div className="top-nav-bar">
+                        <div className="nav-section">
+                            <button className="back-btn" onClick={() => navigate(-1)} title="Go back">
+                                <FiArrowLeft />
+                            </button>
+                            <div className="code-logo" onClick={() => navigate('/dashboard')} style={{ cursor: 'pointer' }} title="Go to Dashboard">
+                                <span className="logo-uni">Uni</span>Code
+                            </div>
                         </div>
+                        <span className="nav-separator"></span>
+                        <h1 className="problem-title">{problem.title}</h1>
+                    </div>
+                    
+                    <div className="problem-header">
                         <div className="problem-meta">
                             <span className={`difficulty-badge ${problem.difficulty?.toLowerCase() || 'medium'}`}>
                                 {problem.difficulty || 'Medium'}
