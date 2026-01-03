@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import "./SubmissionHistory.css";
 import { FiGrid, FiFileText, FiSend, FiUser, FiSettings, FiLogOut } from 'react-icons/fi';
 import { getUserSubmissions } from "../../API/api-submission";
-import { formatLanguage } from "../../utils/format";
+import { formatLanguage, formatStatus } from "../../utils/format";
 
 const TABS = [
   { key: "ALL", label: "All" },
@@ -23,7 +23,7 @@ function statusBadgeClass(status) {
   if (st === "ACCEPTED") return "badge badge-accepted";
   if (st === "WRONG_ANSWER") return "badge badge-wa";
   if (st === "RUNTIME_ERROR") return "badge badge-re";
-  if (st === "COMPILE_ERROR") return "badge badge-ce";
+  if (st === "COMPILE_ERROR" || st === "COMPILATION_ERROR") return "badge badge-ce";
   if (st === "TIME_LIMIT_EXCEEDED") return "badge badge-tle";
   return "badge";
 }
@@ -93,7 +93,7 @@ function processSubmissions(submissions, userId) {
     totalSubmissions,
     acceptanceRate,
     totalProblemsSolved: solvedProblems.size,
-    totalProblemsAttempted: new Set(submissions.map(s => s.problem?.id).filter(Boolean)).size,
+    totalProblemsAttempted: new Set(submissions.map(s => s.problemId || s.problem?.id).filter(Boolean)).size,
     acceptedCount: acceptedSubmissions.length,
     wrongAnswerCount: wrongAnswerSubmissions.length,
     runtimeErrorCount: runtimeErrorSubmissions.length,
@@ -364,7 +364,7 @@ export default function SubmissionHistory({ userId }) {
             {TABS.map((t) => (
               <button
                 key={t.key}
-                className={`sh-tab ${tab === t.key ? "active" : ""}`}
+                className={`sh-tab tab-${t.key.toLowerCase().replace(/_/g, '-')} ${tab === t.key ? "active" : ""}`}
                 onClick={() => setTab(t.key)}
               >
                 {t.label}
@@ -421,7 +421,7 @@ export default function SubmissionHistory({ userId }) {
                         </span>
                       </td>
                       <td>
-                        <span className={statusBadgeClass(s.status)}>{normalizeStatus(s.status)}</span>
+                        <span className={statusBadgeClass(s.status)}>{formatStatus(s.status)}</span>
                       </td>
                       <td>{formatLanguage(s.language)}</td>
                       <td>{s.executionTimeMs != null ? s.executionTimeMs : "-"}</td>

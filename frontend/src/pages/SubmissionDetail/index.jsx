@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { FiArrowLeft, FiClock, FiCheckCircle, FiXCircle, FiAlertCircle, FiGrid, FiFileText, FiSend, FiUser, FiSettings, FiLogOut } from 'react-icons/fi';
 import './SubmissionDetail.css';
 import axios from 'axios';
-import { formatLanguage } from '../../utils/format';
+import { formatLanguage, formatStatus } from '../../utils/format';
 
 const API = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "http://localhost:8080",
@@ -174,7 +174,7 @@ const SubmissionDetail = () => {
           {/* Status Card */}
           <div className={`sd-status-card ${getStatusClass(submission.status)}`}>
             {getStatusIcon(submission.status)}
-            <span className="status-text">{submission.status}</span>
+            <span className="status-text">{formatStatus(submission.status)}</span>
           </div>
 
           {/* Submission Info */}

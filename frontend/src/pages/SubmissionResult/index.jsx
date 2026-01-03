@@ -1,7 +1,7 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import './SubmissionResult.css';
-import { formatLanguage } from '../../utils/format';
+import { formatLanguage, formatStatus } from '../../utils/format';
 
 const SubmissionResult = () => {
     const location = useLocation();
@@ -68,7 +68,7 @@ const SubmissionResult = () => {
                 {/* Khu vực hiển thị Lỗi hoặc Kết quả chính */}
                 <div className="main-status-area">
                     <div className={`status-box ${getStatusClass(resultData.status)}`}>
-                        <h3 className="status-title">{resultData.status}</h3>
+                        <h3 className="status-title">{formatStatus(resultData.status)}</h3>
                         <pre className="error-detail">
                             {getDisplayMessage()}
                         </pre>
@@ -142,7 +142,7 @@ const SubmissionResult = () => {
                                 <td className={
                                     resultData.status === 'ACCEPTED' ? 'status-cell-success' :
                                         'status-cell-error'
-                                }>{resultData.status}</td>
+                                }>{formatStatus(resultData.status)}</td>
                                 <td>{formatLanguage(resultData.language)}</td>
                                 <td>{resultData.timeLimit}</td>
                                 <td>{resultData.memoryLimit}</td>

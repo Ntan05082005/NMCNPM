@@ -5,7 +5,7 @@ import { FiGrid, FiFileText, FiSend, FiUser, FiSettings, FiLogOut, FiSearch, FiB
 import { FaUserCircle, FaFire, FaCheckCircle, FaClock } from 'react-icons/fa';
 import { getDashboardStats } from '../../API/api-dashboard.js';
 import { getUserSubmissions } from '../../API/api-submission.js';
-import { formatLanguage } from '../../utils/format';
+import { formatLanguage, formatStatus } from '../../utils/format';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -354,7 +354,7 @@ export default function Dashboard() {
                         <h4 className="submission-problem">{sub.problem}</h4>
                         <div className="submission-meta">
                           <span className={`submission-status ${getStatusClass(sub.status)}`}>
-                            {sub.status}
+                            {formatStatus(sub.status)}
                           </span>
                           <span className="submission-lang">{formatLanguage(sub.language)}</span>
                           <span className={`submission-diff ${getDifficultyClass(sub.difficulty)}`}>
