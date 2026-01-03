@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { FiArrowLeft, FiClock, FiCheckCircle, FiXCircle, FiAlertCircle, FiGrid, FiFileText, FiSend, FiUser, FiSettings, FiLogOut } from 'react-icons/fi';
 import './SubmissionDetail.css';
 import axios from 'axios';
+import { formatLanguage } from '../../utils/format';
 
 const API = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "http://localhost:8080",
@@ -83,26 +84,26 @@ const SubmissionDetail = () => {
           <span className="sd-logo-uni">Uni</span>Code
         </div>
         <nav className="sd-nav-menu">
-          <div className="sd-nav-item" onClick={() => navigate('/dashboard')}> 
-            <FiGrid className="sd-nav-icon" /> Dashboard 
+          <div className="sd-nav-item" onClick={() => navigate('/dashboard')}>
+            <FiGrid className="sd-nav-icon" /> Dashboard
           </div>
-          <div className="sd-nav-item" onClick={() => navigate('/problems')}> 
-            <FiFileText className="sd-nav-icon" /> Problems 
+          <div className="sd-nav-item" onClick={() => navigate('/problems')}>
+            <FiFileText className="sd-nav-icon" /> Problems
           </div>
-          <div className="sd-nav-item active" onClick={() => navigate('/profile/submissions')}> 
-            <FiSend className="sd-nav-icon" /> Submissions 
+          <div className="sd-nav-item active" onClick={() => navigate('/profile/submissions')}>
+            <FiSend className="sd-nav-icon" /> Submissions
           </div>
           <div className="sd-nav-item" onClick={() => navigate('/profile')}>
-            <FiUser className="sd-nav-icon" /> Profile 
+            <FiUser className="sd-nav-icon" /> Profile
           </div>
         </nav>
       </div>
       <div className="sd-sidebar-bottom">
         <div className="sd-nav-item" onClick={() => navigate('/settings')}>
-          <FiSettings className="sd-nav-icon" /> Settings 
+          <FiSettings className="sd-nav-icon" /> Settings
         </div>
-        <div className="sd-nav-item" onClick={handleLogout}> 
-          <FiLogOut className="sd-nav-icon" /> Log Out 
+        <div className="sd-nav-item" onClick={handleLogout}>
+          <FiLogOut className="sd-nav-icon" /> Log Out
         </div>
       </div>
     </aside>
@@ -180,8 +181,8 @@ const SubmissionDetail = () => {
           <div className="sd-info-grid">
             <div className="sd-info-item">
               <label>Problem</label>
-              <span 
-                className="sd-link" 
+              <span
+                className="sd-link"
                 onClick={() => navigate(`/problem/${submission.problem?.slug || submission.problem?.id}`)}
               >
                 {submission.problem?.title || `Problem #${submission.problem?.id}`}
@@ -189,7 +190,7 @@ const SubmissionDetail = () => {
             </div>
             <div className="sd-info-item">
               <label>Language</label>
-              <span>{submission.language}</span>
+              <span>{formatLanguage(submission.language)}</span>
             </div>
             <div className="sd-info-item">
               <label>Submitted At</label>
@@ -198,6 +199,10 @@ const SubmissionDetail = () => {
             <div className="sd-info-item">
               <label>Runtime</label>
               <span>{submission.executionTimeMs != null ? `${submission.executionTimeMs} ms` : '-'}</span>
+            </div>
+            <div className="sd-info-item">
+              <label>Memory (KB)</label>
+              <span>{submission.memoryUsedKb != null ? submission.memoryUsedKb : '-'}</span>
             </div>
             <div className="sd-info-item">
               <label>Test Cases</label>

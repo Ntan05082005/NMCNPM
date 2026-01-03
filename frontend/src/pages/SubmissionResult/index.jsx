@@ -1,6 +1,7 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import './SubmissionResult.css';
+import { formatLanguage } from '../../utils/format';
 
 const SubmissionResult = () => {
     const location = useLocation();
@@ -34,7 +35,7 @@ const SubmissionResult = () => {
         if (resultData.status === 'ACCEPTED') {
             return resultData.message || 'All test cases passed! 🎉';
         }
-        
+
         // Priority: compilerError > stderr > errorMessage > message
         if (resultData.compilerError) {
             return resultData.compilerError;
@@ -73,23 +74,23 @@ const SubmissionResult = () => {
                         </pre>
                         <div className="status-footer">
                             <span>Runtime: {resultData.timeLimit}</span>
-                            <span style={{marginLeft: '50px'}}>Memory: {resultData.memoryLimit}</span>
+                            <span style={{ marginLeft: '50px' }}>Memory: {resultData.memoryLimit}</span>
                         </div>
                     </div>
 
                     {/* Navigation buttons */}
                     <div className="test-navigation">
                         {resultData.problemSlug && (
-                            <button 
-                                className="nav-btn" 
+                            <button
+                                className="nav-btn"
                                 onClick={() => navigate(`/interface-code/${resultData.problemSlug}`)}
                             >
                                 ← Back to Problem
                             </button>
                         )}
-                        <button 
-                            className="nav-btn" 
-                            onClick={() => navigate('/profile/submissions', { 
+                        <button
+                            className="nav-btn"
+                            onClick={() => navigate('/profile/submissions', {
                                 state: { fromSubmit: true, timestamp: Date.now() }
                             })}
                         >
@@ -101,22 +102,22 @@ const SubmissionResult = () => {
                 {/* Nút hành động */}
                 <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
                     {resultData.problemSlug && (
-                        <button 
+                        <button
                             className="view-history-btn"
                             onClick={() => navigate(`/interface-code/${resultData.problemSlug}`)}
                         >
                             Try Again
                         </button>
                     )}
-                    <button 
+                    <button
                         className="view-history-btn"
-                        onClick={() => navigate('/profile/submissions', { 
+                        onClick={() => navigate('/profile/submissions', {
                             state: { fromSubmit: true, timestamp: Date.now() }
                         })}
                     >
                         View Full History
                     </button>
-                    <button 
+                    <button
                         className="view-history-btn"
                         onClick={() => navigate('/problems')}
                     >
@@ -133,16 +134,16 @@ const SubmissionResult = () => {
                                 <th>Status</th>
                                 <th>Language</th>
                                 <th>Runtime</th>
-                                <th>Memory</th>
+                                <th>Memory (KB)</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td className={
-                                    resultData.status === 'ACCEPTED' ? 'status-cell-success' : 
-                                    'status-cell-error'
+                                    resultData.status === 'ACCEPTED' ? 'status-cell-success' :
+                                        'status-cell-error'
                                 }>{resultData.status}</td>
-                                <td>{resultData.language || 'N/A'}</td>
+                                <td>{formatLanguage(resultData.language)}</td>
                                 <td>{resultData.timeLimit}</td>
                                 <td>{resultData.memoryLimit}</td>
                             </tr>

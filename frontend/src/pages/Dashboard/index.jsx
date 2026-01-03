@@ -5,6 +5,7 @@ import { FiGrid, FiFileText, FiSend, FiUser, FiSettings, FiLogOut, FiSearch, FiB
 import { FaUserCircle, FaFire, FaCheckCircle, FaClock } from 'react-icons/fa';
 import { getDashboardStats } from '../../API/api-dashboard.js';
 import { getUserSubmissions } from '../../API/api-submission.js';
+import { formatLanguage } from '../../utils/format';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -12,7 +13,7 @@ export default function Dashboard() {
   const [recentSubmissions, setRecentSubmissions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   const username = localStorage.getItem('username') || 'Guest';
   const userId = localStorage.getItem('userId') || localStorage.getItem('user_id') || '1';
 
@@ -33,31 +34,31 @@ export default function Dashboard() {
       });
       setRecentSubmissions([]);
       setLoading(false); // Show dashboard immediately with zeros
-      
+
       try {
         console.log('Fetching dashboard data for userId:', userId);
-        
+
         // Try to fetch user stats from backend
         const statsResponse = await getDashboardStats(userId);
         const stats = statsResponse.data;
-        
+
         console.log('Dashboard stats loaded:', stats);
-        
+
         // Fetch recent submissions using the same API as Submission History
         try {
           const submissionsResponse = await getUserSubmissions(userId);
           console.log('User submissions response:', submissionsResponse.data);
-          
+
           // The API returns an array of submissions directly
-          const allSubmissions = Array.isArray(submissionsResponse.data) 
-            ? submissionsResponse.data 
+          const allSubmissions = Array.isArray(submissionsResponse.data)
+            ? submissionsResponse.data
             : [];
-          
+
           console.log('All submissions:', allSubmissions);
-          
+
           // Calculate total submissions from actual data
           const totalSubmissionsCount = allSubmissions.length;
-          
+
           // Update stats with real backend data and actual total submissions
           if (stats) {
             setUserStats({
@@ -73,7 +74,7 @@ export default function Dashboard() {
               recentActivity: [0, 0, 0, 0, 0, 0, 0]
             });
           }
-          
+
           // Sort by submission time (newest first) and take first 4
           const sortedSubmissions = allSubmissions
             .sort((a, b) => {
@@ -82,10 +83,10 @@ export default function Dashboard() {
               return timeB - timeA; // Newest first
             })
             .slice(0, 4);
-          
+
           console.log('Recent 4 submissions:', sortedSubmissions);
           console.log('Total submissions count:', totalSubmissionsCount);
-          
+
           // Transform submissions data
           if (sortedSubmissions && sortedSubmissions.length > 0) {
             setRecentSubmissions(sortedSubmissions.map(sub => ({
@@ -118,7 +119,7 @@ export default function Dashboard() {
             });
           }
         }
-        
+
       } catch (err) {
         console.error('Error loading dashboard data (will show zeros):', err);
         console.error('Error details:', err.response?.status, err.response?.data || err.message);
@@ -126,24 +127,24 @@ export default function Dashboard() {
         // Keep the empty/zero state already set
       }
     }
-    
+
     loadDashboardData();
   }, [userId]);
-  
+
   const formatTimeAgo = (timestamp) => {
     if (!timestamp) return '-';
     try {
       const now = new Date();
       const past = new Date(timestamp);
-      
+
       // Check if date is valid
       if (isNaN(past.getTime())) return '-';
-      
+
       const diffMs = now - past;
       const diffMins = Math.floor(diffMs / 60000);
       const diffHours = Math.floor(diffMs / 3600000);
       const diffDays = Math.floor(diffMs / 86400000);
-      
+
       if (diffMins < 1) return 'just now';
       if (diffMins < 60) return `${diffMins}m ago`;
       if (diffHours < 24) return `${diffHours}h ago`;
@@ -159,7 +160,7 @@ export default function Dashboard() {
   };
 
   const getStatusClass = (status) => {
-    switch(status) {
+    switch (status) {
       case 'ACCEPTED': return 'status-accepted';
       case 'WRONG_ANSWER': return 'status-wrong';
       case 'RUNTIME_ERROR': return 'status-error';
@@ -170,7 +171,7 @@ export default function Dashboard() {
   const getDifficultyClass = (difficulty) => {
     if (!difficulty) return '';
     const diffLower = String(difficulty).toLowerCase();
-    switch(diffLower) {
+    switch (diffLower) {
       case 'easy': return 'diff-easy';
       case 'medium': return 'diff-medium';
       case 'hard': return 'diff-hard';
@@ -193,14 +194,14 @@ export default function Dashboard() {
               <span className="logo-uni">Uni</span>Code
             </div>
             <nav className="nav-menu">
-              <div className="nav-item active" onClick={() => navigate('/dashboard')}> 
-                <FiGrid className="nav-icon" /> Dashboard 
+              <div className="nav-item active" onClick={() => navigate('/dashboard')}>
+                <FiGrid className="nav-icon" /> Dashboard
               </div>
-              <div className="nav-item" onClick={() => navigate('/problems')}> 
-                <FiFileText className="nav-icon" /> Problems 
+              <div className="nav-item" onClick={() => navigate('/problems')}>
+                <FiFileText className="nav-icon" /> Problems
               </div>
-              <div className="nav-item" onClick={() => navigate('/profile/submissions')}> 
-                <FiSend className="nav-icon" /> Submissions 
+              <div className="nav-item" onClick={() => navigate('/profile/submissions')}>
+                <FiSend className="nav-icon" /> Submissions
               </div>
               <div className="nav-item" onClick={() => navigate('/profile')}>
                 <FiUser className="nav-icon" /> Profile
@@ -208,11 +209,11 @@ export default function Dashboard() {
             </nav>
           </div>
           <div className="sidebar-bottom">
-            <div className="nav-item"onClick={() => navigate('/settings')}>
+            <div className="nav-item" onClick={() => navigate('/settings')}>
               <FiSettings className="nav-icon" /> Settings
             </div>
-            <div className="nav-item" onClick={handleLogout}> 
-              <FiLogOut className="nav-icon" /> Log Out 
+            <div className="nav-item" onClick={handleLogout}>
+              <FiLogOut className="nav-icon" /> Log Out
             </div>
           </div>
         </aside>
@@ -222,18 +223,18 @@ export default function Dashboard() {
           {/* HEADER */}
           <header className="header">
             <div className="welcome-text">
-              <h1 style={{color: 'var(--text-primary)'}}>Welcome back, {username}! 👋</h1>
-              <p style={{color: 'var(--text-secondary)'}}>Here's your coding progress overview</p>
+              <h1 style={{ color: 'var(--text-primary)' }}>Welcome back, {username}! 👋</h1>
+              <p style={{ color: 'var(--text-secondary)' }}>Here's your coding progress overview</p>
             </div>
             <div className="header-actions">
               <div className="user-controls">
                 <div className="notification-icon">
                   <FiBell /> <span className="dot"></span>
                 </div>
-                <div className="user-avatar"> 
-                  <FaUserCircle /> 
+                <div className="user-avatar">
+                  <FaUserCircle />
                 </div>
-                <FiChevronDown style={{color: '#64748b'}} />
+                <FiChevronDown style={{ color: '#64748b' }} />
               </div>
             </div>
           </header>
@@ -295,7 +296,7 @@ export default function Dashboard() {
                   <span className="difficulty-count">{userStats.easySolved}</span>
                 </div>
                 <div className="progress-bar">
-                  <div className="progress-fill easy-fill" style={{width: `${(userStats.easySolved/50)*100}%`}}></div>
+                  <div className="progress-fill easy-fill" style={{ width: `${(userStats.easySolved / 50) * 100}%` }}></div>
                 </div>
                 <span className="progress-text">{userStats.easySolved} / 50 solved</span>
               </div>
@@ -306,7 +307,7 @@ export default function Dashboard() {
                   <span className="difficulty-count">{userStats.mediumSolved}</span>
                 </div>
                 <div className="progress-bar">
-                  <div className="progress-fill medium-fill" style={{width: `${(userStats.mediumSolved/40)*100}%`}}></div>
+                  <div className="progress-fill medium-fill" style={{ width: `${(userStats.mediumSolved / 40) * 100}%` }}></div>
                 </div>
                 <span className="progress-text">{userStats.mediumSolved} / 40 solved</span>
               </div>
@@ -317,7 +318,7 @@ export default function Dashboard() {
                   <span className="difficulty-count">{userStats.hardSolved}</span>
                 </div>
                 <div className="progress-bar">
-                  <div className="progress-fill hard-fill" style={{width: `${(userStats.hardSolved/20)*100}%`}}></div>
+                  <div className="progress-fill hard-fill" style={{ width: `${(userStats.hardSolved / 20) * 100}%` }}></div>
                 </div>
                 <span className="progress-text">{userStats.hardSolved} / 20 solved</span>
               </div>
@@ -343,8 +344,8 @@ export default function Dashboard() {
                   </div>
                 ) : (
                   recentSubmissions.map(sub => (
-                    <div 
-                      key={sub.id} 
+                    <div
+                      key={sub.id}
                       className="submission-item clickable"
                       onClick={() => navigate(`/submissions/${sub.id}`)}
                       style={{ cursor: 'pointer' }}
@@ -355,7 +356,7 @@ export default function Dashboard() {
                           <span className={`submission-status ${getStatusClass(sub.status)}`}>
                             {sub.status}
                           </span>
-                          <span className="submission-lang">{sub.language}</span>
+                          <span className="submission-lang">{formatLanguage(sub.language)}</span>
                           <span className={`submission-diff ${getDifficultyClass(sub.difficulty)}`}>
                             {sub.difficulty}
                           </span>
