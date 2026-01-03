@@ -53,12 +53,13 @@ function processSubmissions(submissions, userId) {
     const status = normalizeStatus(sub.status);
     
     // Map submission to display format
+    // API returns flat structure: problemTitle, problemId, problemSlug, problemDifficulty
     const mappedSub = {
       id: sub.id,
-      problemTitle: sub.problem?.title || "Unknown Problem",
-      problemId: sub.problem?.id,
-      problemSlug: sub.problem?.slug || "",
-      difficulty: sub.problem?.difficulty || "-",
+      problemTitle: sub.problemTitle || sub.problem?.title || "Unknown Problem",
+      problemId: sub.problemId || sub.problem?.id,
+      problemSlug: sub.problemSlug || sub.problem?.slug || "",
+      difficulty: sub.problemDifficulty || sub.problem?.difficulty || "-",
       status: sub.status,
       language: sub.language,
       executionTimeMs: sub.executionTimeMs,
@@ -69,7 +70,7 @@ function processSubmissions(submissions, userId) {
     // Categorize by status
     if (status === "ACCEPTED") {
       acceptedSubmissions.push(mappedSub);
-      solvedProblems.add(sub.problem?.id);
+      solvedProblems.add(sub.problemId || sub.problem?.id);
     } else if (status === "WRONG_ANSWER") {
       wrongAnswerSubmissions.push(mappedSub);
     } else if (status === "RUNTIME_ERROR") {
