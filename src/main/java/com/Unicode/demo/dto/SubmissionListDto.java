@@ -27,4 +27,5 @@ public class SubmissionListDto {
     private LocalDateTime submittedAt;
     private Integer testCasesPassed;
     private Integer totalTestCases;
+    private Long memoryUsedKb;
 }

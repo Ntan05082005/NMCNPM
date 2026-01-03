@@ -10,7 +10,7 @@ public class SubmissionMapper {
 
     public SubmissionListDto toListDto(Submission submission) {
         Problem problem = submission.getProblem();
-        
+
         return SubmissionListDto.builder()
                 .id(submission.getId())
                 .userId(submission.getUser() != null ? submission.getUser().getId() : null)
@@ -22,6 +22,7 @@ public class SubmissionMapper {
                 .language(submission.getLanguage())
                 .status(submission.getStatus())
                 .executionTimeMs(submission.getExecutionTimeMs())
+                .memoryUsedKb(submission.getMemoryUsedKb())
                 .submittedAt(submission.getSubmittedAt())
                 .testCasesPassed(submission.getTestCasesPassed())
                 .totalTestCases(submission.getTotalTestCases())

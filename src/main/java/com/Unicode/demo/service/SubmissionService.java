@@ -79,6 +79,7 @@ public class SubmissionService {
         List<TestResultDto> testResults = new ArrayList<>();
         int passedCount = 0;
         long totalExecutionTime = 0;
+        long maxMemoryUsedKb = 0;
         String lastOutput = "";
         String errorMessage = null;
         String lastStderr = "";
@@ -98,6 +99,7 @@ public class SubmissionService {
                     driverTemplate);
 
             totalExecutionTime += result.executionTimeMs();
+            maxMemoryUsedKb = Math.max(maxMemoryUsedKb, result.memoryUsedKb());
             lastOutput = result.output();
             lastStderr = result.stderr();
 
@@ -175,6 +177,7 @@ public class SubmissionService {
         submission.setOutput(lastOutput);
         submission.setErrorMessage(errorMessage);
         submission.setExecutionTimeMs(totalExecutionTime);
+        submission.setMemoryUsedKb(maxMemoryUsedKb > 0 ? maxMemoryUsedKb : null);
 
         // Save submission to database
         Submission savedSubmission = submissionRepository.save(submission);
@@ -206,11 +209,11 @@ public class SubmissionService {
 
         // Parse language
         Language language = parseLanguage(request.getLanguage());
-        
+
         // Check if custom input is provided
         String customInput = request.getCustomInput();
         boolean isCustomRun = customInput != null && !customInput.trim().isEmpty();
-        
+
         if (isCustomRun) {
             // Run with custom input only
             return runWithCustomInput(problem, language, request.getCode(), customInput.trim());
@@ -219,22 +222,22 @@ public class SubmissionService {
             return runWithSampleTestCases(problem, language, request.getCode());
         }
     }
-    
+
     /**
      * Run code with custom user-provided input
      */
     private SubmitResponse runWithCustomInput(Problem problem, Language language, String code, String customInput) {
         // Get driver template for the language
         String driverTemplate = getDriverTemplate(problem, language);
-        
+
         CodeExecutionService.ExecutionResult result = codeExecutionService.execute(
                 code,
                 language,
                 customInput,
                 driverTemplate);
-        
+
         List<TestResultDto> testResults = new ArrayList<>();
-        
+
         TestResultDto testResult = TestResultDto.builder()
                 .testCaseNumber(1)
                 .input(customInput)
@@ -245,17 +248,17 @@ public class SubmissionService {
                 .errorMessage(result.error())
                 .stderr(result.stderr())
                 .compilerError(result.compilerError())
-                .status(result.success() ? "EXECUTED" : 
-                       result.hasCompilationError() ? "COMPILE_ERROR" :
-                       result.timedOut() ? "TIME_LIMIT_EXCEEDED" : "RUNTIME_ERROR")
+                .status(result.success() ? "EXECUTED"
+                        : result.hasCompilationError() ? "COMPILE_ERROR"
+                                : result.timedOut() ? "TIME_LIMIT_EXCEEDED" : "RUNTIME_ERROR")
                 .build();
-        
+
         testResults.add(testResult);
-        
-        String status = result.success() ? "EXECUTED" : 
-                       result.hasCompilationError() ? "COMPILE_ERROR" :
-                       result.timedOut() ? "TIME_LIMIT_EXCEEDED" : "RUNTIME_ERROR";
-        
+
+        String status = result.success() ? "EXECUTED"
+                : result.hasCompilationError() ? "COMPILE_ERROR"
+                        : result.timedOut() ? "TIME_LIMIT_EXCEEDED" : "RUNTIME_ERROR";
+
         return SubmitResponse.builder()
                 .submissionId(null)
                 .status(status)
@@ -270,7 +273,7 @@ public class SubmissionService {
                 .message("Custom input execution completed")
                 .build();
     }
-    
+
     /**
      * Run code with sample test cases (first 2)
      */
@@ -281,17 +284,18 @@ public class SubmissionService {
             return SubmitResponse.builder()
                     .submissionId(null)
                     .status("NO_TEST_CASES")
-                    .errorMessage("No test cases available for this problem. Please use Custom Input to test your code.")
+                    .errorMessage(
+                            "No test cases available for this problem. Please use Custom Input to test your code.")
                     .testCasesPassed(0)
                     .totalTestCases(0)
                     .testResults(new ArrayList<>())
                     .message("No test cases found")
                     .build();
         }
-        
+
         // Limit to sample test cases (first 2)
-        List<TestCase> sampleTestCases = allTestCases.size() > 2 
-                ? allTestCases.subList(0, 2) 
+        List<TestCase> sampleTestCases = allTestCases.size() > 2
+                ? allTestCases.subList(0, 2)
                 : allTestCases;
 
         // Run sample test cases
@@ -408,8 +412,8 @@ public class SubmissionService {
     public List<SubmissionListDto> getUserSubmissionsDto(Long userId) {
         List<Submission> submissions = submissionRepository.findByUserIdWithProblem(userId);
         return submissions.stream()
-            .map(this::toSubmissionListDto)
-            .collect(java.util.stream.Collectors.toList());
+                .map(this::toSubmissionListDto)
+                .collect(java.util.stream.Collectors.toList());
     }
 
     /**
@@ -417,20 +421,21 @@ public class SubmissionService {
      */
     private SubmissionListDto toSubmissionListDto(Submission submission) {
         return SubmissionListDto.builder()
-            .id(submission.getId())
-            .userId(submission.getUser() != null ? submission.getUser().getId() : null)
-            .username(submission.getUser() != null ? submission.getUser().getUsername() : null)
-            .problemId(submission.getProblem() != null ? submission.getProblem().getId() : null)
-            .problemTitle(submission.getProblem() != null ? submission.getProblem().getTitle() : "Unknown Problem")
-            .problemSlug(submission.getProblem() != null ? submission.getProblem().getSlug() : null)
-            .problemDifficulty(submission.getProblem() != null ? submission.getProblem().getDifficulty() : null)
-            .language(submission.getLanguage())
-            .status(submission.getStatus())
-            .executionTimeMs(submission.getExecutionTimeMs())
-            .submittedAt(submission.getSubmittedAt())
-            .testCasesPassed(submission.getTestCasesPassed())
-            .totalTestCases(submission.getTotalTestCases())
-            .build();
+                .id(submission.getId())
+                .userId(submission.getUser() != null ? submission.getUser().getId() : null)
+                .username(submission.getUser() != null ? submission.getUser().getUsername() : null)
+                .problemId(submission.getProblem() != null ? submission.getProblem().getId() : null)
+                .problemTitle(submission.getProblem() != null ? submission.getProblem().getTitle() : "Unknown Problem")
+                .problemSlug(submission.getProblem() != null ? submission.getProblem().getSlug() : null)
+                .problemDifficulty(submission.getProblem() != null ? submission.getProblem().getDifficulty() : null)
+                .language(submission.getLanguage())
+                .status(submission.getStatus())
+                .executionTimeMs(submission.getExecutionTimeMs())
+                .memoryUsedKb(submission.getMemoryUsedKb())
+                .submittedAt(submission.getSubmittedAt())
+                .testCasesPassed(submission.getTestCasesPassed())
+                .totalTestCases(submission.getTotalTestCases())
+                .build();
     }
 
     /**
