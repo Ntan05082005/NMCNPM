@@ -14,6 +14,9 @@ import java.util.List;
 public interface SubmissionRepository extends JpaRepository<Submission, Long>, JpaSpecificationExecutor<Submission> {
 
     List<Submission> findByUserIdOrderBySubmittedAtDesc(Long userId);
+    
+    @Query("SELECT s FROM Submission s JOIN FETCH s.problem WHERE s.user.id = :userId ORDER BY s.submittedAt DESC")
+    List<Submission> findByUserIdWithProblem(@Param("userId") Long userId);
 
     List<Submission> findByProblemIdOrderBySubmittedAtDesc(Long problemId);
 
