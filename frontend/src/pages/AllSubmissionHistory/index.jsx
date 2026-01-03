@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import "./SubmissionHistory.css";
 import { FiGrid, FiFileText, FiSend, FiUser, FiSettings, FiLogOut } from 'react-icons/fi';
 import { getUserSubmissions } from "../../API/api-submission";
+import { formatLanguage } from "../../utils/format";
 
 const TABS = [
   { key: "ALL", label: "All" },
@@ -46,12 +47,12 @@ function processSubmissions(submissions, userId) {
   const runtimeErrorSubmissions = [];
   const compilationErrorSubmissions = [];
   const timeLimitExceededSubmissions = [];
-  
+
   const solvedProblems = new Set();
-  
+
   submissions.forEach(sub => {
     const status = normalizeStatus(sub.status);
-    
+
     // Map submission to display format
     // API returns flat structure: problemTitle, problemId, problemSlug, problemDifficulty
     const mappedSub = {
@@ -66,7 +67,7 @@ function processSubmissions(submissions, userId) {
       memoryUsedKb: sub.memoryUsedKb || null,
       submittedAt: sub.submittedAt || sub.createdAt
     };
-    
+
     // Categorize by status
     if (status === "ACCEPTED") {
       acceptedSubmissions.push(mappedSub);
@@ -81,11 +82,11 @@ function processSubmissions(submissions, userId) {
       timeLimitExceededSubmissions.push(mappedSub);
     }
   });
-  
+
   const totalSubmissions = submissions.length;
   const acceptedCount = acceptedSubmissions.length;
   const acceptanceRate = totalSubmissions > 0 ? (acceptedCount / totalSubmissions * 100).toFixed(1) : 0;
-  
+
   return {
     userId,
     username: localStorage.getItem("username") || "Guest",
@@ -116,10 +117,10 @@ export default function SubmissionHistory({ userId }) {
 
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
-  
+
   // Track current username to detect user changes
   const [currentUser, setCurrentUser] = useState(localStorage.getItem("username"));
-  
+
   // Track refresh trigger from location state
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -132,7 +133,7 @@ export default function SubmissionHistory({ userId }) {
 
   useEffect(() => {
     let ignore = false;
-    
+
     // Check if user has changed
     const username = localStorage.getItem("username");
     if (username !== currentUser) {
@@ -151,7 +152,7 @@ export default function SubmissionHistory({ userId }) {
         // Get user ID from localStorage or props
         const storedUserId = localStorage.getItem("user_id");
         const actualUserId = userId || storedUserId;
-        
+
         if (!actualUserId) {
           throw new Error("User ID not found. Please login again.");
         }
@@ -159,10 +160,10 @@ export default function SubmissionHistory({ userId }) {
         // Fetch real submissions from backend
         const response = await getUserSubmissions(actualUserId);
         const submissions = response.data || [];
-        
+
         // Process submissions into stats
         const processedStats = processSubmissions(submissions, actualUserId);
-        
+
         if (!ignore) setStats(processedStats);
       } catch (e) {
         console.error("Error loading submission history:", e);
@@ -277,7 +278,7 @@ export default function SubmissionHistory({ userId }) {
   };
 
   if (loading) return <div className="sh-container">Loading submission history...</div>;
-  
+
   // Don't show error if we have empty stats - just show the page with empty data
   // if (err && !stats) return <div className="sh-container sh-error">{err}</div>;
 
@@ -291,154 +292,154 @@ export default function SubmissionHistory({ userId }) {
               <span className="sh-logo-uni">Uni</span>Code
             </div>
             <nav className="sh-nav-menu">
-              <div className="sh-nav-item" onClick={() => navigate('/dashboard')}> 
-                <FiGrid className="sh-nav-icon" /> Dashboard 
+              <div className="sh-nav-item" onClick={() => navigate('/dashboard')}>
+                <FiGrid className="sh-nav-icon" /> Dashboard
               </div>
-              <div className="sh-nav-item" onClick={() => navigate('/problems')}> 
-                <FiFileText className="sh-nav-icon" /> Problems 
+              <div className="sh-nav-item" onClick={() => navigate('/problems')}>
+                <FiFileText className="sh-nav-icon" /> Problems
               </div>
-              <div className="sh-nav-item active"> 
-                <FiSend className="sh-nav-icon" /> Submissions 
+              <div className="sh-nav-item active">
+                <FiSend className="sh-nav-icon" /> Submissions
               </div>
               <div className="sh-nav-item" onClick={() => navigate('/profile')}>
-                <FiUser className="sh-nav-icon" /> Profile 
+                <FiUser className="sh-nav-icon" /> Profile
               </div>
             </nav>
           </div>
           <div className="sh-sidebar-bottom">
             <div className="sh-nav-item" onClick={() => navigate('/settings')}>
-              <FiSettings className="sh-nav-icon" /> Settings 
+              <FiSettings className="sh-nav-icon" /> Settings
             </div>
-            <div className="sh-nav-item" onClick={handleLogout}> 
-              <FiLogOut className="sh-nav-icon" /> Log Out 
+            <div className="sh-nav-item" onClick={handleLogout}>
+              <FiLogOut className="sh-nav-icon" /> Log Out
             </div>
           </div>
         </aside>
 
         {/* MAIN CONTENT */}
         <div className="sh-container">
-      <div className="sh-header">
-        <div>
-          <h2 className="sh-title">Submission History</h2>
-          <div className="sh-subtitle">
-            User: <b>{summary?.username ?? "-"}</b>
+          <div className="sh-header">
+            <div>
+              <h2 className="sh-title">Submission History</h2>
+              <div className="sh-subtitle">
+                User: <b>{summary?.username ?? "-"}</b>
+              </div>
+            </div>
+
+            <input
+              className="sh-search"
+              placeholder="Search by problem / slug / status / language..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+            />
           </div>
-        </div>
 
-        <input
-          className="sh-search"
-          placeholder="Search by problem / slug / status / language..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-        />
-      </div>
+          {summary && (
+            <div className="sh-cards">
+              {/* 🔵 Total submissions */}
+              <div className="sh-card card-total">
+                <div className="sh-card-label">Total submissions</div>
+                <div className="sh-card-value">{summary.totalSubmissions}</div>
+              </div>
 
-      {summary && (
-      <div className="sh-cards">
-        {/* 🔵 Total submissions */}
-        <div className="sh-card card-total">
-          <div className="sh-card-label">Total submissions</div>
-          <div className="sh-card-value">{summary.totalSubmissions}</div>
-        </div>
+              {/* 🟢 Acceptance rate */}
+              <div className="sh-card card-acceptance">
+                <div className="sh-card-label">Acceptance rate</div>
+                <div className="sh-card-value">
+                  {Number(summary.acceptanceRate).toFixed(1)}%
+                </div>
+              </div>
 
-        {/* 🟢 Acceptance rate */}
-        <div className="sh-card card-acceptance">
-          <div className="sh-card-label">Acceptance rate</div>
-          <div className="sh-card-value">
-            {Number(summary.acceptanceRate).toFixed(1)}%
+              {/* 🟣 Solved / Attempted */}
+              <div className="sh-card card-progress">
+                <div className="sh-card-label">Solved / Attempted</div>
+                <div className="sh-card-value">
+                  {summary.solved} / {summary.attempted}
+                </div>
+              </div>
+            </div>
+          )}
+
+          <div className="sh-tabs">
+            {TABS.map((t) => (
+              <button
+                key={t.key}
+                className={`sh-tab ${tab === t.key ? "active" : ""}`}
+                onClick={() => setTab(t.key)}
+              >
+                {t.label}
+                {summary && t.key !== "ALL" && (
+                  <span className="sh-count">
+                    {t.key === "ACCEPTED" && summary.acceptedCount}
+                    {t.key === "WRONG_ANSWER" && summary.wrongAnswerCount}
+                    {t.key === "RUNTIME_ERROR" && summary.runtimeErrorCount}
+                    {t.key === "COMPILE_ERROR" && summary.compilationErrorCount}
+                    {t.key === "TIME_LIMIT_EXCEEDED" && summary.tleCount}
+                  </span>
+                )}
+              </button>
+            ))}
           </div>
-        </div>
 
-        {/* 🟣 Solved / Attempted */}
-        <div className="sh-card card-progress">
-          <div className="sh-card-label">Solved / Attempted</div>
-          <div className="sh-card-value">
-            {summary.solved} / {summary.attempted}
-          </div>
-        </div>
-      </div>
-      )}
-
-      <div className="sh-tabs">
-        {TABS.map((t) => (
-          <button
-            key={t.key}
-            className={`sh-tab ${tab === t.key ? "active" : ""}`}
-            onClick={() => setTab(t.key)}
-          >
-            {t.label}
-            {summary && t.key !== "ALL" && (
-              <span className="sh-count">
-                {t.key === "ACCEPTED" && summary.acceptedCount}
-                {t.key === "WRONG_ANSWER" && summary.wrongAnswerCount}
-                {t.key === "RUNTIME_ERROR" && summary.runtimeErrorCount}
-                {t.key === "COMPILE_ERROR" && summary.compilationErrorCount}
-                {t.key === "TIME_LIMIT_EXCEEDED" && summary.tleCount}
-              </span>
-            )}
-          </button>
-        ))}
-      </div>
-
-      <div className="sh-table-wrap">
-        <table className="sh-table">
-          <thead>
-            <tr>
-              <th>Problem</th>
-              <th>Difficulty</th>
-              <th>Status</th>
-              <th>Language</th>
-              <th>Runtime (ms)</th>
-              <th>Memory</th>
-              <th>Submitted</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-
-          <tbody>
-            {filtered.length === 0 ? (
-              <tr>
-                <td colSpan={8} className="sh-empty">
-                  No submissions found.
-                </td>
-              </tr>
-            ) : (
-              filtered.map((s) => (
-                <tr key={s.id}>
-                  <td>
-                    <button
-                      className="sh-link"
-                      onClick={() => onOpenProblem(s.problemSlug, s.problemId)}
-                      title={s.problemSlug || ""}
-                    >
-                      {s.problemTitle || `Problem #${s.problemId}`}
-                    </button>
-                  </td>
-                  <td>
-                    <span className={`difficulty-badge difficulty-${(s.difficulty || '').toLowerCase()}`}>
-                      {s.difficulty || "-"}
-                    </span>
-                  </td>
-                  <td>
-                    <span className={statusBadgeClass(s.status)}>{normalizeStatus(s.status)}</span>
-                  </td>
-                  <td>{s.language || "-"}</td>
-                  <td>{s.executionTimeMs != null ? s.executionTimeMs : "-"}</td>
-                  <td>{s.memoryUsedKb != null ? `${s.memoryUsedKb} KB` : "-"}</td>
-                  <td>{formatDateTime(s.submittedAt)}</td>
-                  <td>
-                    <button className="sh-btn" onClick={() => onOpenSubmission(s.id)}>
-                      View
-                    </button>
-                  </td>
+          <div className="sh-table-wrap">
+            <table className="sh-table">
+              <thead>
+                <tr>
+                  <th>Problem</th>
+                  <th>Difficulty</th>
+                  <th>Status</th>
+                  <th>Language</th>
+                  <th>Runtime (ms)</th>
+                  <th>Memory (KB)</th>
+                  <th>Submitted</th>
+                  <th>Action</th>
                 </tr>
-              ))
-            )}
-          </tbody>
-        </table>
+              </thead>
+
+              <tbody>
+                {filtered.length === 0 ? (
+                  <tr>
+                    <td colSpan={8} className="sh-empty">
+                      No submissions found.
+                    </td>
+                  </tr>
+                ) : (
+                  filtered.map((s) => (
+                    <tr key={s.id}>
+                      <td>
+                        <button
+                          className="sh-link"
+                          onClick={() => onOpenProblem(s.problemSlug, s.problemId)}
+                          title={s.problemSlug || ""}
+                        >
+                          {s.problemTitle || `Problem #${s.problemId}`}
+                        </button>
+                      </td>
+                      <td>
+                        <span className={`difficulty-badge difficulty-${(s.difficulty || '').toLowerCase()}`}>
+                          {s.difficulty || "-"}
+                        </span>
+                      </td>
+                      <td>
+                        <span className={statusBadgeClass(s.status)}>{normalizeStatus(s.status)}</span>
+                      </td>
+                      <td>{formatLanguage(s.language)}</td>
+                      <td>{s.executionTimeMs != null ? s.executionTimeMs : "-"}</td>
+                      <td>{s.memoryUsedKb != null ? s.memoryUsedKb : "-"}</td>
+                      <td>{formatDateTime(s.submittedAt)}</td>
+                      <td>
+                        <button className="sh-btn" onClick={() => onOpenSubmission(s.id)}>
+                          View
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
       </div>
-    </div>
-      </div>
-    </div>
+    </div >
   );
 }
