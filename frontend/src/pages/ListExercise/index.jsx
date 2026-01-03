@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import "./list-exercise.css"; 
 
@@ -10,6 +10,8 @@ import { VscDebugAlt } from "react-icons/vsc";
 
 export default function ListExercise() {
   const navigate = useNavigate();
+  const username = localStorage.getItem('username') || 'User';
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Dữ liệu các thẻ bài tập
   const problems = [
@@ -105,6 +107,19 @@ export default function ListExercise() {
     navigate('/login');
   };
 
+  // Filter problems based on search term
+  const filteredProblems = useMemo(() => {
+    const q = searchTerm.trim().toLowerCase();
+    if (!q) return problems;
+    
+    return problems.filter((item) => {
+      const title = (item.title || '').toLowerCase();
+      const desc = (item.desc || '').toLowerCase();
+      const id = (item.id || '').toLowerCase();
+      return title.includes(q) || desc.includes(q) || id.includes(q);
+    });
+  }, [searchTerm, problems]);
+
   return (
     <div className="list-exercise-page">
       <div className="dashboard-container">
@@ -131,13 +146,18 @@ export default function ListExercise() {
         <main className="main-content">
           <header className="header">
             <div className="welcome-text">
-              <h1>Welcome User!</h1>
+              <h1>Welcome, {username}!</h1>
               <p>Here are your problems</p>
             </div>
             <div className="header-actions">
               <div className="search-box">
                 <FiSearch className="search-icon" />
-                <input type="text" placeholder="Search" />
+                <input 
+                  type="text" 
+                  placeholder="Search categories..." 
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                />
               </div>
               <div className="user-controls">
                 <div className="notification-icon">
@@ -157,7 +177,7 @@ export default function ListExercise() {
           </div>
 
           <div className="problems-grid">
-            {problems.map((item) => (
+            {filteredProblems.map((item) => (
               <div key={item.id} className="problem-card" onClick={() => handleCardClick(item.id)}>
                 <div className="card-visual-area">
                   {item.renderIcon()}
@@ -168,6 +188,11 @@ export default function ListExercise() {
                 </div>
               </div>
             ))}
+            {filteredProblems.length === 0 && (
+              <div className="no-results" style={{ gridColumn: '1/-1', textAlign: 'center', padding: '40px', color: 'var(--text-secondary)' }}>
+                No categories found matching "{searchTerm}"
+              </div>
+            )}
           </div>
         </main>
       </div>

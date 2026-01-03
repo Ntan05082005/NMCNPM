@@ -144,13 +144,21 @@
 .list-exercise-page .search-box input {
   padding: 12px 20px 12px 50px;
   border-radius: 30px;
-  border: none;
-  background: #f1f5f9;
+  border: 1px solid var(--border-color, rgba(128, 128, 128, 0.2));
+  background: var(--bg-secondary, #f1f5f9);
   width: 300px;
   outline: none;
   font-size: 14px;
-  color: #475569;
+  color: var(--text-primary, #475569);
   font-family: inherit;
+}
+
+.list-exercise-page .search-box input::placeholder {
+  color: var(--text-secondary, #94a3b8);
+}
+
+.list-exercise-page .search-box input:focus {
+  border-color: var(--accent-color, #3b82f6);
 }
 
 .list-exercise-page .search-icon {

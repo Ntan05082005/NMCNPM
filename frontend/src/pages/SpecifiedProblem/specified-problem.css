@@ -20,7 +20,19 @@
 .specified-problem-page .welcome-text p { color: var(--text-secondary, #94a3b8); font-size: 15px; }
 .specified-problem-page .header-actions { display: flex; align-items: center; gap: 30px; }
 .specified-problem-page .search-box { position: relative; }
-.specified-problem-page .search-box input { padding: 12px 20px 12px 50px; border-radius: 30px; border: none; background: #f1f5f9; width: 300px; outline: none; font-size: 14px; font-family: inherit; }
+.specified-problem-page .search-box input { 
+  padding: 12px 20px 12px 50px; 
+  border-radius: 30px; 
+  border: 1px solid var(--border-color, rgba(128, 128, 128, 0.2)); 
+  background: var(--bg-secondary, #f1f5f9); 
+  width: 300px; 
+  outline: none; 
+  font-size: 14px; 
+  font-family: inherit; 
+  color: var(--text-primary, #475569);
+}
+.specified-problem-page .search-box input::placeholder { color: var(--text-secondary, #94a3b8); }
+.specified-problem-page .search-box input:focus { border-color: var(--accent-color, #3b82f6); }
 /* CSS cho icon search đã có sẵn ở đây, chỉ cần thêm JSX là nhận */
 .specified-problem-page .search-icon { position: absolute; left: 20px; top: 50%; transform: translateY(-50%); color: #94a3b8; font-size: 18px; pointer-events: none; }
 .specified-problem-page .user-controls { display: flex; align-items: center; gap: 20px; }

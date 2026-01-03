@@ -19,6 +19,7 @@ import { FaUserCircle } from "react-icons/fa";
 export default function SpecifiedProblem() {
   const navigate = useNavigate();
   const { categoryId } = useParams();
+  const username = localStorage.getItem('username') || 'User';
 
   const [problems, setProblems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -88,14 +89,15 @@ export default function SpecifiedProblem() {
       // 1) lọc theo difficulty (Sort By)
       if (difficultyFilter !== "ALL" && p.difficultyNorm !== difficultyFilter) return false;
 
-      // 2) lọc theo search (title / slug / difficulty)
+      // 2) lọc theo search (title / slug / difficulty / category)
       if (!q) return true;
 
       const title = (p.title || "").toLowerCase();
       const slug = (p.slug || "").toLowerCase();
       const diff = (p.difficultyNorm || "").toLowerCase(); // easy/medium/hard
+      const category = (p.category || "").toLowerCase();
 
-      return title.includes(q) || slug.includes(q) || diff.includes(q);
+      return title.includes(q) || slug.includes(q) || diff.includes(q) || category.includes(q);
     });
   }, [normalized, difficultyFilter, searchTerm]);
 
@@ -149,7 +151,7 @@ export default function SpecifiedProblem() {
           {/* HEADER */}
           <header className="header">
             <div className="welcome-text">
-              <h1>Welcome User!</h1>
+              <h1>Welcome, {username}!</h1>
               <p>Here are your problems</p>
             </div>
 
@@ -159,7 +161,7 @@ export default function SpecifiedProblem() {
                 {/* ✅ SEARCH INPUT */}
                 <input
                   type="text"
-                  placeholder="Search by title / slug / difficulty (easy, medium...)"
+                  placeholder="Search by title / category / difficulty..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                 />
