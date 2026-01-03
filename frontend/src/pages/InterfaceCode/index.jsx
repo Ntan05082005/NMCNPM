@@ -146,9 +146,10 @@ export default function InterfaceCode() {
             setRunResult(response.data);
         } catch (error) {
             console.error("Run code error:", error);
+            const errorMsg = error.response?.data?.message || error.response?.data?.errorMessage;
             setRunResult({
                 status: 'ERROR',
-                errorMessage: error.response?.data?.message || 'Connection error or not logged in.'
+                errorMessage: errorMsg || 'Connection error or not logged in.'
             });
         } finally {
             setIsRunning(false);
