@@ -60,4 +60,7 @@ public class Submission {
 
     @Column(name = "total_test_cases")
     private Integer totalTestCases;
+
+    @Column(name = "memory_used_kb")
+    private Long memoryUsedKb;
 }

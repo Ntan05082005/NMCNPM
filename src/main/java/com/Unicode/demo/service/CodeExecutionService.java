@@ -23,6 +23,7 @@ public class CodeExecutionService {
     private static final int TIMEOUT_SECONDS = 10; // Increased to allow for Docker startup
     private static final String DOCKER_NETWORK = "none"; // No network access for security
     private static final Pattern TIME_PATTERN = Pattern.compile("___TIME_MS:(\\d+)___");
+    private static final Pattern MEMORY_PATTERN = Pattern.compile("___MEM_KB:(\\d+)___");
 
     private final RuntimeCalculator runtimeCalculator;
     private final ErrorCaptureService errorCaptureService;
@@ -94,24 +95,32 @@ public class CodeExecutionService {
     private String buildDockerCommand(Path tempDir, Language language) {
         String absPath = tempDir.toAbsolutePath().toString().replace("\\", "/");
 
-        // Each command wraps execution with shell timing to measure actual runtime
-        // Output format: normal output followed by ___TIME_MS:123___
+        // Each command wraps execution with shell timing and memory measurement
+        // Output format: normal output followed by ___TIME_MS:123___ and
+        // ___MEM_KB:456___
+        // Memory is captured using /proc/self/status VmHWM (peak resident set size)
         return switch (language) {
             case PYTHON -> String.format(
                     "docker run --rm --network=%s -v \"%s:/code:ro\" -w /code python:3.11-slim " +
                             "sh -c \"start=$(date +%%s%%N) && python solution.py < input.txt && " +
-                            "end=$(date +%%s%%N) && echo ___TIME_MS:$(((end-start)/1000000))___\"",
+                            "end=$(date +%%s%%N) && mem=$(grep VmHWM /proc/self/status 2>/dev/null | awk '{print $2}' || echo 0) && "
+                            +
+                            "echo ___TIME_MS:$(((end-start)/1000000))___ && echo ___MEM_KB:${mem:-0}___\"",
                     DOCKER_NETWORK, absPath);
             case JAVASCRIPT -> String.format(
                     "docker run --rm --network=%s -v \"%s:/code:ro\" -w /code node:20-slim " +
                             "sh -c \"start=$(date +%%s%%N) && node solution.js < input.txt && " +
-                            "end=$(date +%%s%%N) && echo ___TIME_MS:$(((end-start)/1000000))___\"",
+                            "end=$(date +%%s%%N) && mem=$(grep VmHWM /proc/self/status 2>/dev/null | awk '{print $2}' || echo 0) && "
+                            +
+                            "echo ___TIME_MS:$(((end-start)/1000000))___ && echo ___MEM_KB:${mem:-0}___\"",
                     DOCKER_NETWORK, absPath);
             case CPP -> String.format(
                     "docker run --rm --network=%s -v \"%s:/code\" -w /code gcc:13 " +
                             "sh -c \"g++ -O2 -o solution solution.cpp && " +
                             "start=$(date +%%s%%N) && ./solution < input.txt && " +
-                            "end=$(date +%%s%%N) && echo ___TIME_MS:$(((end-start)/1000000))___\"",
+                            "end=$(date +%%s%%N) && mem=$(grep VmHWM /proc/self/status 2>/dev/null | awk '{print $2}' || echo 0) && "
+                            +
+                            "echo ___TIME_MS:$(((end-start)/1000000))___ && echo ___MEM_KB:${mem:-0}___\"",
                     DOCKER_NETWORK, absPath);
         };
     }
@@ -184,16 +193,17 @@ public class CodeExecutionService {
                         false);
             }
 
-            // Parse internal timing from output
+            // Parse internal timing and memory from output
             String rawOutput = captured.getCleanOutput();
             long internalTimeMs = parseInternalTiming(rawOutput);
-            String cleanOutput = stripTimingMarker(rawOutput);
+            long memoryUsedKb = parseMemoryUsage(rawOutput);
+            String cleanOutput = stripMetricsMarkers(rawOutput);
 
             // Use internal timing if available, otherwise fall back to external
             long finalTime = internalTimeMs >= 0 ? internalTimeMs : runtimeResult.getExecutionTimeMs();
 
-            log.debug("Internal execution time: {}ms (external: {}ms)",
-                    internalTimeMs, runtimeResult.getExecutionTimeMs());
+            log.debug("Internal execution time: {}ms (external: {}ms), memory: {}KB",
+                    internalTimeMs, runtimeResult.getExecutionTimeMs(), memoryUsedKb);
 
             // Success
             return new ExecutionResult(
@@ -201,6 +211,7 @@ public class CodeExecutionService {
                     cleanOutput,
                     "",
                     finalTime,
+                    memoryUsedKb,
                     "",
                     "",
                     false);
@@ -240,13 +251,36 @@ public class CodeExecutionService {
     }
 
     /**
-     * Remove timing marker from output
+     * Parse memory usage marker from output
+     * 
+     * @return memory used in KB, or 0 if not found
      */
-    private String stripTimingMarker(String output) {
+    private long parseMemoryUsage(String output) {
+        if (output == null || output.isEmpty()) {
+            return 0;
+        }
+        Matcher matcher = MEMORY_PATTERN.matcher(output);
+        if (matcher.find()) {
+            try {
+                return Long.parseLong(matcher.group(1));
+            } catch (NumberFormatException e) {
+                log.warn("Failed to parse memory usage: {}", matcher.group(1));
+                return 0;
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Remove timing and memory markers from output
+     */
+    private String stripMetricsMarkers(String output) {
         if (output == null) {
             return "";
         }
-        return TIME_PATTERN.matcher(output).replaceAll("").trim();
+        String result = TIME_PATTERN.matcher(output).replaceAll("");
+        result = MEMORY_PATTERN.matcher(result).replaceAll("");
+        return result.trim();
     }
 
     private void cleanupTempDir(Path tempDir) {
@@ -273,12 +307,19 @@ public class CodeExecutionService {
             String output,
             String error,
             long executionTimeMs,
+            long memoryUsedKb,
             String stderr,
             String compilerError,
             boolean timedOut) {
         // Constructor for backward compatibility
         public ExecutionResult(boolean success, String output, String error, long executionTimeMs) {
-            this(success, output, error, executionTimeMs, "", "", false);
+            this(success, output, error, executionTimeMs, 0, "", "", false);
+        }
+
+        // Constructor without memory (for compatibility)
+        public ExecutionResult(boolean success, String output, String error, long executionTimeMs,
+                String stderr, String compilerError, boolean timedOut) {
+            this(success, output, error, executionTimeMs, 0, stderr, compilerError, timedOut);
         }
 
         public boolean hasCompilationError() {
