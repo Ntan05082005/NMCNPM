@@ -90,11 +90,11 @@ export default function Dashboard() {
           if (sortedSubmissions && sortedSubmissions.length > 0) {
             setRecentSubmissions(sortedSubmissions.map(sub => ({
               id: sub.id || Math.random(),
-              problem: sub.problemTitle || sub.title || 'Unknown Problem',
+              problem: sub.problemTitle || sub.problem?.title || sub.title || 'Unknown Problem',
               status: sub.status || 'PENDING',
               language: sub.language || 'N/A',
               time: formatTimeAgo(sub.submittedAt || sub.createdAt),
-              difficulty: sub.difficulty || 'Easy'
+              difficulty: sub.problemDifficulty || sub.problem?.difficulty || sub.difficulty || 'Easy'
             })));
           } else {
             setRecentSubmissions([]);
@@ -347,7 +347,12 @@ export default function Dashboard() {
                   </div>
                 ) : (
                   recentSubmissions.map(sub => (
-                    <div key={sub.id} className="submission-item">
+                    <div 
+                      key={sub.id} 
+                      className="submission-item clickable"
+                      onClick={() => navigate(`/submissions/${sub.id}`)}
+                      style={{ cursor: 'pointer' }}
+                    >
                       <div className="submission-main">
                         <h4 className="submission-problem">{sub.problem}</h4>
                         <div className="submission-meta">

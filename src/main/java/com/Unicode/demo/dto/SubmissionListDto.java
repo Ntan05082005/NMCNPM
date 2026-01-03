@@ -20,6 +20,7 @@ public class SubmissionListDto {
     private Long problemId;
     private String problemTitle;
     private String problemSlug;
+    private String problemDifficulty;
     private Language language;
     private SubmissionStatus status;
     private Long executionTimeMs;

@@ -36,12 +36,31 @@ export function getAllProblems({ page = 0, size = 10, difficulty, tags, search }
 
 // Get problem by slug
 export function getProblemBySlug(slug) {
-  return API.get(`/api/problems/${slug}`);
+  const token = localStorage.getItem("jwt_token");
+  const config = {};
+  
+  // Add auth header if token exists (to get user's solve status)
+  if (token) {
+    config.headers = {
+      Authorization: `Bearer ${token}`
+    };
+  }
+  
+  return API.get(`/api/problems/${slug}`, config);
 }
 
 // Get problem by ID
 export function getProblemById(id) {
-  return API.get(`/api/problems/id/${id}`);
+  const token = localStorage.getItem("jwt_token");
+  const config = {};
+  
+  if (token) {
+    config.headers = {
+      Authorization: `Bearer ${token}`
+    };
+  }
+  
+  return API.get(`/api/problems/id/${id}`, config);
 }
 
 // Get problem detail for coding interface with language-specific starter code

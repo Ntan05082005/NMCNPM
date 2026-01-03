@@ -32,6 +32,15 @@ public class ProblemService {
             int page,
             int size
     ) {
+        return getProblems(filter, page, size, null);
+    }
+
+    public PageResponse<ProblemDto> getProblems(
+            ProblemFilterDto filter,
+            int page,
+            int size,
+            Long userId
+    ) {
         // Validate and set defaults
         if (size <= 0 || size > 100) {
             size = 20; // Default page size
@@ -57,9 +66,10 @@ public class ProblemService {
         // Execute query
         Page<Problem> problemPage = problemRepository.findAll(spec, pageable);
 
-        // Map to DTOs
+        // Map to DTOs with user context for solve status
+        final Long userIdFinal = userId;
         List<ProblemDto> content = problemPage.getContent().stream()
-                .map(problemMapper::toDto)
+                .map(problem -> problemMapper.toDto(problem, userIdFinal))
                 .collect(Collectors.toList());
 
         // Create response
@@ -75,15 +85,23 @@ public class ProblemService {
     }
 
     public ProblemDto getProblemBySlug(String slug) {
+        return getProblemBySlug(slug, null);
+    }
+
+    public ProblemDto getProblemBySlug(String slug, Long userId) {
         Problem problem = problemRepository.findBySlug(slug)
                 .orElseThrow(() -> new RuntimeException("Problem not found with slug: " + slug));
-        return problemMapper.toDto(problem);
+        return problemMapper.toDto(problem, userId);
     }
 
     public ProblemDto getProblemById(Long id) {
+        return getProblemById(id, null);
+    }
+
+    public ProblemDto getProblemById(Long id, Long userId) {
         Problem problem = problemRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Problem not found with id: " + id));
-        return problemMapper.toDto(problem);
+        return problemMapper.toDto(problem, userId);
     }
 
     private Sort createSort(String sortBy, String sortDirection) {

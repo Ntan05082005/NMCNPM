@@ -4,14 +4,23 @@ import com.Unicode.demo.dto.ProblemDto;
 import com.Unicode.demo.dto.TagDto;
 import com.Unicode.demo.entity.Problem;
 import com.Unicode.demo.entity.Tag;
+import com.Unicode.demo.repository.SubmissionRepository;
 import org.springframework.stereotype.Component;
+import lombok.RequiredArgsConstructor;
 
 import java.util.stream.Collectors;
 
 @Component
+@RequiredArgsConstructor
 public class ProblemMapper {
 
+    private final SubmissionRepository submissionRepository;
+
     public ProblemDto toDto(Problem problem) {
+        return toDto(problem, null);
+    }
+
+    public ProblemDto toDto(Problem problem, Long userId) {
         if (problem == null) {
             return null;
         }
@@ -21,7 +30,14 @@ public class ProblemMapper {
         dto.setTitle(problem.getTitle());
         dto.setSlug(problem.getSlug());
         dto.setDifficulty(problem.getDifficulty());
-        dto.setStatus("Unsolved"); // Default status - can be enhanced to check user's submissions
+        
+        // Check if user has solved this problem
+        if (userId != null && submissionRepository.hasUserSolvedProblem(userId, problem.getId())) {
+            dto.setStatus("Solved");
+        } else {
+            dto.setStatus("Unsolved");
+        }
+        
         dto.setDescription(problem.getDescription());
         dto.setAcceptanceRate(problem.getAcceptanceRate());
         dto.setTotalSubmissions(problem.getTotalSubmissions());

@@ -75,8 +75,8 @@ public class SubmissionController {
      */
     @GetMapping("/user/{userId}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<Submission>> getUserSubmissions(@PathVariable Long userId) {
-        List<Submission> submissions = submissionService.getUserSubmissions(userId);
+    public ResponseEntity<List<SubmissionListDto>> getUserSubmissions(@PathVariable Long userId) {
+        List<SubmissionListDto> submissions = submissionService.getUserSubmissionsDto(userId);
         return ResponseEntity.ok(submissions);
     }
 

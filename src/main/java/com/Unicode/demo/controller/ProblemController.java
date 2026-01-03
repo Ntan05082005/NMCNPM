@@ -4,10 +4,14 @@ import com.Unicode.demo.dto.PageResponse;
 import com.Unicode.demo.dto.ProblemDto;
 import com.Unicode.demo.dto.ProblemDetailDto;
 import com.Unicode.demo.dto.ProblemFilterDto;
+import com.Unicode.demo.entity.User;
+import com.Unicode.demo.repository.UserRepository;
 import com.Unicode.demo.service.ProblemService;
 import com.Unicode.demo.service.ProblemDetailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +24,21 @@ public class ProblemController {
 
     private final ProblemService problemService;
     private final ProblemDetailService problemDetailService;
+    private final UserRepository userRepository;
+
+    /**
+     * Get current user ID from security context
+     */
+    private Long getCurrentUserId() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && !"anonymousUser".equals(auth.getPrincipal())) {
+            String username = auth.getName();
+            return userRepository.findByUsername(username)
+                    .map(User::getId)
+                    .orElse(null);
+        }
+        return null;
+    }
 
     /**
      * Simple test endpoint
@@ -61,8 +80,9 @@ public class ProblemController {
             filter.setSortBy(sortBy);
             filter.setSortDirection(sortDirection);
 
-            System.out.println("🎯 Calling problemService.getProblems()...");
-            PageResponse<ProblemDto> response = problemService.getProblems(filter, page, size);
+            Long userId = getCurrentUserId();
+            System.out.println("🎯 Calling problemService.getProblems() with userId: " + userId);
+            PageResponse<ProblemDto> response = problemService.getProblems(filter, page, size, userId);
             System.out.println("🎯 Service returned " + response.getTotalElements() + " problems");
             return ResponseEntity.ok(response);
         } catch (Exception e) {
@@ -79,7 +99,8 @@ public class ProblemController {
      */
     @GetMapping("/{slug}")
     public ResponseEntity<ProblemDto> getProblemBySlug(@PathVariable String slug) {
-        ProblemDto problem = problemService.getProblemBySlug(slug);
+        Long userId = getCurrentUserId();
+        ProblemDto problem = problemService.getProblemBySlug(slug, userId);
         return ResponseEntity.ok(problem);
     }
 
@@ -90,7 +111,8 @@ public class ProblemController {
      */
     @GetMapping("/id/{id}")
     public ResponseEntity<ProblemDto> getProblemById(@PathVariable Long id) {
-        ProblemDto problem = problemService.getProblemById(id);
+        Long userId = getCurrentUserId();
+        ProblemDto problem = problemService.getProblemById(id, userId);
         return ResponseEntity.ok(problem);
     }
 

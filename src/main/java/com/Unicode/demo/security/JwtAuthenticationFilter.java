@@ -34,16 +34,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String path = request.getRequestURI();
         System.out.println("🔍 Checking if should filter: " + path);
         
+        // Only skip auth endpoints - process JWT for all other endpoints
+        // This allows /api/problems to get user context if token is present
         boolean skip = path.startsWith("/api/auth") 
                     || path.startsWith("/api/test/public")
                     || path.startsWith("/api/debug")
-                    || path.startsWith("/api/problems")
                     || path.startsWith("/api/tags");
         
         if (skip) {
             System.out.println("✅ Skipping JWT filter for public endpoint: " + path);
         } else {
-            System.out.println("🔒 Will process JWT for protected endpoint: " + path);
+            System.out.println("🔒 Will process JWT for endpoint: " + path);
         }
         
         return skip;
