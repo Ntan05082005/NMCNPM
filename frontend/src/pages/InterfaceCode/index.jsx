@@ -58,12 +58,6 @@ const CodeEditor = ({ defaultCode, submissionStatus, currentCode, onCodeChange, 
 
     return (
         <div className="code-editor">
-            <div className="code-header">
-                <select className="language-select" value={selectedLanguage} onChange={(e) => onLanguageChange(e.target.value)}>
-                    {availableLanguages.map(lang => <option key={lang} value={lang}>{lang}</option>)}
-                </select>
-                <span className="icon">⚙️</span>
-            </div>
             <div className="code-editor-content">
                 <pre className="code-line-numbers">{lineNumbers}</pre>
                 <textarea
@@ -103,6 +97,8 @@ export default function InterfaceCode() {
     const [selectedLanguage, setSelectedLanguage] = useState("C++");
     const [runResult, setRunResult] = useState(null);
     const [isRunning, setIsRunning] = useState(false);
+    const [isConsoleExpanded, setIsConsoleExpanded] = useState(false);
+    const [isConsoleMinimized, setIsConsoleMinimized] = useState(false);
 
     const loadProblem = async (lang) => {
         setIsLoading(true);
@@ -134,11 +130,18 @@ export default function InterfaceCode() {
         setRunResult(null);
         setActiveConsoleTab('Result');
         try {
-            const response = await runCode({
+            const requestData = {
                 problemId: problem.id,
                 language: selectedLanguage.toLowerCase(),
                 code: currentCode
-            });
+            };
+            
+            // Include custom input if provided
+            if (customInput && customInput.trim()) {
+                requestData.customInput = customInput.trim();
+            }
+            
+            const response = await runCode(requestData);
             setRunResult(response.data);
         } catch (error) {
             console.error("Run code error:", error);
@@ -206,37 +209,29 @@ export default function InterfaceCode() {
     if (isLoading) return <div className="loading-state">Đang tải chi tiết bài tập...</div>;
     if (!problem) return <div className="error-state">Không tìm thấy bài tập.</div>;
 
-    const categoryWords = problem.category ? problem.category.split(' ') : ["Problem"];
-    const titleWords = problem.title ? problem.title.split(' ') : ["Title"];
-
     return (
         <div className="interface-code-wrapper full-interface-container">
-            <header className="interface-header">
-                <div className="logo-box">UniCode</div>
-                <div className="header-right-controls">
-                    <div className="timer-controls">
-                        <span className="icon">⏱️</span>
-                        <span className="timer-display">{formatElapsedTime(timeElapsed)}</span>
+            {/* Main Split Layout */}
+            <div className="split-container">
+                {/* LEFT PANEL - Problem Description */}
+                <div className="left-panel">
+                    <div className="problem-header">
+                        <div className="problem-title-row">
+                            <h1 className="problem-title">{problem.title}</h1>
+                        </div>
+                        <div className="problem-meta">
+                            <span className={`difficulty-badge ${problem.difficulty?.toLowerCase() || 'medium'}`}>
+                                {problem.difficulty || 'Medium'}
+                            </span>
+                            {problem.category && (
+                                <span className="category-badge">{problem.category}</span>
+                            )}
+                        </div>
                     </div>
-                </div>
-            </header>
-
-            <div className="problem-container">
-                <div className="sidebar">
-                    <div style={{ marginTop: '50px' }}>
-                        {categoryWords.map((word, index) => (
-                            <h2 key={`cat-${index}`} className="sidebar-list-title">{word}</h2>
-                        ))}
-                        <hr className="sidebar-divider" />
-                        {titleWords.map((word, index) => (
-                            <h2 key={`title-${index}`} className="sidebar-problem-title">{word}</h2>
-                        ))}
-                    </div>
-                </div>
-
-                <main className="main-content">
-                    <div className="problem-description">
+                    
+                    <div className="problem-description-scroll">
                         <div className="description-content" dangerouslySetInnerHTML={{ __html: problem.description }} />
+                        
                         <div className="examples-section">
                             {problem.examples && problem.examples.map(ex => (
                                 <div key={ex.id} className="example-card">
@@ -260,6 +255,7 @@ export default function InterfaceCode() {
                                 </div>
                             ))}
                         </div>
+                        
                         {problem.constraints && problem.constraints.length > 0 && (
                             <div className="constraint-card">
                                 <h4 className="constraint-title">Constraints:</h4>
@@ -271,126 +267,186 @@ export default function InterfaceCode() {
                             </div>
                         )}
                     </div>
+                </div>
 
-                    <div className="code-editor-and-console">
-                        <div className="code-area">
-                            <CodeEditor
-                                defaultCode={problem.defaultCode}
-                                submissionStatus={submissionResult}
-                                currentCode={currentCode}
-                                onCodeChange={setCurrentCode}
-                                selectedLanguage={selectedLanguage}
-                                onLanguageChange={(lang) => {
-                                    setSelectedLanguage(lang);
+                {/* Resizer */}
+                <div className="panel-resizer"></div>
+
+                {/* RIGHT PANEL - Code Editor + Console */}
+                <div className="right-panel">
+                    {/* Top Bar with Language and Buttons */}
+                    <div className="right-panel-header">
+                        <div className="header-left">
+                            <select 
+                                className="language-select" 
+                                value={selectedLanguage} 
+                                onChange={(e) => {
+                                    setSelectedLanguage(e.target.value);
                                     setSubmissionResult(null);
                                 }}
-                            />
-                            <div className="button-container run-button-wrapper">
-                                <button className="run-button" onClick={handleRunCode} disabled={isRunning}>
-                                    {isRunning ? 'Running...' : 'Run'}
+                            >
+                                <option value="C++">C++</option>
+                                <option value="Python">Python</option>
+                                <option value="JavaScript">JavaScript</option>
+                            </select>
+                        </div>
+                        <div className="header-right">
+                            <button className="run-button" onClick={handleRunCode} disabled={isRunning}>
+                                <span className="btn-icon">▶</span>
+                                {isRunning ? 'Running...' : 'Run'}
+                            </button>
+                            <button className="submit-button" onClick={handleSubmitCode} disabled={isSubmitting}>
+                                <span className="btn-icon">↗</span>
+                                {isSubmitting ? 'Submitting...' : 'Submit'}
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Code Editor Section */}
+                    <div className={`code-section ${isConsoleExpanded ? 'minimized' : ''} ${isConsoleMinimized ? 'expanded' : ''}`}>
+                        <CodeEditor
+                            defaultCode={problem.defaultCode}
+                            submissionStatus={submissionResult}
+                            currentCode={currentCode}
+                            onCodeChange={setCurrentCode}
+                            selectedLanguage={selectedLanguage}
+                            onLanguageChange={(lang) => {
+                                setSelectedLanguage(lang);
+                                setSubmissionResult(null);
+                            }}
+                        />
+                    </div>
+
+                    {/* Console/Test Section */}
+                    <div className={`console-section ${isConsoleExpanded ? 'expanded' : ''} ${isConsoleMinimized ? 'minimized' : ''}`}>
+                        <div className="console-header-bar">
+                            <div className="console-tabs">
+                                <div className={`console-tab ${activeConsoleTab === 'Result' ? 'active' : ''}`} onClick={() => setActiveConsoleTab('Result')}>
+                                    <span className="tab-icon">✓</span> Test Result
+                                </div>
+                                <div className={`console-tab ${activeConsoleTab === 'Custom' ? 'active' : ''}`} onClick={() => setActiveConsoleTab('Custom')}>
+                                    <span className="tab-icon">›_</span> Custom Input
+                                </div>
+                            </div>
+                            <div className="console-controls">
+                                <button 
+                                    className="console-control-btn" 
+                                    onClick={() => {
+                                        if (isConsoleMinimized) {
+                                            setIsConsoleMinimized(false);
+                                        } else {
+                                            setIsConsoleExpanded(!isConsoleExpanded);
+                                        }
+                                    }}
+                                    title={isConsoleExpanded ? "Restore" : "Expand"}
+                                >
+                                    {isConsoleExpanded ? '⊟' : '⊞'}
+                                </button>
+                                <button 
+                                    className="console-control-btn" 
+                                    onClick={() => {
+                                        if (isConsoleExpanded) {
+                                            setIsConsoleExpanded(false);
+                                        } else {
+                                            setIsConsoleMinimized(!isConsoleMinimized);
+                                        }
+                                    }}
+                                    title={isConsoleMinimized ? "Restore" : "Minimize"}
+                                >
+                                    {isConsoleMinimized ? '△' : '▽'}
                                 </button>
                             </div>
                         </div>
-
-                        <div className="console-area-wrapper">
-                            <div className="console-area">
-                                <div className="console-header">Console</div>
-                                <div className="console-tabs">
-                                    <div className={`console-tab ${activeConsoleTab === 'Result' ? 'active' : ''}`} onClick={() => setActiveConsoleTab('Result')}>Result</div>
-                                    <div className={`console-tab ${activeConsoleTab === 'Custom' ? 'active' : ''}`} onClick={() => setActiveConsoleTab('Custom')}>Custom</div>
-                                </div>
-                                <div className="console-content-display">
-                                    {activeConsoleTab === 'Result' ? (
-                                        <div className="console-output-area">
-                                            {isRunning ? (
-                                                <div className="run-loading">Running code...</div>
-                                            ) : runResult ? (
-                                                <div className="run-result">
-                                                    <div className={`run-status ${runResult.status === 'ACCEPTED' ? 'accepted' : runResult.status === 'WRONG_ANSWER' ? 'wrong' : 'error'}`}>
-                                                        {runResult.status === 'ACCEPTED' ? '✓ All Sample Test Cases Passed' : 
-                                                         runResult.status === 'WRONG_ANSWER' ? '✗ Wrong Answer' :
-                                                         runResult.status === 'COMPILE_ERROR' ? '✗ Compilation Error' :
-                                                         runResult.status === 'RUNTIME_ERROR' ? '✗ Runtime Error' :
-                                                         runResult.status === 'TIME_LIMIT_EXCEEDED' ? '⏱ Time Limit Exceeded' :
-                                                         `Status: ${runResult.status}`}
-                                                    </div>
-                                                    {runResult.executionTimeMs !== undefined && (
-                                                        <div className="run-time">Runtime: {runResult.executionTimeMs} ms</div>
-                                                    )}
-                                                    {runResult.testCasesPassed !== undefined && (
-                                                        <div className="run-testcases">
-                                                            Test Cases: {runResult.testCasesPassed} / {runResult.totalTestCases} passed
-                                                        </div>
-                                                    )}
-                                                    {runResult.compilerError && (
-                                                        <div className="run-error">
-                                                            <pre>{runResult.compilerError}</pre>
-                                                        </div>
-                                                    )}
-                                                    {runResult.errorMessage && (
-                                                        <div className="run-error">
-                                                            <pre>{runResult.errorMessage}</pre>
-                                                        </div>
-                                                    )}
-                                                    {runResult.testResults && runResult.testResults.length > 0 && (
-                                                        <div className="run-testcases-detail">
-                                                            {runResult.testResults.map((test, idx) => (
-                                                                <div key={idx} className={`testcase-item ${test.passed ? 'passed' : 'failed'}`}>
-                                                                    <div className="testcase-header">
-                                                                        {test.passed ? '✓' : '✗'} Sample Test Case {idx + 1}
-                                                                    </div>
-                                                                    {!test.passed && (
-                                                                        <div className="testcase-details">
-                                                                            {test.input && (
-                                                                                <div className="testcase-row">
-                                                                                    <span className="label">Input:</span>
-                                                                                    <pre>{test.input}</pre>
-                                                                                </div>
-                                                                            )}
-                                                                            {test.expectedOutput && (
-                                                                                <div className="testcase-row">
-                                                                                    <span className="label">Expected:</span>
-                                                                                    <pre>{test.expectedOutput}</pre>
-                                                                                </div>
-                                                                            )}
-                                                                            {test.actualOutput && (
-                                                                                <div className="testcase-row">
-                                                                                    <span className="label">Actual:</span>
-                                                                                    <pre>{test.actualOutput}</pre>
-                                                                                </div>
-                                                                            )}
+                        <div className="console-content">
+                            {activeConsoleTab === 'Result' ? (
+                                <div className="console-output-area">
+                                    {isRunning ? (
+                                        <div className="run-loading">Running code...</div>
+                                    ) : runResult ? (
+                                        <div className="run-result">
+                                            <div className={`run-status ${runResult.status === 'ACCEPTED' || runResult.status === 'EXECUTED' ? 'accepted' : runResult.status === 'WRONG_ANSWER' ? 'wrong' : 'error'}`}>
+                                                {runResult.status === 'ACCEPTED' ? '✓ All Sample Test Cases Passed' : 
+                                                 runResult.status === 'EXECUTED' ? '✓ Code Executed Successfully' :
+                                                 runResult.status === 'WRONG_ANSWER' ? '✗ Wrong Answer' :
+                                                 runResult.status === 'COMPILE_ERROR' ? '✗ Compilation Error' :
+                                                 runResult.status === 'RUNTIME_ERROR' ? '✗ Runtime Error' :
+                                                 runResult.status === 'TIME_LIMIT_EXCEEDED' ? '⏱ Time Limit Exceeded' :
+                                                 `Status: ${runResult.status}`}
+                                            </div>
+                                            {runResult.executionTimeMs !== undefined && (
+                                                <div className="run-time">Runtime: {runResult.executionTimeMs} ms</div>
+                                            )}
+                                            {runResult.testCasesPassed !== undefined && runResult.status !== 'EXECUTED' && (
+                                                <div className="run-testcases">
+                                                    Test Cases: {runResult.testCasesPassed} / {runResult.totalTestCases} passed
+                                                </div>
+                                            )}
+                                            {runResult.compilerError && (
+                                                <div className="run-error">
+                                                    <pre>{runResult.compilerError}</pre>
+                                                </div>
+                                            )}
+                                            {runResult.errorMessage && (
+                                                <div className="run-error">
+                                                    <pre>{runResult.errorMessage}</pre>
+                                                </div>
+                                            )}
+                                            {runResult.testResults && runResult.testResults.length > 0 && (
+                                                <div className="run-testcases-detail">
+                                                    {runResult.testResults.map((test, idx) => {
+                                                        const isCustomInput = test.expectedOutput === "(Custom Input - No Expected Output)";
+                                                        return (
+                                                            <div key={idx} className={`testcase-item ${test.passed ? 'passed' : 'failed'}`}>
+                                                                <div className="testcase-header">
+                                                                    {test.passed ? '✓' : '✗'} {isCustomInput ? 'Custom Input' : `Sample Test Case ${idx + 1}`}
+                                                                </div>
+                                                                <div className="testcase-details">
+                                                                    {test.input && (
+                                                                        <div className="testcase-row">
+                                                                            <span className="label">Input:</span>
+                                                                            <pre>{test.input}</pre>
+                                                                        </div>
+                                                                    )}
+                                                                    {!isCustomInput && test.expectedOutput && (
+                                                                        <div className="testcase-row">
+                                                                            <span className="label">Expected:</span>
+                                                                            <pre>{test.expectedOutput}</pre>
+                                                                        </div>
+                                                                    )}
+                                                                    {test.actualOutput && (
+                                                                        <div className="testcase-row">
+                                                                            <span className="label">{isCustomInput ? 'Output:' : 'Actual:'}</span>
+                                                                            <pre>{test.actualOutput}</pre>
                                                                         </div>
                                                                     )}
                                                                 </div>
-                                                            ))}
-                                                        </div>
-                                                    )}
+                                                            </div>
+                                                        );
+                                                    })}
                                                 </div>
-                                            ) : (
-                                                <div className="run-placeholder">Click "Run" to test your code with sample test cases.</div>
                                             )}
                                         </div>
                                     ) : (
-                                        <textarea
-                                            className="custom-input-textarea"
-                                            value={customInput}
-                                            onChange={(e) => setCustomInput(e.target.value)}
-                                            placeholder="Enter custom test input (e.g., 5 10...)"
-                                            spellCheck="false"
-                                        />
+                                        <div className="run-placeholder">
+                                            Click "Run" to test your code.<br/>
+                                            <span style={{fontSize: '0.85em', opacity: 0.7}}>
+                                                Uses sample test cases, or your custom input if provided.
+                                            </span>
+                                        </div>
                                     )}
                                 </div>
-                            </div>
+                            ) : (
+                                <textarea
+                                    className="custom-input-textarea"
+                                    value={customInput}
+                                    onChange={(e) => setCustomInput(e.target.value)}
+                                    placeholder={`Enter your custom test input here...\n\nExample for Two Sum:\n2 7 11 15\n9\n\n(First line: array elements space-separated)\n(Second line: target value)\n\nLeave empty to run with sample test cases.`}
+                                    spellCheck="false"
+                                />
+                            )}
                         </div>
                     </div>
-
-                    <div className="button-container submit-button-wrapper">
-                        {/* NÚT SUBMIT ĐÃ ĐƯỢC GẮN HÀM XỬ LÝ CHUYỂN TRANG */}
-                        <button className="submit-button" onClick={handleSubmitCode} disabled={isSubmitting}>
-                            {isSubmitting ? 'Submitting...' : 'Submit Test'}
-                        </button>
-                    </div>
-                </main>
+                </div>
             </div>
         </div>
     );

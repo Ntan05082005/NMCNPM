@@ -70,20 +70,28 @@ export function submitCode({ problemId, language, code }) {
  * @param {number} problemId - Problem ID
  * @param {string} language - Programming language
  * @param {string} code - User's code
+ * @param {string} customInput - Optional custom test input
  * @returns {Promise} Test results
  */
-export function runCode({ problemId, language, code }) {
+export function runCode({ problemId, language, code, customInput }) {
   const token = localStorage.getItem("jwt_token");
   
   if (!token) {
     return Promise.reject(new Error("Please login to run code"));
   }
   
-  return API.post("/api/submissions/run", {
+  const requestData = {
     problemId,
     language,
     code,
-  }, {
+  };
+  
+  // Include custom input if provided
+  if (customInput) {
+    requestData.customInput = customInput;
+  }
+  
+  return API.post("/api/submissions/run", requestData, {
     headers: {
       Authorization: `Bearer ${token}`,
     },

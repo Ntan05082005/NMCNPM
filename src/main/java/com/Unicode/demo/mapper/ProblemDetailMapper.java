@@ -46,6 +46,7 @@ public class ProblemDetailMapper {
                 .slug(problem.getSlug())
                 .title(problem.getTitle())
                 .category(problem.getCategory() != null ? problem.getCategory() : "Programming")
+                .difficulty(problem.getDifficulty() != null ? problem.getDifficulty() : "Medium")
                 .timeLimit(timeLimit)
                 .description(problem.getDescription())
                 .examples(examples)

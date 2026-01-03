@@ -19,4 +19,7 @@ public class SubmitRequest {
 
     @NotBlank(message = "Language is required")
     private String language; // "python", "javascript", "cpp"
+    
+    // Optional custom input for testing - if provided, runs code with this input instead of sample test cases
+    private String customInput;
 }
