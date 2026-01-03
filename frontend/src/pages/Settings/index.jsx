@@ -86,17 +86,15 @@ const Settings = () => {
          <Card
             title="Appearance"
             bordered={false}
-            headStyle={{ color: '#ffffff', borderBottom: '1px solid rgba(255,255,255,0.2)' }}
+            headStyle={{ color: 'var(--text-primary)', borderBottom: '1px solid var(--text-secondary)' }}
             style={{
-              background: 'rgba(255, 255, 255, 0.1)', // Giữ hiệu ứng kính mờ nếu bạn đang dùng
-              backdropFilter: 'blur(10px)',
+              background: 'var(--bg-secondary)',
               color: 'var(--text-primary)',
               boxShadow: '0 4px 6px rgba(0,0,0,0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.1)'
+              border: '1px solid rgba(128, 128, 128, 0.2)'
             }}
           >
-            {/* Phần bên dưới giữ nguyên, nhưng mình sửa luôn màu chữ "Select Theme" thành trắng cho đồng bộ nếu cần */}
-            <h3 style={{ color: '#ffffff', marginTop: 0 }}>Select Theme</h3>
+            <h3 style={{ color: 'var(--text-primary)', marginTop: 0 }}>Select Theme</h3>
 
             <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', marginTop: 20 }}>
               {THEMES.map(theme => (

@@ -48,17 +48,10 @@ export default function Dashboard() {
           const submissionsResponse = await getUserSubmissions(userId);
           console.log('User submissions response:', submissionsResponse.data);
           
-          // The API returns data grouped by status
-          const data = submissionsResponse.data;
-          
-          // Collect all submissions from all status categories
-          const allSubmissions = [
-            ...(data.acceptedSubmissions || []),
-            ...(data.wrongAnswerSubmissions || []),
-            ...(data.runtimeErrorSubmissions || []),
-            ...(data.compilationErrorSubmissions || []),
-            ...(data.timeLimitExceededSubmissions || [])
-          ];
+          // The API returns an array of submissions directly
+          const allSubmissions = Array.isArray(submissionsResponse.data) 
+            ? submissionsResponse.data 
+            : [];
           
           console.log('All submissions:', allSubmissions);
           
@@ -229,8 +222,8 @@ export default function Dashboard() {
           {/* HEADER */}
           <header className="header">
             <div className="welcome-text">
-              <h1>Welcome back, {username}! 👋</h1>
-              <p>Here's your coding progress overview</p>
+              <h1 style={{color: 'var(--text-primary)'}}>Welcome back, {username}! 👋</h1>
+              <p style={{color: 'var(--text-secondary)'}}>Here's your coding progress overview</p>
             </div>
             <div className="header-actions">
               <div className="search-box">
