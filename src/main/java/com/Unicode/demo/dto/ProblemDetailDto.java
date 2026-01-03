@@ -20,6 +20,7 @@ public class ProblemDetailDto {
     private String slug;
     private String title;
     private String category;
+    private String difficulty;
     private String timeLimit; // Format: "HH:MM:SS"
     private String description;
     private List<ExampleDto> examples;

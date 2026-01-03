@@ -196,13 +196,85 @@ public class SubmissionService {
 
     /**
      * Run code without saving - for testing before submission
-     * Only runs against sample test cases (first 2)
+     * If customInput is provided, runs with that input only
+     * Otherwise runs against sample test cases (first 2)
      */
     public SubmitResponse runCode(SubmitRequest request) {
         // Get problem
         Problem problem = problemRepository.findById(request.getProblemId())
                 .orElseThrow(() -> new RuntimeException("Problem not found"));
 
+        // Parse language
+        Language language = parseLanguage(request.getLanguage());
+        
+        // Check if custom input is provided
+        String customInput = request.getCustomInput();
+        boolean isCustomRun = customInput != null && !customInput.trim().isEmpty();
+        
+        if (isCustomRun) {
+            // Run with custom input only
+            return runWithCustomInput(problem, language, request.getCode(), customInput.trim());
+        } else {
+            // Run with sample test cases
+            return runWithSampleTestCases(problem, language, request.getCode());
+        }
+    }
+    
+    /**
+     * Run code with custom user-provided input
+     */
+    private SubmitResponse runWithCustomInput(Problem problem, Language language, String code, String customInput) {
+        // Get driver template for the language
+        String driverTemplate = getDriverTemplate(problem, language);
+        
+        CodeExecutionService.ExecutionResult result = codeExecutionService.execute(
+                code,
+                language,
+                customInput,
+                driverTemplate);
+        
+        List<TestResultDto> testResults = new ArrayList<>();
+        
+        TestResultDto testResult = TestResultDto.builder()
+                .testCaseNumber(1)
+                .input(customInput)
+                .expectedOutput("(Custom Input - No Expected Output)")
+                .actualOutput(result.output())
+                .passed(result.success())
+                .executionTimeMs(result.executionTimeMs())
+                .errorMessage(result.error())
+                .stderr(result.stderr())
+                .compilerError(result.compilerError())
+                .status(result.success() ? "EXECUTED" : 
+                       result.hasCompilationError() ? "COMPILE_ERROR" :
+                       result.timedOut() ? "TIME_LIMIT_EXCEEDED" : "RUNTIME_ERROR")
+                .build();
+        
+        testResults.add(testResult);
+        
+        String status = result.success() ? "EXECUTED" : 
+                       result.hasCompilationError() ? "COMPILE_ERROR" :
+                       result.timedOut() ? "TIME_LIMIT_EXCEEDED" : "RUNTIME_ERROR";
+        
+        return SubmitResponse.builder()
+                .submissionId(null)
+                .status(status)
+                .output(result.output())
+                .errorMessage(result.error())
+                .executionTimeMs(result.executionTimeMs())
+                .testResults(testResults)
+                .testCasesPassed(result.success() ? 1 : 0)
+                .totalTestCases(1)
+                .stderr(result.stderr())
+                .compilerError(result.compilerError())
+                .message("Custom input execution completed")
+                .build();
+    }
+    
+    /**
+     * Run code with sample test cases (first 2)
+     */
+    private SubmitResponse runWithSampleTestCases(Problem problem, Language language, String code) {
         // Get test cases for the problem - only use first 2 (sample cases)
         List<TestCase> allTestCases = testCaseRepository.findByProblemId(problem.getId());
         if (allTestCases.isEmpty()) {
@@ -213,9 +285,6 @@ public class SubmissionService {
         List<TestCase> sampleTestCases = allTestCases.size() > 2 
                 ? allTestCases.subList(0, 2) 
                 : allTestCases;
-
-        // Parse language
-        Language language = parseLanguage(request.getLanguage());
 
         // Run sample test cases
         List<TestResultDto> testResults = new ArrayList<>();
@@ -234,7 +303,7 @@ public class SubmissionService {
             String driverTemplate = getDriverTemplate(problem, language);
 
             CodeExecutionService.ExecutionResult result = codeExecutionService.execute(
-                    request.getCode(),
+                    code,
                     language,
                     testCase.getInput(),
                     driverTemplate);
