@@ -226,10 +226,6 @@ export default function Dashboard() {
               <p style={{color: 'var(--text-secondary)'}}>Here's your coding progress overview</p>
             </div>
             <div className="header-actions">
-              <div className="search-box">
-                <FiSearch className="search-icon" />
-                <input type="text" placeholder="Search problems..." />
-              </div>
               <div className="user-controls">
                 <div className="notification-icon">
                   <FiBell /> <span className="dot"></span>
