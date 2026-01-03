@@ -195,6 +195,130 @@ public class SubmissionService {
     }
 
     /**
+     * Run code without saving - for testing before submission
+     * Only runs against sample test cases (first 2)
+     */
+    public SubmitResponse runCode(SubmitRequest request) {
+        // Get problem
+        Problem problem = problemRepository.findById(request.getProblemId())
+                .orElseThrow(() -> new RuntimeException("Problem not found"));
+
+        // Get test cases for the problem - only use first 2 (sample cases)
+        List<TestCase> allTestCases = testCaseRepository.findByProblemId(problem.getId());
+        if (allTestCases.isEmpty()) {
+            throw new RuntimeException("No test cases found for this problem");
+        }
+        
+        // Limit to sample test cases (first 2)
+        List<TestCase> sampleTestCases = allTestCases.size() > 2 
+                ? allTestCases.subList(0, 2) 
+                : allTestCases;
+
+        // Parse language
+        Language language = parseLanguage(request.getLanguage());
+
+        // Run sample test cases
+        List<TestResultDto> testResults = new ArrayList<>();
+        int passedCount = 0;
+        long totalExecutionTime = 0;
+        String lastOutput = "";
+        String errorMessage = null;
+        String lastStderr = "";
+        boolean hasCompilationError = false;
+        boolean hasTimeout = false;
+
+        for (int i = 0; i < sampleTestCases.size(); i++) {
+            TestCase testCase = sampleTestCases.get(i);
+
+            // Get driver template for the language
+            String driverTemplate = getDriverTemplate(problem, language);
+
+            CodeExecutionService.ExecutionResult result = codeExecutionService.execute(
+                    request.getCode(),
+                    language,
+                    testCase.getInput(),
+                    driverTemplate);
+
+            totalExecutionTime += result.executionTimeMs();
+            lastOutput = result.output();
+            lastStderr = result.stderr();
+
+            // Check for execution errors
+            if (!result.success()) {
+                errorMessage = result.error();
+
+                if (result.timedOut()) {
+                    hasTimeout = true;
+                }
+
+                if (result.hasCompilationError()) {
+                    hasCompilationError = true;
+                }
+
+                TestResultDto testResult = TestResultDto.builder()
+                        .testCaseNumber(i + 1)
+                        .input(testCase.getInput())
+                        .expectedOutput(testCase.getExpectedOutput())
+                        .actualOutput(result.output())
+                        .passed(false)
+                        .executionTimeMs(result.executionTimeMs())
+                        .errorMessage(result.error())
+                        .stderr(result.stderr())
+                        .compilerError(result.compilerError())
+                        .status(judgeService.categorizeTestResult(TestResultDto.builder()
+                                .stderr(result.stderr())
+                                .compilerError(result.compilerError())
+                                .executionTimeMs(result.executionTimeMs())
+                                .build()))
+                        .build();
+
+                testResults.add(testResult);
+                break; // Stop on first error
+            }
+
+            // Compare output
+            boolean passed = judgeService.compareOutputs(testCase.getExpectedOutput(), result.output());
+
+            if (passed) {
+                passedCount++;
+            }
+
+            TestResultDto testResult = TestResultDto.builder()
+                    .testCaseNumber(i + 1)
+                    .input(testCase.getInput())
+                    .expectedOutput(testCase.getExpectedOutput())
+                    .actualOutput(result.output())
+                    .passed(passed)
+                    .executionTimeMs(result.executionTimeMs())
+                    .status(passed ? "CORRECT" : "WRONG_ANSWER")
+                    .build();
+
+            testResults.add(testResult);
+        }
+
+        // Determine status
+        SubmissionStatus finalStatus = judgeService.judgeSubmission(
+                testResults.toArray(new TestResultDto[0]),
+                hasCompilationError,
+                hasTimeout);
+
+        // Return response WITHOUT saving to database
+        return SubmitResponse.builder()
+                .submissionId(null) // No submission saved
+                .status(finalStatus.name())
+                .output(lastOutput)
+                .errorMessage(errorMessage)
+                .executionTimeMs(totalExecutionTime)
+                .testResults(testResults)
+                .testCasesPassed(passedCount)
+                .totalTestCases(sampleTestCases.size())
+                .stderr(lastStderr)
+                .compilerError(hasCompilationError ? lastStderr : null)
+                .message("Run completed (sample test cases only)")
+                .build();
+    }
+
+    /**
      * Get user's submission history with problem data eagerly loaded
      */
     public List<Submission> getUserSubmissions(Long userId) {

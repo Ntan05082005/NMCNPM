@@ -98,9 +98,11 @@ export default function InterfaceCode() {
     const [submissionResult, setSubmissionResult] = useState(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [timeElapsed, setTimeElapsed] = useState(0);
-    const [activeConsoleTab, setActiveConsoleTab] = useState('Custom');
+    const [activeConsoleTab, setActiveConsoleTab] = useState('Result');
     const [customInput, setCustomInput] = useState("");
     const [selectedLanguage, setSelectedLanguage] = useState("C++");
+    const [runResult, setRunResult] = useState(null);
+    const [isRunning, setIsRunning] = useState(false);
 
     const loadProblem = async (lang) => {
         setIsLoading(true);
@@ -127,20 +129,25 @@ export default function InterfaceCode() {
     }, []);
 
     const handleRunCode = async () => {
-        if (!problem || isSubmitting) return;
-        setIsSubmitting(true);
-        setSubmissionResult(null);
+        if (!problem || isRunning) return;
+        setIsRunning(true);
+        setRunResult(null);
+        setActiveConsoleTab('Result');
         try {
             const response = await runCode({
                 problemId: problem.id,
                 language: selectedLanguage.toLowerCase(),
                 code: currentCode
             });
-            setSubmissionResult(response.data);
+            setRunResult(response.data);
         } catch (error) {
-            alert("Lỗi kết nối hoặc chưa đăng nhập.");
+            console.error("Run code error:", error);
+            setRunResult({
+                status: 'ERROR',
+                errorMessage: error.response?.data?.message || 'Connection error or not logged in.'
+            });
         } finally {
-            setIsSubmitting(false);
+            setIsRunning(false);
         }
     };
     // Trong component InterfaceCode:
@@ -279,8 +286,8 @@ export default function InterfaceCode() {
                                 }}
                             />
                             <div className="button-container run-button-wrapper">
-                                <button className="run-button" onClick={handleRunCode} disabled={isSubmitting}>
-                                    {isSubmitting ? 'Running...' : 'Run'}
+                                <button className="run-button" onClick={handleRunCode} disabled={isRunning}>
+                                    {isRunning ? 'Running...' : 'Run'}
                                 </button>
                             </div>
                         </div>
@@ -289,20 +296,86 @@ export default function InterfaceCode() {
                             <div className="console-area">
                                 <div className="console-header">Console</div>
                                 <div className="console-tabs">
-                                    <div className={`console-tab ${activeConsoleTab === 'Sample' ? 'active' : ''}`} onClick={() => setActiveConsoleTab('Sample')}>Sample</div>
+                                    <div className={`console-tab ${activeConsoleTab === 'Result' ? 'active' : ''}`} onClick={() => setActiveConsoleTab('Result')}>Result</div>
                                     <div className={`console-tab ${activeConsoleTab === 'Custom' ? 'active' : ''}`} onClick={() => setActiveConsoleTab('Custom')}>Custom</div>
                                 </div>
                                 <div className="console-content-display">
-                                    {activeConsoleTab === 'Sample' ? (
+                                    {activeConsoleTab === 'Result' ? (
                                         <div className="console-output-area">
-                                            {submissionResult ? "Xem chi tiết kết quả ở trên status." : "Chạy code để xem kết quả mẫu."}
+                                            {isRunning ? (
+                                                <div className="run-loading">Running code...</div>
+                                            ) : runResult ? (
+                                                <div className="run-result">
+                                                    <div className={`run-status ${runResult.status === 'ACCEPTED' ? 'accepted' : runResult.status === 'WRONG_ANSWER' ? 'wrong' : 'error'}`}>
+                                                        {runResult.status === 'ACCEPTED' ? '✓ All Sample Test Cases Passed' : 
+                                                         runResult.status === 'WRONG_ANSWER' ? '✗ Wrong Answer' :
+                                                         runResult.status === 'COMPILE_ERROR' ? '✗ Compilation Error' :
+                                                         runResult.status === 'RUNTIME_ERROR' ? '✗ Runtime Error' :
+                                                         runResult.status === 'TIME_LIMIT_EXCEEDED' ? '⏱ Time Limit Exceeded' :
+                                                         `Status: ${runResult.status}`}
+                                                    </div>
+                                                    {runResult.executionTimeMs !== undefined && (
+                                                        <div className="run-time">Runtime: {runResult.executionTimeMs} ms</div>
+                                                    )}
+                                                    {runResult.testCasesPassed !== undefined && (
+                                                        <div className="run-testcases">
+                                                            Test Cases: {runResult.testCasesPassed} / {runResult.totalTestCases} passed
+                                                        </div>
+                                                    )}
+                                                    {runResult.compilerError && (
+                                                        <div className="run-error">
+                                                            <pre>{runResult.compilerError}</pre>
+                                                        </div>
+                                                    )}
+                                                    {runResult.errorMessage && (
+                                                        <div className="run-error">
+                                                            <pre>{runResult.errorMessage}</pre>
+                                                        </div>
+                                                    )}
+                                                    {runResult.testResults && runResult.testResults.length > 0 && (
+                                                        <div className="run-testcases-detail">
+                                                            {runResult.testResults.map((test, idx) => (
+                                                                <div key={idx} className={`testcase-item ${test.passed ? 'passed' : 'failed'}`}>
+                                                                    <div className="testcase-header">
+                                                                        {test.passed ? '✓' : '✗'} Sample Test Case {idx + 1}
+                                                                    </div>
+                                                                    {!test.passed && (
+                                                                        <div className="testcase-details">
+                                                                            {test.input && (
+                                                                                <div className="testcase-row">
+                                                                                    <span className="label">Input:</span>
+                                                                                    <pre>{test.input}</pre>
+                                                                                </div>
+                                                                            )}
+                                                                            {test.expectedOutput && (
+                                                                                <div className="testcase-row">
+                                                                                    <span className="label">Expected:</span>
+                                                                                    <pre>{test.expectedOutput}</pre>
+                                                                                </div>
+                                                                            )}
+                                                                            {test.actualOutput && (
+                                                                                <div className="testcase-row">
+                                                                                    <span className="label">Actual:</span>
+                                                                                    <pre>{test.actualOutput}</pre>
+                                                                                </div>
+                                                                            )}
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            ) : (
+                                                <div className="run-placeholder">Click "Run" to test your code with sample test cases.</div>
+                                            )}
                                         </div>
                                     ) : (
                                         <textarea
                                             className="custom-input-textarea"
                                             value={customInput}
                                             onChange={(e) => setCustomInput(e.target.value)}
-                                            placeholder="Nhập input test case (VD: 5 10...)"
+                                            placeholder="Enter custom test input (e.g., 5 10...)"
                                             spellCheck="false"
                                         />
                                     )}

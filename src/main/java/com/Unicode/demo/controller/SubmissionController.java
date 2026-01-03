@@ -48,6 +48,26 @@ public class SubmissionController {
     }
 
     /**
+     * Run code without saving submission (for testing before submit)
+     * POST /api/submissions/run
+     * 
+     * Request body same as submit:
+     * {
+     *   "problemId": 1,
+     *   "code": "def two_sum(nums, target): ...",
+     *   "language": "python"
+     * }
+     * 
+     * Returns test results without saving to database
+     */
+    @PostMapping("/run")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<SubmitResponse> runCode(@Valid @RequestBody SubmitRequest request) {
+        SubmitResponse response = submissionService.runCode(request);
+        return ResponseEntity.ok(response);
+    }
+
+    /**
      * Get list of submissions with filtering and pagination
      * GET /api/submissions?page=0&size=10&status=ACCEPTED&search=Two Sum
      */
