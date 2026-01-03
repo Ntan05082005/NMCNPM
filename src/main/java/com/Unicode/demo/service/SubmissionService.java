@@ -195,10 +195,10 @@ public class SubmissionService {
     }
 
     /**
-     * Get user's submission history
+     * Get user's submission history with problem data eagerly loaded
      */
     public List<Submission> getUserSubmissions(Long userId) {
-        return submissionRepository.findByUserIdOrderBySubmittedAtDesc(userId);
+        return submissionRepository.findByUserIdWithProblem(userId);
     }
 
     /**

@@ -24,13 +24,15 @@ export default function LogIn() {
 
       const token = res.data.token;
       const name = res.data.username;
+      const userId = res.data.userId;
 
       // Clear old user data first
       localStorage.clear();
       
-      // Lưu token và username mới vào localStorage
+      // Lưu token, username và userId vào localStorage
       localStorage.setItem("jwt_token", token);
       localStorage.setItem("username", name);
+      localStorage.setItem("user_id", userId);
 
       setMessage("Login successful! Redirecting...");
       setTimeout(() => {

@@ -156,28 +156,39 @@ export default function InterfaceCode() {
                 code: currentCode
             });
             
-            // Sau khi submit thành công, chuyển đến trang submission history
-            navigate('/profile/submissions', {
+            // Navigate to submission result page with data
+            navigate('/submission-result', {
                 state: {
-                    fromSubmit: true,
-                    latestSubmission: {
-                        status: response.data.status,
-                        problemTitle: problem.title,
-                        language: selectedLanguage,
-                        executionTimeMs: response.data.executionTimeMs,
-                        testCasesPassed: response.data.testCasesPassed,
-                        totalTestCases: response.data.totalTestCases
-                    }
+                    status: response.data.status,
+                    errorMessage: response.data.errorMessage || '',
+                    message: response.data.message || '',
+                    stderr: response.data.stderr || '',
+                    compilerError: response.data.compilerError || '',
+                    timeLimit: `${response.data.executionTimeMs || 0} ms`,
+                    memoryLimit: response.data.memoryUsedMB ? `${response.data.memoryUsedMB} MB` : 'N/A',
+                    testcasesPassed: `${response.data.testCasesPassed || 0} / ${response.data.totalTestCases || 0}`,
+                    testResults: response.data.testResults || [],
+                    language: selectedLanguage,
+                    problemTitle: problem.title,
+                    problemSlug: slug,
+                    submissionId: response.data.submissionId
                 }
             });
 
         } catch (error) {
             console.error('Error submitting code:', error);
-            // Nếu có lỗi, vẫn chuyển đến submission history
-            navigate('/profile/submissions', {
+            // Navigate to result page with error
+            navigate('/submission-result', {
                 state: {
-                    fromSubmit: true,
-                    error: 'Failed to submit code. Please try again.'
+                    status: 'ERROR',
+                    errorMessage: error.response?.data?.message || 'Failed to submit code. Please try again.',
+                    message: 'Submission failed',
+                    timeLimit: '0 ms',
+                    memoryLimit: 'N/A',
+                    testcasesPassed: '0 / 0',
+                    language: selectedLanguage,
+                    problemTitle: problem.title,
+                    problemSlug: slug
                 }
             });
         } finally {

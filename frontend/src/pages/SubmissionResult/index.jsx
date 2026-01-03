@@ -6,13 +6,43 @@ const SubmissionResult = () => {
     const location = useLocation();
     const navigate = useNavigate();
 
-    // Lấy dữ liệu từ trang trước truyền qua (nếu có), nếu không thì dùng dữ liệu giả định để giống hình ảnh
+    // Lấy dữ liệu từ trang trước truyền qua (nếu có), nếu không thì dùng dữ liệu mặc định
     const resultData = location.state || {
-        status: "Compile Error",
-        errorMessage: "Line 5: Char 5: Error: Non-Void Function Does Not Return A Value [-Werror,-Wreturn-Type]\n  5 |   }\n    |   ^\n1 Error Generated.",
-        timeLimit: "54 Ms",
-        memoryLimit: "12MB",
-        testcasesPassed: "0 / 0"
+        status: "NO_DATA",
+        errorMessage: "No submission data found. Please submit your code again.",
+        timeLimit: "0 ms",
+        memoryLimit: "N/A",
+        testcasesPassed: "0 / 0",
+        language: "N/A",
+        problemTitle: "Unknown Problem",
+        problemSlug: null
+    };
+
+    // Helper function to determine status styling
+    const getStatusClass = (status) => {
+        const upperStatus = status?.toUpperCase() || '';
+        if (upperStatus === 'ACCEPTED') return 'success-box';
+        if (upperStatus.includes('ERROR') || upperStatus === 'COMPILE_ERROR') return 'error-box';
+        if (upperStatus === 'WRONG_ANSWER') return 'warning-box';
+        if (upperStatus === 'TIME_LIMIT_EXCEEDED') return 'warning-box';
+        if (upperStatus === 'MEMORY_LIMIT_EXCEEDED') return 'warning-box';
+        return 'error-box';
+    };
+
+    // Get display message
+    const getDisplayMessage = () => {
+        if (resultData.status === 'ACCEPTED') {
+            return resultData.message || 'All test cases passed! 🎉';
+        }
+        
+        // Priority: compilerError > stderr > errorMessage > message
+        if (resultData.compilerError) {
+            return resultData.compilerError;
+        }
+        if (resultData.stderr && resultData.stderr.trim()) {
+            return resultData.stderr;
+        }
+        return resultData.errorMessage || resultData.message || 'Check your solution and try again.';
     };
 
     return (
@@ -22,6 +52,11 @@ const SubmissionResult = () => {
                 <div className="unicode-logo" onClick={() => navigate('/')}>
                     UniCode
                 </div>
+                {resultData.problemTitle && (
+                    <h2 style={{ marginLeft: '20px', color: '#333' }}>
+                        {resultData.problemTitle}
+                    </h2>
+                )}
             </div>
 
             <div className="result-content">
@@ -31,34 +66,67 @@ const SubmissionResult = () => {
 
                 {/* Khu vực hiển thị Lỗi hoặc Kết quả chính */}
                 <div className="main-status-area">
-                    <div className={`status-box ${
-                        resultData.status === 'ACCEPTED' || resultData.status === 'Accepted' ? 'success-box' : 
-                        resultData.status === 'Compile Error' || resultData.status.includes('ERROR') ? 'error-box' : 
-                        'warning-box'
-                    }`}>
+                    <div className={`status-box ${getStatusClass(resultData.status)}`}>
                         <h3 className="status-title">{resultData.status}</h3>
                         <pre className="error-detail">
-                            {resultData.errorMessage || resultData.message || 'All test cases passed!'}
+                            {getDisplayMessage()}
                         </pre>
                         <div className="status-footer">
-                            <span>Time Limit: {resultData.timeLimit}</span>
-                            <span style={{marginLeft: '50px'}}>Memory {resultData.memoryLimit}</span>
+                            <span>Runtime: {resultData.timeLimit}</span>
+                            <span style={{marginLeft: '50px'}}>Memory: {resultData.memoryLimit}</span>
                         </div>
                     </div>
 
-                    {/* Điều hướng Next/Prev Test */}
+                    {/* Navigation buttons */}
                     <div className="test-navigation">
-                        <button className="nav-btn">Previous Test &lt;</button>
-                        <button className="nav-btn">&gt; Next Test</button>
+                        {resultData.problemSlug && (
+                            <button 
+                                className="nav-btn" 
+                                onClick={() => navigate(`/interface-code/${resultData.problemSlug}`)}
+                            >
+                                ← Back to Problem
+                            </button>
+                        )}
+                        <button 
+                            className="nav-btn" 
+                            onClick={() => navigate('/profile/submissions', { 
+                                state: { fromSubmit: true, timestamp: Date.now() }
+                            })}
+                        >
+                            View All Submissions →
+                        </button>
                     </div>
                 </div>
 
-                {/* Nút View History */}
-                <button className="view-history-btn">View History</button>
+                {/* Nút hành động */}
+                <div style={{ display: 'flex', gap: '10px', marginTop: '20px' }}>
+                    {resultData.problemSlug && (
+                        <button 
+                            className="view-history-btn"
+                            onClick={() => navigate(`/interface-code/${resultData.problemSlug}`)}
+                        >
+                            Try Again
+                        </button>
+                    )}
+                    <button 
+                        className="view-history-btn"
+                        onClick={() => navigate('/profile/submissions', { 
+                            state: { fromSubmit: true, timestamp: Date.now() }
+                        })}
+                    >
+                        View Full History
+                    </button>
+                    <button 
+                        className="view-history-btn"
+                        onClick={() => navigate('/problems')}
+                    >
+                        Browse Problems
+                    </button>
+                </div>
 
-                {/* Bảng Lịch sử Nộp bài */}
+                {/* Bảng thông tin submission hiện tại */}
                 <div className="history-container">
-                    <h2 className="history-title">Submission History</h2>
+                    <h2 className="history-title">Current Submission</h2>
                     <table className="history-table">
                         <thead>
                             <tr>
@@ -71,17 +139,17 @@ const SubmissionResult = () => {
                         <tbody>
                             <tr>
                                 <td className={
-                                    resultData.status === 'ACCEPTED' || resultData.status === 'Accepted' ? 'status-cell-success' : 
+                                    resultData.status === 'ACCEPTED' ? 'status-cell-success' : 
                                     'status-cell-error'
                                 }>{resultData.status}</td>
-                                <td>{resultData.language || 'C++'}</td>
+                                <td>{resultData.language || 'N/A'}</td>
                                 <td>{resultData.timeLimit}</td>
                                 <td>{resultData.memoryLimit}</td>
                             </tr>
-                            {/* Bạn có thể map thêm dữ liệu lịch sử ở đây */}
                         </tbody>
                     </table>
                 </div>
+
             </div>
         </div>
     );

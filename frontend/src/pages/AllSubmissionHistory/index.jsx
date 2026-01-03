@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import "./SubmissionHistory.css";
 import { FiGrid, FiFileText, FiSend, FiUser, FiSettings, FiLogOut } from 'react-icons/fi';
+import { getUserSubmissions } from "../../API/api-submission";
 
 const TABS = [
   { key: "ALL", label: "All" },
@@ -38,8 +39,73 @@ function formatDateTime(iso) {
   return `${yyyy}-${mm}-${dd} ${hh}:${mi}`;
 }
 
+// Helper function to process submissions into stats
+function processSubmissions(submissions, userId) {
+  const acceptedSubmissions = [];
+  const wrongAnswerSubmissions = [];
+  const runtimeErrorSubmissions = [];
+  const compilationErrorSubmissions = [];
+  const timeLimitExceededSubmissions = [];
+  
+  const solvedProblems = new Set();
+  
+  submissions.forEach(sub => {
+    const status = normalizeStatus(sub.status);
+    
+    // Map submission to display format
+    const mappedSub = {
+      id: sub.id,
+      problemTitle: sub.problem?.title || "Unknown Problem",
+      problemId: sub.problem?.id,
+      status: sub.status,
+      language: sub.language,
+      runtime: sub.executionTimeMs ? `${sub.executionTimeMs} ms` : "-",
+      memory: sub.memoryUsed || "-",
+      submittedAt: sub.submittedAt || sub.createdAt
+    };
+    
+    // Categorize by status
+    if (status === "ACCEPTED") {
+      acceptedSubmissions.push(mappedSub);
+      solvedProblems.add(sub.problem?.id);
+    } else if (status === "WRONG_ANSWER") {
+      wrongAnswerSubmissions.push(mappedSub);
+    } else if (status === "RUNTIME_ERROR") {
+      runtimeErrorSubmissions.push(mappedSub);
+    } else if (status === "COMPILATION_ERROR" || status === "COMPILE_ERROR") {
+      compilationErrorSubmissions.push(mappedSub);
+    } else if (status === "TIME_LIMIT_EXCEEDED") {
+      timeLimitExceededSubmissions.push(mappedSub);
+    }
+  });
+  
+  const totalSubmissions = submissions.length;
+  const acceptedCount = acceptedSubmissions.length;
+  const acceptanceRate = totalSubmissions > 0 ? (acceptedCount / totalSubmissions * 100).toFixed(1) : 0;
+  
+  return {
+    userId,
+    username: localStorage.getItem("username") || "Guest",
+    totalSubmissions,
+    acceptanceRate,
+    totalProblemsSolved: solvedProblems.size,
+    totalProblemsAttempted: new Set(submissions.map(s => s.problem?.id).filter(Boolean)).size,
+    acceptedCount: acceptedSubmissions.length,
+    wrongAnswerCount: wrongAnswerSubmissions.length,
+    runtimeErrorCount: runtimeErrorSubmissions.length,
+    compilationErrorCount: compilationErrorSubmissions.length,
+    timeLimitExceededCount: timeLimitExceededSubmissions.length,
+    acceptedSubmissions,
+    wrongAnswerSubmissions,
+    runtimeErrorSubmissions,
+    compilationErrorSubmissions,
+    timeLimitExceededSubmissions
+  };
+}
+
 export default function SubmissionHistory({ userId }) {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [stats, setStats] = useState(null);
   const [tab, setTab] = useState("ALL");
@@ -50,6 +116,16 @@ export default function SubmissionHistory({ userId }) {
   
   // Track current username to detect user changes
   const [currentUser, setCurrentUser] = useState(localStorage.getItem("username"));
+  
+  // Track refresh trigger from location state
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  useEffect(() => {
+    // If coming from submission, trigger refresh
+    if (location.state?.fromSubmit) {
+      setRefreshKey(prev => prev + 1);
+    }
+  }, [location.state]);
 
   useEffect(() => {
     let ignore = false;
@@ -69,34 +145,45 @@ export default function SubmissionHistory({ userId }) {
       setErr("");
 
       try {
-        // TODO: Replace with real backend API when ready
-        // For now, always show empty state instead of Mock API data
+        // Get user ID from localStorage or props
+        const storedUserId = localStorage.getItem("user_id");
+        const actualUserId = userId || storedUserId;
         
-        // Create empty stats with current user info
-        const emptyStats = {
-          userId: userId || 1,
-          username: localStorage.getItem("username") || "Guest",
-          totalSubmissions: 0,
-          acceptanceRate: 0,
-          totalProblemsSolved: 0,
-          totalProblemsAttempted: 0,
-          acceptedCount: 0,
-          wrongAnswerCount: 0,
-          runtimeErrorCount: 0,
-          compilationErrorCount: 0,
-          timeLimitExceededCount: 0,
-          acceptedSubmissions: [],
-          wrongAnswerSubmissions: [],
-          runtimeErrorSubmissions: [],
-          compilationErrorSubmissions: [],
-          timeLimitExceededSubmissions: []
-        };
+        if (!actualUserId) {
+          throw new Error("User ID not found. Please login again.");
+        }
 
-        if (!ignore) setStats(emptyStats);
+        // Fetch real submissions from backend
+        const response = await getUserSubmissions(actualUserId);
+        const submissions = response.data || [];
+        
+        // Process submissions into stats
+        const processedStats = processSubmissions(submissions, actualUserId);
+        
+        if (!ignore) setStats(processedStats);
       } catch (e) {
         console.error("Error loading submission history:", e);
         if (!ignore) {
-          // Even on error, show empty state
+          setErr(e.message || "Failed to load submission history");
+          // Show empty state on error
+          const emptyStats = {
+            userId: userId || 1,
+            username: localStorage.getItem("username") || "Guest",
+            totalSubmissions: 0,
+            acceptanceRate: 0,
+            totalProblemsSolved: 0,
+            totalProblemsAttempted: 0,
+            acceptedCount: 0,
+            wrongAnswerCount: 0,
+            runtimeErrorCount: 0,
+            compilationErrorCount: 0,
+            timeLimitExceededCount: 0,
+            acceptedSubmissions: [],
+            wrongAnswerSubmissions: [],
+            runtimeErrorSubmissions: [],
+            compilationErrorSubmissions: [],
+            timeLimitExceededSubmissions: []
+          };
           setStats(emptyStats);
         }
       } finally {
@@ -106,7 +193,7 @@ export default function SubmissionHistory({ userId }) {
 
     load();
     return () => (ignore = true);
-  }, [userId, currentUser]);
+  }, [userId, currentUser, refreshKey]);
 
   const allRows = useMemo(() => {
     if (!stats) return [];

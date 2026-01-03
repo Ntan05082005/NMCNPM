@@ -127,10 +127,13 @@ public class AuthController {
             // GENERATE JWT TOKEN
             String token = jwtUtils.generateToken(username);
 
-            // Trả về token cho client
-            Map<String, String> response = new HashMap<>();
+            // Trả về token, username và userId cho client
+            Map<String, Object> response = new HashMap<>();
             response.put("token", token);
             response.put("username", username);
+            response.put("userId", user.getId());
+            response.put("email", user.getEmail());
+            response.put("role", user.getRole().name());
 
             return ResponseEntity.ok(response);
         } catch (Exception e) {
