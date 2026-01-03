@@ -278,7 +278,15 @@ public class SubmissionService {
         // Get test cases for the problem - only use first 2 (sample cases)
         List<TestCase> allTestCases = testCaseRepository.findByProblemId(problem.getId());
         if (allTestCases.isEmpty()) {
-            throw new RuntimeException("No test cases found for this problem");
+            return SubmitResponse.builder()
+                    .submissionId(null)
+                    .status("NO_TEST_CASES")
+                    .errorMessage("No test cases available for this problem. Please use Custom Input to test your code.")
+                    .testCasesPassed(0)
+                    .totalTestCases(0)
+                    .testResults(new ArrayList<>())
+                    .message("No test cases found")
+                    .build();
         }
         
         // Limit to sample test cases (first 2)
