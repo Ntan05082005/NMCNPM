@@ -57,10 +57,12 @@ function processSubmissions(submissions, userId) {
       id: sub.id,
       problemTitle: sub.problem?.title || "Unknown Problem",
       problemId: sub.problem?.id,
+      problemSlug: sub.problem?.slug || "",
+      difficulty: sub.problem?.difficulty || "-",
       status: sub.status,
       language: sub.language,
-      runtime: sub.executionTimeMs ? `${sub.executionTimeMs} ms` : "-",
-      memory: sub.memoryUsed || "-",
+      executionTimeMs: sub.executionTimeMs,
+      memoryUsedKb: sub.memoryUsedKb || null,
       submittedAt: sub.submittedAt || sub.createdAt
     };
     
@@ -411,13 +413,17 @@ export default function SubmissionHistory({ userId }) {
                       {s.problemTitle || `Problem #${s.problemId}`}
                     </button>
                   </td>
-                  <td>{s.difficulty || "-"}</td>
+                  <td>
+                    <span className={`difficulty-badge difficulty-${(s.difficulty || '').toLowerCase()}`}>
+                      {s.difficulty || "-"}
+                    </span>
+                  </td>
                   <td>
                     <span className={statusBadgeClass(s.status)}>{normalizeStatus(s.status)}</span>
                   </td>
                   <td>{s.language || "-"}</td>
-                  <td>{s.executionTimeMs ?? "-"}</td>
-                  <td>{s.memoryUsedKb ? `${s.memoryUsedKb} KB` : "-"}</td>
+                  <td>{s.executionTimeMs != null ? s.executionTimeMs : "-"}</td>
+                  <td>{s.memoryUsedKb != null ? `${s.memoryUsedKb} KB` : "-"}</td>
                   <td>{formatDateTime(s.submittedAt)}</td>
                   <td>
                     <button className="sh-btn" onClick={() => onOpenSubmission(s.id)}>
