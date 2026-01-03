@@ -22,13 +22,13 @@
   display: flex;
   height: 100vh;
   /* Gradient nền mờ ảo: Xanh nhạt -> Trắng -> Tím nhạt */
-  background: linear-gradient(90deg, #eef4ff 0%, #f4f6ff 50%, #fdfdff 100%);
+  background: var(--bg-primary, linear-gradient(90deg, #eef4ff 0%, #f4f6ff 50%, #fdfdff 100%));
 }
 
 /* --- 3. SIDEBAR --- */
 .list-exercise-page .sidebar {
   width: 280px;
-  background: linear-gradient(180deg, #dceaff 0%, #edf3ff 100%);
+  background: var(--sidebar-bg, linear-gradient(180deg, #dceaff 0%, #edf3ff 100%));
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -40,7 +40,7 @@
 .list-exercise-page .logo {
   font-size: 36px;
   font-weight: 800;
-  color: #1e3a8a;
+  color: var(--text-primary, #1e3a8a);
   margin-bottom: 60px;
   letter-spacing: -1px;
   display: flex;
@@ -48,7 +48,7 @@
 }
 
 .list-exercise-page .logo-uni {
-  color: #2563eb;
+  color: var(--accent-color, #2563eb);
   margin-right: 2px;
 }
 
@@ -65,7 +65,7 @@
   gap: 18px;
   font-size: 16px;
   font-weight: 500;
-  color: #64748b;
+  color: var(--text-secondary, #64748b);
   cursor: pointer;
   transition: all 0.3s ease;
   padding: 0.875rem 1rem;
@@ -239,7 +239,7 @@
 }
 
 .list-exercise-page .problem-card {
-  background: white;
+  background: var(--bg-secondary, white);
   border-radius: 24px;
   padding: 40px 25px;
   text-align: center;
@@ -251,6 +251,7 @@
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
   min-height: 320px;
+  border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .list-exercise-page .problem-card:hover {
@@ -279,7 +280,7 @@
 .list-exercise-page .problem-card h3 {
   font-size: 18px;
   font-weight: 700;
-  color: #334155;
+  color: var(--text-primary, #334155);
   margin-bottom: 12px;
   line-height: 1.4;
   height: 50px;
@@ -290,7 +291,7 @@
 
 .list-exercise-page .card-desc {
   font-size: 13px;
-  color: #94a3b8;
+  color: var(--text-secondary, #94a3b8);
   line-height: 1.6;
   font-weight: 400;
 }

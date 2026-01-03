@@ -4,7 +4,7 @@
 .sd-page {
   width: 100%;
   min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: var(--bg-primary, linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%));
   font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
@@ -19,7 +19,7 @@
 ========================= */
 .sd-sidebar {
   width: 280px;
-  background: linear-gradient(180deg, #dceaff 0%, #edf3ff 100%);
+  background: var(--sidebar-bg, linear-gradient(180deg, #dceaff 0%, #edf3ff 100%));
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -36,7 +36,7 @@
 .sd-logo {
   font-size: 36px;
   font-weight: 800;
-  color: #1e3a8a;
+  color: var(--text-primary, #1e3a8a);
   margin-bottom: 60px;
   letter-spacing: -1px;
   display: flex;
@@ -44,7 +44,7 @@
 }
 
 .sd-logo-uni {
-  color: #2563eb;
+  color: var(--accent-color, #2563eb);
   margin-right: 2px;
 }
 
@@ -60,7 +60,7 @@
   gap: 18px;
   font-size: 16px;
   font-weight: 500;
-  color: #64748b;
+  color: var(--text-secondary, #64748b);
   cursor: pointer;
   transition: all 0.3s ease;
   padding: 0.875rem 1rem;
@@ -70,7 +70,7 @@
 
 .sd-nav-item:hover {
   background: rgba(59, 130, 246, 0.1);
-  color: #2563eb;
+  color: var(--accent-color, #2563eb);
   transform: translateX(5px);
 }
 
@@ -106,7 +106,7 @@
   justify-content: center;
   min-height: 50vh;
   font-size: 1.2rem;
-  color: #64748b;
+  color: var(--text-secondary, #64748b);
 }
 
 .sd-error-container {
@@ -136,7 +136,7 @@
 .sd-header h1 {
   font-size: 1.8rem;
   font-weight: 700;
-  color: #1e3a8a;
+  color: var(--text-primary, #1e3a8a);
   margin: 0;
 }
 
@@ -241,8 +241,8 @@
 }
 
 .sd-info-item {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
+  background: var(--bg-secondary, #ffffff);
+  border: 1px solid rgba(128, 128, 128, 0.2);
   border-radius: 12px;
   padding: 1rem 1.25rem;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
@@ -256,7 +256,7 @@
 .sd-info-item label {
   display: block;
   font-size: 0.8rem;
-  color: #64748b;
+  color: var(--text-secondary, #64748b);
   margin-bottom: 0.4rem;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -266,11 +266,11 @@
 .sd-info-item span {
   font-size: 1rem;
   font-weight: 600;
-  color: #1e3a8a;
+  color: var(--text-primary, #1e3a8a);
 }
 
 .sd-link {
-  color: #2563eb;
+  color: var(--accent-color, #2563eb);
   cursor: pointer;
   transition: color 0.2s;
 }
@@ -286,8 +286,8 @@
 .sd-code-section,
 .sd-output-section,
 .sd-error-section {
-  background: #ffffff;
-  border: 1px solid #e2e8f0;
+  background: var(--bg-secondary, #ffffff);
+  border: 1px solid rgba(128, 128, 128, 0.2);
   border-radius: 12px;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
@@ -299,7 +299,7 @@
 .sd-error-section h3 {
   font-size: 1rem;
   margin-bottom: 1rem;
-  color: #1e3a8a;
+  color: var(--text-primary, #1e3a8a);
   font-weight: 600;
   display: flex;
   align-items: center;
