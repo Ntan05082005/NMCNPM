@@ -40,4 +40,8 @@ public interface SubmissionRepository extends JpaRepository<Submission, Long>, J
     @Query("SELECT COUNT(DISTINCT s.problem.id) FROM Submission s WHERE s.user.id = :userId AND s.status = 'ACCEPTED' AND s.problem.difficulty = :difficulty")
     Long countDistinctProblemsSolvedByUserIdAndDifficulty(@Param("userId") Long userId,
             @Param("difficulty") String difficulty);
+
+    // Check if user has solved a specific problem (has at least one ACCEPTED submission)
+    @Query("SELECT CASE WHEN COUNT(s) > 0 THEN true ELSE false END FROM Submission s WHERE s.user.id = :userId AND s.problem.id = :problemId AND s.status = 'ACCEPTED'")
+    boolean hasUserSolvedProblem(@Param("userId") Long userId, @Param("problemId") Long problemId);
 }

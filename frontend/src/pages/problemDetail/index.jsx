@@ -98,7 +98,9 @@ function ProblemDetail() {
 
             <div className="chip-row">
               <span className="chip chip-medium">{problem.difficulty}</span>
-              <span className="chip chip-unsolved">{problem.status}</span>
+              <span className={`chip ${problem.status?.toLowerCase() === 'solved' ? 'chip-solved' : 'chip-unsolved'}`}>
+                {problem.status || 'Unsolved'}
+              </span>
             </div>
 
             <div className="problem-meta">

@@ -1,8 +1,7 @@
 /* ============= FONT & BASE ============= */
-@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap");
 
 .problem-detail-page {
-  font-family: "Poppins", sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   color: #333;
   height: 100vh;
   width: 100%;
@@ -12,13 +11,13 @@
 .problem-detail-page .dashboard-container {
   display: flex;
   height: 100vh;
-  background: linear-gradient(90deg, #eef4ff 0%, #f4f6ff 50%, #fdfdff 100%);
+  background: var(--bg-primary, linear-gradient(90deg, #eef4ff 0%, #f4f6ff 50%, #fdfdff 100%));
 }
 
 /* ============= SIDEBAR (GIỐNG LIST) ============= */
 .problem-detail-page .sidebar {
   width: 280px;
-  background: linear-gradient(180deg, #dceaff 0%, #edf3ff 100%);
+  background: var(--sidebar-bg, linear-gradient(180deg, #dceaff 0%, #edf3ff 100%));
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -29,7 +28,7 @@
 .problem-detail-page .logo {
   font-size: 36px;
   font-weight: 800;
-  color: #1e3a8a;
+  color: var(--text-primary, #1e3a8a);
   margin-bottom: 60px;
   letter-spacing: -1px;
   display: flex;
@@ -37,14 +36,20 @@
 }
 
 .problem-detail-page .logo-uni {
-  color: #2563eb;
+  color: var(--accent-color, #2563eb);
   margin-right: 2px;
+}
+
+.problem-detail-page .sidebar-top {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
 .problem-detail-page .nav-menu {
   display: flex;
   flex-direction: column;
-  gap: 25px;
+  gap: 0.5rem;
 }
 
 .problem-detail-page .nav-item {
@@ -53,12 +58,11 @@
   gap: 18px;
   font-size: 16px;
   font-weight: 500;
-  color: #64748b;
+  color: var(--text-secondary, #64748b);
   cursor: pointer;
   transition: all 0.3s ease;
   padding: 0.875rem 1rem;
   border-radius: 10px;
-  margin-bottom: 0.5rem;
   text-decoration: none;
   border: none;
   outline: none;
@@ -66,7 +70,7 @@
 
 .problem-detail-page .nav-item:hover {
   background: rgba(59, 130, 246, 0.1);
-  color: #2563eb;
+  color: var(--accent-color, #2563eb);
   transform: translateX(5px);
   text-decoration: none;
 }
@@ -86,7 +90,7 @@
 .problem-detail-page .sidebar-bottom {
   display: flex;
   flex-direction: column;
-  gap: 25px;
+  gap: 0.5rem;
 }
 
 /* ============= MAIN LAYOUT ============= */
@@ -94,13 +98,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: radial-gradient(
-      circle at top right,
-      #c7ddff 0,
-      #e6f0ff 40%,
-      #f5f7ff 100%
-    )
-    fixed;
+  background: var(--bg-primary, radial-gradient(circle at top right, #c7ddff 0, #e6f0ff 40%, #f5f7ff 100%));
   overflow-y: auto;
 }
 
@@ -131,12 +129,12 @@
 .problem-detail-page .welcome-text h1 {
   font-size: 36px;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--text-primary, #0f172a);
   margin-bottom: 8px;
 }
 
 .problem-detail-page .welcome-text p {
-  color: #94a3b8;
+  color: var(--text-secondary, #94a3b8);
   font-size: 15px;
 }
 
@@ -160,7 +158,7 @@
 .problem-title {
   font-size: 60px;
   font-weight: 800;
-  color: #0f172a;
+  color: var(--text-primary, #0f172a);
   margin: 0px;
 }
 
@@ -188,6 +186,11 @@
 .chip-unsolved {
   background: #fee2e2;
   color: #b91c1c;
+}
+
+.chip-solved {
+  background: #d1fae5;
+  color: #065f46;
 }
 
 .problem-meta {
@@ -261,7 +264,7 @@
 }
 
 .section-card {
-  background: rgba(255, 255, 255, 0.94);
+  background: var(--bg-secondary, rgba(255, 255, 255, 0.94));
   border-radius: 18px;
   padding: 20px 26px 24px;
   box-shadow: 0 10px 26px rgba(148, 163, 184, 0.22);
@@ -270,7 +273,7 @@
 .section-title {
   font-size: 20px;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--text-primary, #1f2937);
   margin-bottom: 10px;
 }
 
@@ -281,7 +284,7 @@
 .objectives-list {
   padding-left: 18px;
   font-size: 14px;
-  color: #374151;
+  color: var(--text-primary, #374151);
 }
 
 .objectives-list li + li {
@@ -290,7 +293,7 @@
 
 .summary-text {
   font-size: 14px;
-  color: #374151;
+  color: var(--text-primary, #374151);
   margin-bottom: 18px;
 }
 
@@ -302,11 +305,12 @@
 }
 
 .example-card {
-  background: #0f3aa2;
-  color: #e5edff;
+  background: var(--bg-secondary, #0f3aa2);
+  color: var(--text-primary, #e5edff);
   border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 16px 30px rgba(15, 23, 42, 0.55);
+  box-shadow: 0 16px 30px rgba(15, 23, 42, 0.25);
+  border: 1px solid rgba(128, 128, 128, 0.2);
 }
 
 .example-header {
@@ -314,7 +318,8 @@
   text-align: center;
   font-weight: 700;
   font-size: 14px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.25);
+  border-bottom: 1px solid rgba(128, 128, 128, 0.25);
+  background: rgba(0, 0, 0, 0.1);
 }
 
 .example-body {

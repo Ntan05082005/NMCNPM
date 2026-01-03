@@ -10,18 +10,21 @@ body { font-family: system-ui, -apple-system, sans-serif; background: white; ove
 body { background: var(--bg-primary); color: var(--text-primary); }
 
 /* Sidebar & Cards */
-.dashboard-page, .sh-page, .list-exercise-page { background: var(--bg-primary) !important; }
+.dashboard-page, .sh-page, .list-exercise-page, .specified-problem-page, .problem-detail-page, .interface-code-wrapper { background: var(--bg-primary) !important; }
 .sidebar, .sh-sidebar { background: var(--sidebar-bg) !important; }
 .sidebar a, .sidebar button { color: #1e293b !important; font-weight: 600; padding: 0.75rem 1.25rem; border-radius: 12px; }
 .sidebar a:hover { color: #2563eb !important; background: rgba(37, 99, 235, 0.1); }
 .sidebar a.active { color: #ffffff !important; background: #2563eb; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
-.stat-card, .problem-card, .sh-card, .difficulty-card, .profile-card { background: var(--bg-secondary); color: var(--text-primary); border-radius: 18px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 10px 24px rgba(0,0,0,0.05); }
+.stat-card, .problem-card, .sh-card, .difficulty-card, .profile-card, .problem-list-card, .learning-card, .example-card-box { background: var(--bg-secondary); color: var(--text-primary); border-radius: 18px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 10px 24px rgba(0,0,0,0.05); }
 
 /* Theme Configs */
 body.theme-dark { --bg-primary: #0f172a; --bg-secondary: #1e293b; --text-primary: #f8fafc; --text-secondary: #94a3b8; --accent-color: #60a5fa; --sidebar-bg: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); }
 body.theme-dark .sidebar a { color: #e2e8f0 !important; }
 body.theme-dark .sidebar a:hover { color: #60a5fa !important; background: rgba(96, 165, 250, 0.15); }
 body.theme-dark .sidebar a.active { color: #0f172a !important; background: #60a5fa; }
+body.theme-dark .nav-item, body.theme-dark .sh-nav-item { color: #e2e8f0 !important; }
+body.theme-dark .nav-item:hover, body.theme-dark .sh-nav-item:hover { color: #60a5fa !important; background: rgba(96, 165, 250, 0.15) !important; }
+body.theme-dark .nav-item.active, body.theme-dark .sh-nav-item.active { color: #0f172a !important; background: #60a5fa !important; box-shadow: 0 4px 15px rgba(96, 165, 250, 0.4) !important; }
 body.theme-dark .stat-card, body.theme-dark .sh-card { background: #1e293b; border: 1px solid rgba(148, 163, 184, 0.2); }
 body.theme-dark .submission-item { background: #1e293b; border: 1px solid rgba(148, 163, 184, 0.2); }
 body.theme-dark .submission-item:hover { background: #2d3a4f; }
@@ -31,6 +34,30 @@ body.theme-dark .problem-card .card-desc { color: #94a3b8 !important; }
 body.theme-dark .sh-table-wrap { background: #1e293b; border: 1px solid rgba(148, 163, 184, 0.2); }
 body.theme-dark .sh-tab { background: #1e293b; border-color: rgba(148, 163, 184, 0.2); color: #f8fafc; }
 body.theme-dark .recent-submissions, body.theme-dark .recent-submissions-full { background: #1e293b; border: 1px solid rgba(148, 163, 184, 0.2); }
+/* Dark theme - Problem pages */
+body.theme-dark .specified-problem-page, body.theme-dark .problem-detail-page, body.theme-dark .interface-code-wrapper { background: var(--bg-primary) !important; }
+body.theme-dark .specified-problem-page .dashboard-container, body.theme-dark .problem-detail-page .dashboard-container { background: var(--bg-primary) !important; }
+body.theme-dark .problem-list-card, body.theme-dark .learning-card { background: #1e293b !important; border: 1px solid rgba(148, 163, 184, 0.2); }
+body.theme-dark .problem-row { background: #1e293b !important; border: 1px solid rgba(148, 163, 184, 0.2) !important; }
+body.theme-dark .problem-row:hover { background: #2d3a4f !important; }
+body.theme-dark .interface-code-wrapper .sidebar { background: var(--sidebar-bg) !important; }
+body.theme-dark .interface-code-wrapper .main-content { background: var(--bg-primary) !important; }
+body.theme-dark .interface-code-wrapper .problem-description { background: #1e293b !important; border: 1px solid rgba(148, 163, 184, 0.2); color: #f8fafc !important; }
+body.theme-dark .example-card { background: #1e293b !important; border: 1px solid rgba(148, 163, 184, 0.3) !important; color: #f8fafc !important; }
+body.theme-dark .example-card .example-header { background: rgba(96, 165, 250, 0.3) !important; border-bottom: 1px solid rgba(148, 163, 184, 0.3) !important; }
+body.theme-dark .section-card { background: #1e293b !important; border: 1px solid rgba(148, 163, 184, 0.2) !important; }
+body.theme-dark .section-title { color: #f8fafc !important; }
+body.theme-dark .section-title.green { color: #60a5fa !important; }
+body.theme-dark .problem-main { background: var(--bg-primary) !important; }
+/* Dark theme - Submission Result page */
+body.theme-dark .result-page-container { background: var(--bg-primary) !important; }
+body.theme-dark .result-page-container .testcase-status { color: #94a3b8 !important; }
+body.theme-dark .result-page-container .history-container { background: #1e293b !important; border: 1px solid rgba(148, 163, 184, 0.2); }
+body.theme-dark .result-page-container .history-title { color: #60a5fa !important; background: transparent !important; }
+body.theme-dark .result-page-container .history-table thead { background: rgba(96, 165, 250, 0.5) !important; }
+body.theme-dark .result-page-container .history-table tbody tr { background: #1e293b !important; border-bottom: 1px solid rgba(148, 163, 184, 0.2) !important; }
+body.theme-dark .result-page-container .history-table td { color: #f8fafc !important; }
+body.theme-dark .result-page-container .nav-btn { color: #f8fafc !important; }
 
 body.theme-christmas { --bg-primary: #1a3d2e; --bg-secondary: #2d5a47; --text-primary: #ffffff; --text-secondary: #a7f3d0; --accent-color: #dc2626; --sidebar-bg: linear-gradient(135deg, #2d5a47 0%, #1a3d2e 100%); }
 body.theme-christmas::before { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 1; background-image: radial-gradient(circle at 20% 80%, rgba(220, 38, 38, 0.1) 0%, transparent 40%); }
@@ -46,6 +73,35 @@ body.theme-christmas .recent-submissions, body.theme-christmas .recent-submissio
 body.theme-christmas label, body.theme-christmas h3, body.theme-christmas .sidebar a { color: #ffffff !important; }
 body.theme-christmas .sidebar a:hover { background: rgba(220, 38, 38, 0.2); }
 body.theme-christmas .sidebar a.active { background: #dc2626; }
+body.theme-christmas .nav-item, body.theme-christmas .sh-nav-item { color: #ffffff !important; }
+body.theme-christmas .nav-item.active, body.theme-christmas .sh-nav-item.active { background: #dc2626 !important; box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4) !important; }
+body.theme-christmas .nav-item:hover, body.theme-christmas .sh-nav-item:hover { background: rgba(220, 38, 38, 0.2) !important; color: #ffffff !important; }
+/* Christmas theme - Problem pages */
+body.theme-christmas .specified-problem-page, body.theme-christmas .problem-detail-page, body.theme-christmas .interface-code-wrapper { background: var(--bg-primary) !important; }
+body.theme-christmas .specified-problem-page .dashboard-container, body.theme-christmas .problem-detail-page .dashboard-container { background: var(--bg-primary) !important; }
+body.theme-christmas .problem-list-card, body.theme-christmas .learning-card { background: rgba(45, 90, 71, 0.95) !important; border: 1px solid rgba(167, 243, 208, 0.25); }
+body.theme-christmas .problem-row { background: rgba(45, 90, 71, 0.95) !important; border: 1px solid rgba(167, 243, 208, 0.25) !important; }
+body.theme-christmas .problem-row:hover { background: rgba(55, 100, 81, 0.95) !important; }
+body.theme-christmas .example-card-box { background: rgba(37, 99, 235, 0.9) !important; }
+body.theme-christmas .example-card { background: rgba(45, 90, 71, 0.95) !important; border: 1px solid rgba(167, 243, 208, 0.3) !important; color: #ffffff !important; }
+body.theme-christmas .example-card .example-header { background: rgba(220, 38, 38, 0.8) !important; border-bottom: 1px solid rgba(167, 243, 208, 0.3) !important; }
+body.theme-christmas .section-card { background: rgba(45, 90, 71, 0.95) !important; border: 1px solid rgba(167, 243, 208, 0.25) !important; }
+body.theme-christmas .section-title { color: #a7f3d0 !important; }
+body.theme-christmas .section-title.green { color: #22c55e !important; }
+body.theme-christmas .problem-main { background: var(--bg-primary) !important; }
+body.theme-christmas .interface-code-wrapper .sidebar { background: var(--sidebar-bg) !important; }
+body.theme-christmas .interface-code-wrapper .main-content { background: var(--bg-primary) !important; }
+body.theme-christmas .interface-code-wrapper .problem-description { background: rgba(45, 90, 71, 0.95) !important; border: 1px solid rgba(167, 243, 208, 0.25); color: #ffffff !important; }
+/* Christmas theme - Submission Result page */
+body.theme-christmas .result-page-container { background: var(--bg-primary) !important; }
+body.theme-christmas .result-page-container .unicode-logo { background: linear-gradient(135deg, #dc2626, #22c55e) !important; -webkit-background-clip: text !important; background-clip: text !important; -webkit-text-fill-color: transparent !important; }
+body.theme-christmas .result-page-container .testcase-status { color: #a7f3d0 !important; }
+body.theme-christmas .result-page-container .history-container { background: rgba(45, 90, 71, 0.95) !important; border: 1px solid rgba(167, 243, 208, 0.25); }
+body.theme-christmas .result-page-container .history-title { color: #a7f3d0 !important; background: transparent !important; }
+body.theme-christmas .result-page-container .history-table thead { background: rgba(220, 38, 38, 0.8) !important; }
+body.theme-christmas .result-page-container .history-table tbody tr { background: rgba(45, 90, 71, 0.95) !important; border-bottom: 1px solid rgba(167, 243, 208, 0.2) !important; }
+body.theme-christmas .result-page-container .history-table td { color: #ffffff !important; }
+body.theme-christmas .result-page-container .nav-btn { color: #ffffff !important; }
 
 body.theme-newyear { --bg-primary: #2d2d2d; --bg-secondary: #3d3d3d; --text-primary: #ffffff; --text-secondary: #fbbf24; --accent-color: #fbbf24; --sidebar-bg: linear-gradient(135deg, #3d3d3d 0%, #2d2d2d 100%); }
 body.theme-newyear::before { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 1; opacity: 0.7; background-image: radial-gradient(circle at 25% 30%, rgba(251, 191, 36, 0.15) 0%, transparent 25%); }
@@ -62,6 +118,33 @@ body.theme-newyear label, body.theme-newyear h3 { color: #fbbf24 !important; }
 body.theme-newyear .sidebar a { color: #fde68a !important; }
 body.theme-newyear .sidebar a:hover { background: rgba(251, 191, 36, 0.15); }
 body.theme-newyear .sidebar a.active { color: #2d2d2d !important; background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); }
+body.theme-newyear .nav-item.active, body.theme-newyear .sh-nav-item.active { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%) !important; color: #2d2d2d !important; box-shadow: 0 4px 15px rgba(251, 191, 36, 0.4) !important; }
+body.theme-newyear .nav-item:hover, body.theme-newyear .sh-nav-item:hover { background: rgba(251, 191, 36, 0.15) !important; color: #fbbf24 !important; }
+body.theme-newyear .nav-item, body.theme-newyear .sh-nav-item { color: #fde68a !important; }
+/* New Year theme - Problem pages */
+body.theme-newyear .specified-problem-page, body.theme-newyear .problem-detail-page, body.theme-newyear .interface-code-wrapper { background: var(--bg-primary) !important; }
+body.theme-newyear .specified-problem-page .dashboard-container, body.theme-newyear .problem-detail-page .dashboard-container { background: var(--bg-primary) !important; }
+body.theme-newyear .problem-list-card, body.theme-newyear .learning-card { background: rgba(61, 61, 61, 0.98) !important; border: 1px solid rgba(251, 191, 36, 0.35); }
+body.theme-newyear .problem-row { background: rgba(61, 61, 61, 0.98) !important; border: 1px solid rgba(251, 191, 36, 0.35) !important; }
+body.theme-newyear .problem-row:hover { background: rgba(71, 71, 71, 0.98) !important; }
+body.theme-newyear .interface-code-wrapper .sidebar { background: var(--sidebar-bg) !important; }
+body.theme-newyear .interface-code-wrapper .main-content { background: var(--bg-primary) !important; }
+body.theme-newyear .interface-code-wrapper .problem-description { background: rgba(61, 61, 61, 0.98) !important; border: 1px solid rgba(251, 191, 36, 0.35); color: #ffffff !important; }
+body.theme-newyear .example-card { background: rgba(61, 61, 61, 0.98) !important; border: 1px solid rgba(251, 191, 36, 0.4) !important; color: #ffffff !important; }
+body.theme-newyear .example-card .example-header { background: rgba(251, 191, 36, 0.3) !important; border-bottom: 1px solid rgba(251, 191, 36, 0.4) !important; }
+body.theme-newyear .section-card { background: rgba(61, 61, 61, 0.98) !important; border: 1px solid rgba(251, 191, 36, 0.35) !important; }
+body.theme-newyear .section-title { color: #fbbf24 !important; }
+body.theme-newyear .section-title.green { color: #fbbf24 !important; }
+body.theme-newyear .problem-main { background: var(--bg-primary) !important; }
+/* New Year theme - Submission Result page */
+body.theme-newyear .result-page-container { background: var(--bg-primary) !important; }
+body.theme-newyear .result-page-container .testcase-status { color: #fde68a !important; }
+body.theme-newyear .result-page-container .history-container { background: rgba(61, 61, 61, 0.98) !important; border: 1px solid rgba(251, 191, 36, 0.35); }
+body.theme-newyear .result-page-container .history-title { color: #fbbf24 !important; background: transparent !important; }
+body.theme-newyear .result-page-container .history-table thead { background: rgba(251, 191, 36, 0.6) !important; }
+body.theme-newyear .result-page-container .history-table tbody tr { background: rgba(61, 61, 61, 0.98) !important; border-bottom: 1px solid rgba(251, 191, 36, 0.2) !important; }
+body.theme-newyear .result-page-container .history-table td { color: #ffffff !important; }
+body.theme-newyear .result-page-container .nav-btn { color: #fde68a !important; }
 
 .christmas-snow-container, .newyear-fireworks-container { display: none; position: fixed; inset: 0; pointer-events: none; z-index: 9999; overflow: hidden; }
 body.theme-christmas .christmas-snow-container { display: block; }

@@ -202,6 +202,37 @@ public class SubmissionService {
     }
 
     /**
+     * Get user's submission history as DTOs with problem information
+     */
+    public List<SubmissionListDto> getUserSubmissionsDto(Long userId) {
+        List<Submission> submissions = submissionRepository.findByUserIdWithProblem(userId);
+        return submissions.stream()
+            .map(this::toSubmissionListDto)
+            .collect(java.util.stream.Collectors.toList());
+    }
+
+    /**
+     * Convert Submission entity to SubmissionListDto
+     */
+    private SubmissionListDto toSubmissionListDto(Submission submission) {
+        return SubmissionListDto.builder()
+            .id(submission.getId())
+            .userId(submission.getUser() != null ? submission.getUser().getId() : null)
+            .username(submission.getUser() != null ? submission.getUser().getUsername() : null)
+            .problemId(submission.getProblem() != null ? submission.getProblem().getId() : null)
+            .problemTitle(submission.getProblem() != null ? submission.getProblem().getTitle() : "Unknown Problem")
+            .problemSlug(submission.getProblem() != null ? submission.getProblem().getSlug() : null)
+            .problemDifficulty(submission.getProblem() != null ? submission.getProblem().getDifficulty() : null)
+            .language(submission.getLanguage())
+            .status(submission.getStatus())
+            .executionTimeMs(submission.getExecutionTimeMs())
+            .submittedAt(submission.getSubmittedAt())
+            .testCasesPassed(submission.getTestCasesPassed())
+            .totalTestCases(submission.getTotalTestCases())
+            .build();
+    }
+
+    /**
      * Get all submissions for a problem
      */
     public List<Submission> getProblemSubmissions(Long problemId) {
