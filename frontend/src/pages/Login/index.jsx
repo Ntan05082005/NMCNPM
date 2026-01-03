@@ -120,7 +120,7 @@ export default function LogIn() {
           {/* LOGIN CARD */}
           <section className="signup-card-container">
             <div className="signup-card">
-              <div className="form-logo">
+              <div className="form-logo" onClick={() => window.location.href = '/dashboard'} style={{ cursor: 'pointer' }} title="Go to Dashboard">
                 <span>Uni</span>Code
               </div>
 

@@ -11,6 +11,72 @@
     overflow: hidden;
 }
 
+/* --- TOP NAV BAR (inside left panel) --- */
+.interface-code-wrapper .top-nav-bar {
+    display: flex;
+    align-items: center;
+    padding: 16px 20px 12px 20px;
+    background-color: var(--bg-secondary);
+    flex-shrink: 0;
+    gap: 24px;
+}
+
+.interface-code-wrapper .nav-section {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.interface-code-wrapper .nav-separator {
+    width: 1px;
+    height: 24px;
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.interface-code-wrapper .problem-title {
+    font-size: 1.35em;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+/* --- NAV SECTION (Back button + Logo) - Base styles only --- */
+
+.interface-code-wrapper .back-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 1.2em;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.interface-code-wrapper .back-btn:hover {
+    background: rgba(0,0,0,0.05);
+    color: var(--text-primary);
+}
+
+.interface-code-wrapper .code-logo {
+    font-size: 1.3em;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
+}
+
+.interface-code-wrapper .code-logo .logo-uni {
+    color: var(--accent-color);
+    margin-right: 1px;
+}
+
 /* --- SPLIT CONTAINER (Main Layout) --- */
 .interface-code-wrapper .split-container {
     display: flex;
@@ -27,35 +93,22 @@
     flex-direction: column;
     background-color: var(--bg-secondary);
     border-right: 1px solid rgba(0,0,0,0.1);
-    border-radius: 18px 0 0 18px;
     box-shadow: 0 10px 24px rgba(0,0,0,0.05);
     overflow: hidden;
 }
 
 .interface-code-wrapper .problem-header {
-    padding: 16px 20px 8px 20px;
+    padding: 12px 20px 8px 20px;
     display: flex;
     flex-direction: column;
     gap: 8px;
     flex-shrink: 0;
 }
 
-.interface-code-wrapper .problem-title-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.interface-code-wrapper .problem-title {
-    font-size: 1.25em;
-    font-weight: 700;
-    color: var(--text-primary);
-    margin: 0;
-}
-
 .interface-code-wrapper .problem-meta {
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 10px;
 }
 
@@ -828,4 +881,27 @@ body.theme-newyear .interface-code-wrapper .console-tab.active {
 
 body.theme-newyear .interface-code-wrapper .problem-title {
     color: #fbbf24;
+}
+
+/* Dark Theme - Top Nav Bar */
+body.theme-dark .interface-code-wrapper .back-btn:hover {
+    background: rgba(148, 163, 184, 0.15);
+}
+
+/* Christmas Theme - Top Nav Bar */
+body.theme-christmas .interface-code-wrapper .code-logo .logo-uni {
+    color: #dc2626;
+}
+
+body.theme-christmas .interface-code-wrapper .back-btn:hover {
+    background: rgba(167, 243, 208, 0.15);
+}
+
+/* New Year Theme - Top Nav Bar */
+body.theme-newyear .interface-code-wrapper .code-logo .logo-uni {
+    color: #fbbf24;
+}
+
+body.theme-newyear .interface-code-wrapper .back-btn:hover {
+    background: rgba(251, 191, 36, 0.15);
 }

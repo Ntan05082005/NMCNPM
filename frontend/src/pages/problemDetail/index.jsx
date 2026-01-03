@@ -73,7 +73,7 @@ function ProblemDetail() {
       {/* ========== SIDEBAR ĐƠN GIẢN ========= */}
       <aside className="sidebar">
         <div className="sidebar-top">
-          <div className="logo">
+          <div className="logo" onClick={() => navigate('/dashboard')} style={{ cursor: 'pointer' }} title="Go to Dashboard">
             <span className="logo-uni">Uni</span>Code
           </div>
           <nav className="nav-menu">

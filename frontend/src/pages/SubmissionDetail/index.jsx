@@ -79,7 +79,7 @@ const SubmissionDetail = () => {
   const Sidebar = () => (
     <aside className="sd-sidebar">
       <div className="sd-sidebar-top">
-        <div className="sd-logo">
+        <div className="sd-logo" onClick={() => navigate('/dashboard')} style={{ cursor: 'pointer' }} title="Go to Dashboard">
           <span className="sd-logo-uni">Uni</span>Code
         </div>
         <nav className="sd-nav-menu">
