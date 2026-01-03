@@ -19,6 +19,7 @@ import Dashboard from './pages/Dashboard/index.jsx';
 import Profile from './pages/Profile/index.jsx';
 import Settings from './pages/Settings/index.jsx';
 import SubmissionResult from './pages/SubmissionResult/index.jsx';
+import SubmissionDetail from './pages/SubmissionDetail/index.jsx';
 
 const ThemeEffects = () => {
   const snowFlakes = Array.from({ length: 18 }, (_, i) => i + 1);
@@ -141,6 +142,7 @@ function App() {
         <Route path="/problem/:slug" element={<ProblemDetail />} />
         <Route path="/interface-code/:slug" element={<InterfaceCode />} />
         <Route path="/submission-result" element={<SubmissionResult />} />
+        <Route path="/submissions/:id" element={<SubmissionDetail />} />
         <Route path="/profile/submissions" element={<SubmissionHistory />} />
         <Route path="/about" element={<AboutUs />} />
         <Route path="/profile" element={<Profile />} />
