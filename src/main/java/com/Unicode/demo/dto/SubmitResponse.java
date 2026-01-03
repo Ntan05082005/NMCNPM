@@ -26,6 +26,7 @@ public class SubmitResponse {
     private String stderr;
     private String compilerError;
     private Double memoryUsedMB;
+    private String message;
     
     /**
      * Get acceptance rate
