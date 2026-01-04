@@ -182,6 +182,9 @@ public class SubmissionService {
         // Save submission to database
         Submission savedSubmission = submissionRepository.save(submission);
 
+        // Update problem statistics
+        updateProblemStats(problem, finalStatus);
+
         // Build enhanced response using builder
         return SubmitResponse.builder()
                 .submissionId(savedSubmission.getId())
@@ -610,5 +613,30 @@ public class SubmissionService {
         // Query Database và Map sang DTO
         return submissionRepository.findAll(spec, pageable)
                 .map(submissionMapper::toListDto);
+    }
+
+    /**
+     * Update problem statistics after a submission
+     */
+    private void updateProblemStats(Problem problem, SubmissionStatus status) {
+        // Increment total submissions
+        int totalSubmissions = (problem.getTotalSubmissions() != null ? problem.getTotalSubmissions() : 0) + 1;
+        problem.setTotalSubmissions(totalSubmissions);
+
+        // Increment accepted count if submission was accepted
+        if (status == SubmissionStatus.ACCEPTED) {
+            int totalAccepted = (problem.getTotalAccepted() != null ? problem.getTotalAccepted() : 0) + 1;
+            problem.setTotalAccepted(totalAccepted);
+        }
+
+        // Calculate acceptance rate
+        int totalAccepted = problem.getTotalAccepted() != null ? problem.getTotalAccepted() : 0;
+        if (totalSubmissions > 0) {
+            double rate = (totalAccepted * 100.0) / totalSubmissions;
+            problem.setAcceptanceRate(java.math.BigDecimal.valueOf(rate).setScale(2, java.math.RoundingMode.HALF_UP));
+        }
+
+        // Save updated problem
+        problemRepository.save(problem);
     }
 }

@@ -1,3 +1,9 @@
+.submissions-table th:nth-child(6),
+.submissions-table td:nth-child(6),
+.submissions-table th:nth-child(7),
+.submissions-table td:nth-child(7) {
+    text-align: center;
+}
 /* ============================================
    ADMIN DASHBOARD STYLES
    ============================================ */
@@ -272,13 +278,109 @@
     box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
 }
 
+/* Header Actions */
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+/* Sort Dropdown */
+.sort-wrapper {
+    position: relative;
+}
+
+.sort-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: var(--bg-secondary, #fff);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary, #1e293b);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.sort-btn:hover {
+    border-color: #6366f1;
+}
+
+.sort-dropdown {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 8px;
+    background: var(--bg-secondary, #fff);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    min-width: 160px;
+    z-index: 100;
+    overflow: hidden;
+}
+
+.sort-item {
+    padding: 10px 16px;
+    font-size: 14px;
+    color: var(--text-primary, #1e293b);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.sort-item:hover {
+    background: rgba(99, 102, 241, 0.1);
+}
+
+.sort-item.active {
+    background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+    color: #fff;
+}
+
+/* Table Container - Fixed Height */
+.table-container {
+    background: var(--bg-secondary, #fff);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* Table Footer */
+.table-footer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 16px;
+    padding: 0 8px;
+    position: relative;
+}
+
+.results-count {
+    position: absolute;
+    left: 8px;
+    font-size: 14px;
+    color: var(--text-secondary, #64748b);
+}
+
+/* Empty rows for fixed table height */
+.admin-table tbody tr.empty-row {
+    height: 53px;
+}
+
+.admin-table tbody tr.empty-row td {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
 /* Admin Table */
 .admin-table {
     width: 100%;
     background: var(--bg-secondary, #fff);
     border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    table-layout: fixed;
 }
 
 .admin-table th,
@@ -286,14 +388,66 @@
     padding: 14px 18px;
     text-align: left;
     border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
+
+/* Fixed column widths for Problems table */
+.problems-table th:nth-child(1),
+.problems-table td:nth-child(1) { width: 60px; }  /* ID */
+.problems-table th:nth-child(2),
+.problems-table td:nth-child(2) { width: 35%; }   /* Title */
+.problems-table th:nth-child(3),
+.problems-table td:nth-child(3) { width: 110px; } /* Difficulty */
+.problems-table th:nth-child(4),
+.problems-table td:nth-child(4) { width: 110px; } /* Submissions */
+.problems-table th:nth-child(5),
+.problems-table td:nth-child(5) { width: 110px; } /* Acceptance */
+.problems-table th:nth-child(6),
+.problems-table td:nth-child(6) { width: 130px; } /* Actions */
+
+/* Fixed column widths for Users table */
+.users-table th:nth-child(1),
+.users-table td:nth-child(1) { width: 60px; }  /* ID */
+
+.users-table th:nth-child(2),
+.users-table td:nth-child(2) { width: 110px; } /* Username */
+.users-table th:nth-child(3),
+.users-table td:nth-child(3) { width: 260px; } /* Email */
+.users-table th:nth-child(4),
+.users-table td:nth-child(4) { width: 100px; } /* Role */
+.users-table th:nth-child(5),
+.users-table td:nth-child(5) { width: 70px; } /* Actions */
+
+/* Fixed column widths for Submissions table */
+.submissions-table th:nth-child(1),
+.submissions-table td:nth-child(1) { width: 50px; }  /* ID */
+
+.submissions-table th:nth-child(2),
+.submissions-table td:nth-child(2) { width: 90px; }   /* User */
+.submissions-table th:nth-child(3),
+.submissions-table td:nth-child(3) { width: 120px; }  /* Problem */
+.submissions-table th:nth-child(4),
+.submissions-table td:nth-child(4) { width: 90px; }   /* Language */
+.submissions-table th:nth-child(5),
+.submissions-table td:nth-child(5) { width: 120px; }  /* Status */
+.submissions-table th:nth-child(6),
+.submissions-table td:nth-child(6) { width: 110px; }   /* Runtime */
+.submissions-table th:nth-child(7),
+.submissions-table td:nth-child(7) { width: 110px; }   /* Memory */
+.submissions-table th:nth-child(8),
+.submissions-table td:nth-child(8) { width: 140px; }  /* Submitted */
+.submissions-table th:nth-child(9),
+.submissions-table td:nth-child(9) { width: 80px; }   /* Actions */
 
 .admin-table th {
     background: rgba(0, 0, 0, 0.02);
     font-weight: 600;
     font-size: 13px;
     color: var(--text-secondary, #64748b);
-    text-transform: uppercase;
+    text-transform: none;
+    letter-spacing: 0.01em;
 }
 
 .admin-table td {
@@ -540,6 +694,25 @@ body.theme-dark .search-box input::placeholder {
     color: var(--text-secondary);
 }
 
+body.theme-dark .sort-btn {
+    background: var(--bg-secondary);
+    border-color: rgba(148, 163, 184, 0.2);
+    color: var(--text-primary);
+}
+
+body.theme-dark .sort-dropdown {
+    background: var(--bg-secondary);
+    border-color: rgba(148, 163, 184, 0.2);
+}
+
+body.theme-dark .sort-item {
+    color: var(--text-primary);
+}
+
+body.theme-dark .sort-item:hover {
+    background: rgba(96, 165, 250, 0.2);
+}
+
 body.theme-dark .role-select {
     background: var(--bg-secondary);
     border-color: rgba(148, 163, 184, 0.2);
@@ -554,6 +727,18 @@ body.theme-dark .pagination button {
 body.theme-dark .pagination button:hover:not(:disabled) {
     background: #60a5fa;
     color: #0f172a;
+}
+
+body.theme-dark .table-container {
+    background: var(--bg-secondary);
+}
+
+body.theme-dark .results-count {
+    color: var(--text-secondary);
+}
+
+body.theme-dark .admin-table tbody tr.empty-row td {
+    border-color: rgba(148, 163, 184, 0.15);
 }
 
 /* Christmas Theme */
@@ -654,6 +839,29 @@ body.theme-christmas .search-box input::placeholder {
     color: #a7f3d0;
 }
 
+body.theme-christmas .sort-btn {
+    background: rgba(45, 90, 71, 0.95);
+    border-color: rgba(167, 243, 208, 0.25);
+    color: #ffffff;
+}
+
+body.theme-christmas .sort-dropdown {
+    background: rgba(45, 90, 71, 0.98);
+    border-color: rgba(167, 243, 208, 0.25);
+}
+
+body.theme-christmas .sort-item {
+    color: #ffffff;
+}
+
+body.theme-christmas .sort-item:hover {
+    background: rgba(220, 38, 38, 0.3);
+}
+
+body.theme-christmas .sort-item.active {
+    background: linear-gradient(135deg, #dc2626 0%, #16a34a 100%);
+}
+
 body.theme-christmas .btn-primary {
     background: linear-gradient(135deg, #dc2626 0%, #16a34a 100%);
 }
@@ -676,6 +884,18 @@ body.theme-christmas .pagination button:hover:not(:disabled) {
 
 body.theme-christmas .pagination span {
     color: #a7f3d0;
+}
+
+body.theme-christmas .table-container {
+    background: rgba(45, 90, 71, 0.95);
+}
+
+body.theme-christmas .results-count {
+    color: #a7f3d0;
+}
+
+body.theme-christmas .admin-table tbody tr.empty-row td {
+    border-color: rgba(167, 243, 208, 0.15);
 }
 
 /* New Year Theme */
@@ -777,6 +997,30 @@ body.theme-newyear .search-box input::placeholder {
     color: #fde68a;
 }
 
+body.theme-newyear .sort-btn {
+    background: rgba(61, 61, 61, 0.98);
+    border-color: rgba(251, 191, 36, 0.35);
+    color: #ffffff;
+}
+
+body.theme-newyear .sort-dropdown {
+    background: rgba(61, 61, 61, 0.98);
+    border-color: rgba(251, 191, 36, 0.35);
+}
+
+body.theme-newyear .sort-item {
+    color: #ffffff;
+}
+
+body.theme-newyear .sort-item:hover {
+    background: rgba(251, 191, 36, 0.2);
+}
+
+body.theme-newyear .sort-item.active {
+    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+    color: #1f2937;
+}
+
 body.theme-newyear .btn-primary {
     background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
     color: #1f2937;
@@ -801,6 +1045,18 @@ body.theme-newyear .pagination button:hover:not(:disabled) {
 
 body.theme-newyear .pagination span {
     color: #fde68a;
+}
+
+body.theme-newyear .table-container {
+    background: rgba(61, 61, 61, 0.98);
+}
+
+body.theme-newyear .results-count {
+    color: #fde68a;
+}
+
+body.theme-newyear .admin-table tbody tr.empty-row td {
+    border-color: rgba(251, 191, 36, 0.15);
 }
 
 /* Responsive */
