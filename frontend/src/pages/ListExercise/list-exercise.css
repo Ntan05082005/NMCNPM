@@ -477,7 +477,95 @@
   letter-spacing: 1px;
 }
 
-/* --- 9. RESPONSIVE --- */
+/* --- 9. DARK MODE THEME OVERRIDES --- */
+body.theme-dark .list-exercise-page .line-black {
+  background-color: #94a3b8; /* Lighter gray for visibility on dark background */
+}
+
+body.theme-dark .list-exercise-page .icon-system-custom .brace {
+  color: #60a5fa; /* Brighter blue for dark mode */
+}
+
+body.theme-dark .list-exercise-page .icon-dsa,
+body.theme-dark .list-exercise-page .icon-sql-custom .db-icon,
+body.theme-dark .list-exercise-page .icon-sql-custom .db-text {
+  color: #60a5fa; /* Brighter blue */
+}
+
+body.theme-dark .list-exercise-page .icon-impl {
+  color: #fbbf24; /* Brighter amber */
+}
+
+body.theme-dark .list-exercise-page .icon-debug {
+  color: #34d399; /* Brighter emerald */
+}
+
+body.theme-dark .list-exercise-page .icon-oop,
+body.theme-dark .list-exercise-page .oop-banner {
+  background: #0ea5e9;
+  color: white;
+}
+
+/* Christmas Theme Overrides */
+body.theme-christmas .list-exercise-page .line-black {
+  background-color: #a7f3d0; /* Light green for visibility */
+}
+
+body.theme-christmas .list-exercise-page .icon-system-custom .brace {
+  color: #fca5a5; /* Light red for Christmas */
+}
+
+body.theme-christmas .list-exercise-page .icon-dsa,
+body.theme-christmas .list-exercise-page .icon-sql-custom .db-icon,
+body.theme-christmas .list-exercise-page .icon-sql-custom .db-text {
+  color: #fca5a5; /* Christmas red */
+}
+
+body.theme-christmas .list-exercise-page .icon-impl {
+  color: #fbbf24; /* Gold */
+}
+
+body.theme-christmas .list-exercise-page .icon-debug {
+  color: #86efac; /* Bright green */
+}
+
+body.theme-christmas .list-exercise-page .oop-banner {
+  background: #dc2626;
+}
+
+/* New Year Theme Overrides */
+body.theme-newyear .list-exercise-page .line-black {
+  background-color: #fbbf24; /* Gold for visibility */
+}
+
+body.theme-newyear .list-exercise-page .icon-system-custom .brace {
+  color: #fbbf24; /* Gold */
+}
+
+body.theme-newyear .list-exercise-page .icon-dsa,
+body.theme-newyear .list-exercise-page .icon-sql-custom .db-icon,
+body.theme-newyear .list-exercise-page .icon-sql-custom .db-text {
+  color: #fbbf24; /* Gold */
+}
+
+body.theme-newyear .list-exercise-page .icon-impl {
+  color: #fcd34d; /* Bright gold */
+}
+
+body.theme-newyear .list-exercise-page .icon-debug {
+  color: #fbbf24; /* Gold */
+}
+
+body.theme-newyear .list-exercise-page .icon-oop {
+  color: #fbbf24;
+}
+
+body.theme-newyear .list-exercise-page .oop-banner {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  color: #2d2d2d;
+}
+
+/* --- 10. RESPONSIVE --- */
 @media (max-width: 1200px) {
   .list-exercise-page .problems-grid {
     grid-template-columns: repeat(2, 1fr);
