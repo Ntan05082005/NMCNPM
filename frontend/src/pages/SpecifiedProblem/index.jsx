@@ -13,6 +13,7 @@ import {
   FiSearch,
   FiBell,
   FiChevronDown,
+  FiShield,
 } from "react-icons/fi";
 import { FaUserCircle } from "react-icons/fa";
 
@@ -20,6 +21,8 @@ export default function SpecifiedProblem() {
   const navigate = useNavigate();
   const { categoryId } = useParams();
   const username = localStorage.getItem('username') || 'User';
+  const userRole = localStorage.getItem('role');
+  const isAdmin = userRole === 'ADMIN';
 
   const [problems, setProblems] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -134,6 +137,11 @@ export default function SpecifiedProblem() {
               <div className="nav-item" onClick={() => navigate("/profile")}>
                 <FiUser className="nav-icon" /> Profile
               </div>
+              {isAdmin && (
+                <div className="nav-item admin-nav" onClick={() => navigate('/admin')}>
+                  <FiShield className="nav-icon" /> Admin Panel
+                </div>
+              )}
             </nav>
           </div>
           <div className="sidebar-bottom">

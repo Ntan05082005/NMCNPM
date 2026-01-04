@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import "./SubmissionHistory.css";
-import { FiGrid, FiFileText, FiSend, FiUser, FiSettings, FiLogOut } from 'react-icons/fi';
+import { FiGrid, FiFileText, FiSend, FiUser, FiSettings, FiLogOut, FiShield } from 'react-icons/fi';
 import { getUserSubmissions } from "../../API/api-submission";
 import { formatLanguage, formatStatus } from "../../utils/format";
 
@@ -110,6 +110,8 @@ function processSubmissions(submissions, userId) {
 export default function SubmissionHistory({ userId }) {
   const navigate = useNavigate();
   const location = useLocation();
+  const userRole = localStorage.getItem('role');
+  const isAdmin = userRole === 'ADMIN';
 
   const [stats, setStats] = useState(null);
   const [tab, setTab] = useState("ALL");
@@ -304,6 +306,11 @@ export default function SubmissionHistory({ userId }) {
               <div className="sh-nav-item" onClick={() => navigate('/profile')}>
                 <FiUser className="sh-nav-icon" /> Profile
               </div>
+              {isAdmin && (
+                <div className="sh-nav-item admin-nav" onClick={() => navigate('/admin')}>
+                  <FiShield className="sh-nav-icon" /> Admin Panel
+                </div>
+              )}
             </nav>
           </div>
           <div className="sh-sidebar-bottom">

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { FiArrowLeft, FiClock, FiCheckCircle, FiXCircle, FiAlertCircle, FiGrid, FiFileText, FiSend, FiUser, FiSettings, FiLogOut } from 'react-icons/fi';
+import { FiArrowLeft, FiClock, FiCheckCircle, FiXCircle, FiAlertCircle, FiGrid, FiFileText, FiSend, FiUser, FiSettings, FiLogOut, FiShield } from 'react-icons/fi';
 import './SubmissionDetail.css';
 import axios from 'axios';
 import { formatLanguage, formatStatus } from '../../utils/format';
@@ -26,6 +26,8 @@ const SubmissionDetail = () => {
   const [submission, setSubmission] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const userRole = localStorage.getItem('role');
+  const isAdmin = userRole === 'ADMIN';
 
   const handleLogout = () => {
     localStorage.clear();
@@ -96,6 +98,11 @@ const SubmissionDetail = () => {
           <div className="sd-nav-item" onClick={() => navigate('/profile')}>
             <FiUser className="sd-nav-icon" /> Profile
           </div>
+          {isAdmin && (
+            <div className="sd-nav-item admin-nav" onClick={() => navigate('/admin')}>
+              <FiShield className="sd-nav-icon" /> Admin Panel
+            </div>
+          )}
         </nav>
       </div>
       <div className="sd-sidebar-bottom">

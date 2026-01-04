@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import "./list-exercise.css"; 
 
 // Import Icons
-import { FiGrid, FiFileText, FiSend, FiUser, FiSettings, FiLogOut, FiSearch, FiBell, FiChevronDown } from 'react-icons/fi';
+import { FiGrid, FiFileText, FiSend, FiUser, FiSettings, FiLogOut, FiSearch, FiBell, FiChevronDown, FiShield } from 'react-icons/fi';
 import { FaUserCircle, FaLightbulb, FaCogs, FaDatabase } from "react-icons/fa"; // Dùng FaDatabase cho SQL đẹp hơn
 import { TbBinaryTree } from "react-icons/tb";
 import { VscDebugAlt } from "react-icons/vsc";
@@ -11,6 +11,8 @@ import { VscDebugAlt } from "react-icons/vsc";
 export default function ListExercise() {
   const navigate = useNavigate();
   const username = localStorage.getItem('username') || 'User';
+  const userRole = localStorage.getItem('role');
+  const isAdmin = userRole === 'ADMIN';
   const [searchTerm, setSearchTerm] = useState('');
 
   // Dữ liệu các thẻ bài tập
@@ -134,6 +136,11 @@ export default function ListExercise() {
               <div className="nav-item active"> <FiFileText className="nav-icon" /> Problems </div>
               <div className="nav-item" onClick={() => navigate('/profile/submissions')}> <FiSend className="nav-icon" /> Submissions </div>
               <div className="nav-item" onClick={() => navigate('/profile')}> <FiUser className="nav-icon" /> Profile </div>
+              {isAdmin && (
+                <div className="nav-item admin-nav" onClick={() => navigate('/admin')}>
+                  <FiShield className="nav-icon" /> Admin Panel
+                </div>
+              )}
             </nav>
           </div>
           <div className="sidebar-bottom">

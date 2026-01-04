@@ -14,7 +14,7 @@ import java.util.List;
 public interface SubmissionRepository extends JpaRepository<Submission, Long>, JpaSpecificationExecutor<Submission> {
 
     List<Submission> findByUserIdOrderBySubmittedAtDesc(Long userId);
-    
+
     @Query("SELECT s FROM Submission s JOIN FETCH s.problem WHERE s.user.id = :userId ORDER BY s.submittedAt DESC")
     List<Submission> findByUserIdWithProblem(@Param("userId") Long userId);
 
@@ -41,7 +41,12 @@ public interface SubmissionRepository extends JpaRepository<Submission, Long>, J
     Long countDistinctProblemsSolvedByUserIdAndDifficulty(@Param("userId") Long userId,
             @Param("difficulty") String difficulty);
 
-    // Check if user has solved a specific problem (has at least one ACCEPTED submission)
+    // Check if user has solved a specific problem (has at least one ACCEPTED
+    // submission)
     @Query("SELECT CASE WHEN COUNT(s) > 0 THEN true ELSE false END FROM Submission s WHERE s.user.id = :userId AND s.problem.id = :problemId AND s.status = 'ACCEPTED'")
     boolean hasUserSolvedProblem(@Param("userId") Long userId, @Param("problemId") Long problemId);
+
+    // Find accepted solutions for a problem
+    @Query("SELECT s FROM Submission s WHERE s.problem.id = :problemId AND s.status = 'ACCEPTED' ORDER BY s.submittedAt DESC")
+    List<Submission> findByProblemIdAndStatus(@Param("problemId") Long problemId, @Param("status") String status);
 }

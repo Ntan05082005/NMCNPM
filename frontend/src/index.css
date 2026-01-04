@@ -10,8 +10,8 @@ body { font-family: system-ui, -apple-system, sans-serif; background: white; ove
 body { background: var(--bg-primary); color: var(--text-primary); }
 
 /* Sidebar & Cards */
-.dashboard-page, .sh-page, .list-exercise-page, .specified-problem-page, .problem-detail-page, .interface-code-wrapper { background: var(--bg-primary) !important; }
-.sidebar, .sh-sidebar { background: var(--sidebar-bg) !important; }
+.dashboard-page, .sh-page, .list-exercise-page, .specified-problem-page, .problem-detail-page, .interface-code-wrapper, .admin-page, .problem-editor-page { background: var(--bg-primary) !important; }
+.sidebar, .sh-sidebar, .admin-sidebar { background: var(--sidebar-bg) !important; }
 .sidebar a, .sidebar button { color: #1e293b !important; font-weight: 600; padding: 0.75rem 1.25rem; border-radius: 12px; }
 .sidebar a:hover { color: #2563eb !important; background: rgba(37, 99, 235, 0.1); }
 .sidebar a.active { color: #ffffff !important; background: #2563eb; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
@@ -25,6 +25,8 @@ body.theme-dark .sidebar a.active { color: #0f172a !important; background: #60a5
 body.theme-dark .nav-item, body.theme-dark .sh-nav-item { color: #e2e8f0 !important; }
 body.theme-dark .nav-item:hover, body.theme-dark .sh-nav-item:hover { color: #60a5fa !important; background: rgba(96, 165, 250, 0.15) !important; }
 body.theme-dark .nav-item.active, body.theme-dark .sh-nav-item.active { color: #0f172a !important; background: #60a5fa !important; box-shadow: 0 4px 15px rgba(96, 165, 250, 0.4) !important; }
+body.theme-dark .nav-item.admin-nav, body.theme-dark .sh-nav-item.admin-nav, body.theme-dark .sd-nav-item.admin-nav { background: rgba(251, 191, 36, 0.15) !important; color: #fbbf24 !important; border: 1px solid rgba(251, 191, 36, 0.3) !important; }
+body.theme-dark .nav-item.admin-nav:hover, body.theme-dark .sh-nav-item.admin-nav:hover, body.theme-dark .sd-nav-item.admin-nav:hover { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important; color: #fff !important; }
 body.theme-dark .stat-card, body.theme-dark .sh-card { background: #1e293b; border: 1px solid rgba(148, 163, 184, 0.2); }
 body.theme-dark .submission-item { background: #1e293b; border: 1px solid rgba(148, 163, 184, 0.2); }
 body.theme-dark .submission-item:hover { background: #2d3a4f; }
@@ -76,6 +78,8 @@ body.theme-christmas .sidebar a.active { background: #dc2626; }
 body.theme-christmas .nav-item, body.theme-christmas .sh-nav-item { color: #ffffff !important; }
 body.theme-christmas .nav-item.active, body.theme-christmas .sh-nav-item.active { background: #dc2626 !important; box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4) !important; }
 body.theme-christmas .nav-item:hover, body.theme-christmas .sh-nav-item:hover { background: rgba(220, 38, 38, 0.2) !important; color: #ffffff !important; }
+body.theme-christmas .nav-item.admin-nav, body.theme-christmas .sh-nav-item.admin-nav, body.theme-christmas .sd-nav-item.admin-nav { background: rgba(251, 191, 36, 0.2) !important; color: #fcd34d !important; border: 1px solid rgba(251, 191, 36, 0.4) !important; }
+body.theme-christmas .nav-item.admin-nav:hover, body.theme-christmas .sh-nav-item.admin-nav:hover, body.theme-christmas .sd-nav-item.admin-nav:hover { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important; color: #fff !important; }
 /* Christmas theme - Problem pages */
 body.theme-christmas .specified-problem-page, body.theme-christmas .problem-detail-page, body.theme-christmas .interface-code-wrapper { background: var(--bg-primary) !important; }
 body.theme-christmas .specified-problem-page .dashboard-container, body.theme-christmas .problem-detail-page .dashboard-container { background: var(--bg-primary) !important; }
@@ -121,6 +125,8 @@ body.theme-newyear .sidebar a.active { color: #2d2d2d !important; background: li
 body.theme-newyear .nav-item.active, body.theme-newyear .sh-nav-item.active { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%) !important; color: #2d2d2d !important; box-shadow: 0 4px 15px rgba(251, 191, 36, 0.4) !important; }
 body.theme-newyear .nav-item:hover, body.theme-newyear .sh-nav-item:hover { background: rgba(251, 191, 36, 0.15) !important; color: #fbbf24 !important; }
 body.theme-newyear .nav-item, body.theme-newyear .sh-nav-item { color: #fde68a !important; }
+body.theme-newyear .nav-item.admin-nav, body.theme-newyear .sh-nav-item.admin-nav, body.theme-newyear .sd-nav-item.admin-nav { background: rgba(251, 191, 36, 0.2) !important; color: #fbbf24 !important; border: 1px solid rgba(251, 191, 36, 0.5) !important; }
+body.theme-newyear .nav-item.admin-nav:hover, body.theme-newyear .sh-nav-item.admin-nav:hover, body.theme-newyear .sd-nav-item.admin-nav:hover { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%) !important; color: #2d2d2d !important; }
 /* New Year theme - Problem pages */
 body.theme-newyear .specified-problem-page, body.theme-newyear .problem-detail-page, body.theme-newyear .interface-code-wrapper { background: var(--bg-primary) !important; }
 body.theme-newyear .specified-problem-page .dashboard-container, body.theme-newyear .problem-detail-page .dashboard-container { background: var(--bg-primary) !important; }
