@@ -48,3 +48,6 @@ code_exec_*/
 
 ### Docker ###
 docker-compose.override.yml
+
+### Secrets - Keep API keys safe ###
+src/main/resources/application.properties

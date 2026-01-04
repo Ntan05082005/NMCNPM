@@ -175,7 +175,7 @@
   border-radius: 999px;
   font-size: 12px;
   font-weight: 600;
-  
+
 }
 
 .chip-medium {
@@ -287,7 +287,7 @@
   color: var(--text-primary, #374151);
 }
 
-.objectives-list li + li {
+.objectives-list li+li {
   margin-top: 4px;
 }
 
@@ -370,7 +370,7 @@
 .code-now-wrapper {
   padding: 0 40px 28px;
   display: flex;
-  justify-content: flex-end;
+  justify-content: center;
 }
 
 .code-now-btn {
@@ -424,6 +424,7 @@
 }
 
 @media (max-width: 768px) {
+
   .problem-detail-page .nav-menu,
   .problem-detail-page .sidebar-bottom {
     display: none;

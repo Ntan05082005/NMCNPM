@@ -20,6 +20,8 @@ import Profile from './pages/Profile/index.jsx';
 import Settings from './pages/Settings/index.jsx';
 import SubmissionResult from './pages/SubmissionResult/index.jsx';
 import SubmissionDetail from './pages/SubmissionDetail/index.jsx';
+import AIChatbot from './components/AIChatbot/AIChatbot.jsx';
+import { AIContextProvider } from './components/AIChatbot/AIContext.jsx';
 
 const ThemeEffects = () => {
   const snowFlakes = Array.from({ length: 18 }, (_, i) => i + 1);
@@ -52,8 +54,8 @@ const ThemeEffects = () => {
 
         // Safe zone: Đẩy ra biên nếu rơi vào giữa
         if (left > 20 && left < 80 && top > 20 && top < 80) {
-           if (Math.random() > 0.5) top = Math.random() * 15; // Lên đỉnh
-           else top = 85 + Math.random() * 10; // Xuống đáy
+          if (Math.random() > 0.5) top = Math.random() * 15; // Lên đỉnh
+          else top = 85 + Math.random() * 10; // Xuống đáy
         }
 
         newBatch.push({
@@ -103,10 +105,10 @@ const ThemeEffects = () => {
 
             {/* 2. Các tia sáng (Rays) */}
             <div className="explosion">
-                {rays.map((_, index) => (
-                    // Mỗi tia xoay 1 góc 15 độ
-                    <div key={index} className="ray" style={{ '--angle': `${index * 15}deg` }}></div>
-                ))}
+              {rays.map((_, index) => (
+                // Mỗi tia xoay 1 góc 15 độ
+                <div key={index} className="ray" style={{ '--angle': `${index * 15}deg` }}></div>
+              ))}
             </div>
           </div>
         ))}
@@ -129,27 +131,30 @@ function App() {
   }, []);
 
   return (
-    <BrowserRouter>
-      <ThemeEffects />
-      <Routes>
-        <Route path="/" element={<Start />} />
-        <Route path="/signup" element={<SignUp />} />
-        <Route path="/login" element={<LogIn />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/protected" element={<ProtectedPage />} />
-        <Route path="/problems" element={<ListExercise />} />
-        <Route path="/category/:categoryId" element={<SpecifiedProblem />} />
-        <Route path="/problem/:slug" element={<ProblemDetail />} />
-        <Route path="/interface-code/:slug" element={<InterfaceCode />} />
-        <Route path="/submission-result" element={<SubmissionResult />} />
-        <Route path="/submissions/:id" element={<SubmissionDetail />} />
-        <Route path="/profile/submissions" element={<SubmissionHistory />} />
-        <Route path="/about" element={<AboutUs />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/settings" element={<Settings />} />
-        <Route path="*" element={<div style={{ padding: 20 }}>No route matched</div>} />
-      </Routes>
-    </BrowserRouter>
+    <AIContextProvider>
+      <BrowserRouter>
+        <ThemeEffects />
+        <Routes>
+          <Route path="/" element={<Start />} />
+          <Route path="/signup" element={<SignUp />} />
+          <Route path="/login" element={<LogIn />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/protected" element={<ProtectedPage />} />
+          <Route path="/problems" element={<ListExercise />} />
+          <Route path="/category/:categoryId" element={<SpecifiedProblem />} />
+          <Route path="/problem/:slug" element={<ProblemDetail />} />
+          <Route path="/interface-code/:slug" element={<InterfaceCode />} />
+          <Route path="/submission-result" element={<SubmissionResult />} />
+          <Route path="/submissions/:id" element={<SubmissionDetail />} />
+          <Route path="/profile/submissions" element={<SubmissionHistory />} />
+          <Route path="/about" element={<AboutUs />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="*" element={<div style={{ padding: 20 }}>No route matched</div>} />
+        </Routes>
+        <AIChatbot />
+      </BrowserRouter>
+    </AIContextProvider>
   );
 }
 
