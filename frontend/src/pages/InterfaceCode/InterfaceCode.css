@@ -532,6 +532,11 @@
     outline: none;
 }
 
+.interface-code-wrapper .custom-input-textarea::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.6;
+}
+
 /* --- RUN RESULT STYLES --- */
 .interface-code-wrapper .run-loading {
     color: var(--text-secondary);
@@ -653,12 +658,12 @@
 .interface-code-wrapper .testcase-row pre {
     margin: 0;
     padding: 6px 8px;
-    background-color: var(--bg-code, #1e1e1e);
+    background-color: #1e1e1e;
     border-radius: 3px;
     font-family: 'Consolas', 'Monaco', monospace;
     white-space: pre-wrap;
     word-break: break-word;
-    color: var(--text-primary, #d4d4d4);
+    color: #d4d4d4;
     font-size: 0.9em;
     max-height: 50px;
     overflow-y: auto;
@@ -714,6 +719,13 @@ body:not(.theme-dark):not(.theme-christmas):not(.theme-newyear) .interface-code-
 
 body:not(.theme-dark):not(.theme-christmas):not(.theme-newyear) .interface-code-wrapper .code-input-area {
     color: #d4d4d4;
+}
+
+/* Light mode: Override testcase pre background to be light */
+body:not(.theme-dark):not(.theme-christmas):not(.theme-newyear) .interface-code-wrapper .testcase-row pre {
+    background-color: #f8fafc;
+    color: #1e293b;
+    border: 1px solid rgba(0,0,0,0.1);
 }
 
 /* Dark Theme */

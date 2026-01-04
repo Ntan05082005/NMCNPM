@@ -280,3 +280,114 @@
   border-color: #e2e8f0;
   color: #475569;
 }
+
+/* --- DARK MODE THEME OVERRIDES --- */
+body.theme-dark .specified-problem-page .pr-title {
+  color: #f8fafc !important;
+}
+
+body.theme-dark .specified-problem-page .problem-row {
+  border-bottom-color: rgba(148, 163, 184, 0.2);
+}
+
+body.theme-dark .specified-problem-page .problem-row:hover {
+  background: #2d3a4f;
+}
+
+body.theme-dark .specified-problem-page .difficulty-badge {
+  background: rgba(148, 163, 184, 0.1);
+  border-color: rgba(148, 163, 184, 0.3);
+  color: #94a3b8;
+}
+
+body.theme-dark .specified-problem-page .difficulty-badge.diff-easy {
+  background: rgba(16, 185, 129, 0.15);
+  border-color: rgba(16, 185, 129, 0.4);
+  color: #34d399;
+}
+
+body.theme-dark .specified-problem-page .difficulty-badge.diff-medium {
+  background: rgba(251, 191, 36, 0.15);
+  border-color: rgba(251, 191, 36, 0.4);
+  color: #fbbf24;
+}
+
+body.theme-dark .specified-problem-page .difficulty-badge.diff-hard {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #f87171;
+}
+
+/* --- CHRISTMAS THEME OVERRIDES --- */
+body.theme-christmas .specified-problem-page .pr-title {
+  color: #ffffff !important;
+}
+
+body.theme-christmas .specified-problem-page .problem-row {
+  border-bottom-color: rgba(167, 243, 208, 0.2);
+}
+
+body.theme-christmas .specified-problem-page .problem-row:hover {
+  background: rgba(55, 100, 81, 0.95);
+}
+
+body.theme-christmas .specified-problem-page .difficulty-badge {
+  background: rgba(167, 243, 208, 0.1);
+  border-color: rgba(167, 243, 208, 0.3);
+  color: #a7f3d0;
+}
+
+body.theme-christmas .specified-problem-page .difficulty-badge.diff-easy {
+  background: rgba(134, 239, 172, 0.2);
+  border-color: rgba(134, 239, 172, 0.5);
+  color: #86efac;
+}
+
+body.theme-christmas .specified-problem-page .difficulty-badge.diff-medium {
+  background: rgba(251, 191, 36, 0.2);
+  border-color: rgba(251, 191, 36, 0.5);
+  color: #fbbf24;
+}
+
+body.theme-christmas .specified-problem-page .difficulty-badge.diff-hard {
+  background: rgba(252, 165, 165, 0.2);
+  border-color: rgba(252, 165, 165, 0.5);
+  color: #fca5a5;
+}
+
+/* --- NEW YEAR THEME OVERRIDES --- */
+body.theme-newyear .specified-problem-page .pr-title {
+  color: #ffffff !important;
+}
+
+body.theme-newyear .specified-problem-page .problem-row {
+  border-bottom-color: rgba(251, 191, 36, 0.2);
+}
+
+body.theme-newyear .specified-problem-page .problem-row:hover {
+  background: rgba(71, 71, 71, 0.98);
+}
+
+body.theme-newyear .specified-problem-page .difficulty-badge {
+  background: rgba(251, 191, 36, 0.1);
+  border-color: rgba(251, 191, 36, 0.3);
+  color: #fbbf24;
+}
+
+body.theme-newyear .specified-problem-page .difficulty-badge.diff-easy {
+  background: rgba(251, 191, 36, 0.15);
+  border-color: rgba(251, 191, 36, 0.4);
+  color: #fbbf24;
+}
+
+body.theme-newyear .specified-problem-page .difficulty-badge.diff-medium {
+  background: rgba(252, 211, 77, 0.15);
+  border-color: rgba(252, 211, 77, 0.4);
+  color: #fcd34d;
+}
+
+body.theme-newyear .specified-problem-page .difficulty-badge.diff-hard {
+  background: rgba(245, 158, 11, 0.15);
+  border-color: rgba(245, 158, 11, 0.4);
+  color: #f59e0b;
+}
