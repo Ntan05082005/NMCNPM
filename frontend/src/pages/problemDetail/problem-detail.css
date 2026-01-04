@@ -366,6 +366,115 @@
   color: #374151;
 }
 
+.constraints li code {
+  background: rgba(0, 0, 0, 0.05);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-family: 'Consolas', monospace;
+  font-size: 0.95em;
+}
+
+/* ============= THEME OVERRIDES ============= */
+
+/* Dark Mode */
+body.theme-dark .problem-detail-page .constraints h3 {
+  color: #fbbf24;
+}
+
+body.theme-dark .problem-detail-page .constraints ul {
+  color: #cbd5e1;
+}
+
+body.theme-dark .problem-detail-page .constraints li code {
+  background: rgba(96, 165, 250, 0.15);
+  color: #60a5fa;
+}
+
+body.theme-dark .problem-detail-page .example-card {
+  background: #1e293b;
+  color: #f8fafc;
+  border-color: rgba(148, 163, 184, 0.3);
+}
+
+body.theme-dark .problem-detail-page .example-header {
+  background: rgba(96, 165, 250, 0.2);
+  border-bottom-color: rgba(148, 163, 184, 0.3);
+}
+
+body.theme-dark .problem-detail-page .section-title {
+  color: #f8fafc;
+}
+
+body.theme-dark .problem-detail-page .section-title.green {
+  color: #60a5fa;
+}
+
+/* Christmas Theme */
+body.theme-christmas .problem-detail-page .constraints h3 {
+  color: #fbbf24;
+}
+
+body.theme-christmas .problem-detail-page .constraints ul {
+  color: #d1fae5;
+}
+
+body.theme-christmas .problem-detail-page .constraints li code {
+  background: rgba(220, 38, 38, 0.15);
+  color: #fca5a5;
+}
+
+body.theme-christmas .problem-detail-page .example-card {
+  background: rgba(45, 90, 71, 0.95);
+  color: #ffffff;
+  border-color: rgba(167, 243, 208, 0.3);
+}
+
+body.theme-christmas .problem-detail-page .example-header {
+  background: rgba(220, 38, 38, 0.3);
+  border-bottom-color: rgba(167, 243, 208, 0.3);
+}
+
+body.theme-christmas .problem-detail-page .section-title {
+  color: #a7f3d0;
+}
+
+body.theme-christmas .problem-detail-page .section-title.green {
+  color: #86efac;
+}
+
+/* New Year Theme */
+body.theme-newyear .problem-detail-page .constraints h3 {
+  color: #fbbf24;
+}
+
+body.theme-newyear .problem-detail-page .constraints ul {
+  color: #fef3c7;
+}
+
+body.theme-newyear .problem-detail-page .constraints li code {
+  background: rgba(251, 191, 36, 0.15);
+  color: #fbbf24;
+}
+
+body.theme-newyear .problem-detail-page .example-card {
+  background: rgba(61, 61, 61, 0.98);
+  color: #ffffff;
+  border-color: rgba(251, 191, 36, 0.4);
+}
+
+body.theme-newyear .problem-detail-page .example-header {
+  background: rgba(251, 191, 36, 0.25);
+  border-bottom-color: rgba(251, 191, 36, 0.4);
+}
+
+body.theme-newyear .problem-detail-page .section-title {
+  color: #fbbf24;
+}
+
+body.theme-newyear .problem-detail-page .section-title.green {
+  color: #fcd34d;
+}
+
 /* ============= CODE NOW BUTTON ============= */
 .code-now-wrapper {
   padding: 0 40px 28px;
