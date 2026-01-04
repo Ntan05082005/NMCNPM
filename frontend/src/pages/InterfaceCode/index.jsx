@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom'; // THÊM useNavigate
 import { getProblemDetail, runCode, submitCode } from "../../API/api-InterfaceCode.js";
 import { FiArrowLeft } from 'react-icons/fi';
+import { useAIContext } from '../../components/AIChatbot/AIContext.jsx';
 import './InterfaceCode.css';
 
 // --- HÀM TIỆN ÍCH ---
@@ -86,6 +87,7 @@ const CodeEditor = ({ defaultCode, submissionStatus, currentCode, onCodeChange, 
 export default function InterfaceCode() {
     const { slug } = useParams();
     const navigate = useNavigate(); // KHỞI TẠO NAVIGATE
+    const { setContext, clearContext } = useAIContext(); // AI Context
 
     const [problem, setProblem] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -120,6 +122,29 @@ export default function InterfaceCode() {
         if (slug) loadProblem(selectedLanguage);
     }, [slug, selectedLanguage]);
 
+    // Update AI Context when problem or code changes
+    useEffect(() => {
+        if (problem) {
+            // Extract plain text from HTML description
+            const tempDiv = document.createElement('div');
+            tempDiv.innerHTML = problem.description || '';
+            const plainDescription = tempDiv.textContent || tempDiv.innerText || '';
+
+            setContext({
+                title: problem.title,
+                difficulty: problem.difficulty,
+                description: plainDescription.substring(0, 500), // Limit for API
+                code: currentCode,
+                language: selectedLanguage,
+                examples: problem.examples || [],
+                constraints: problem.constraints || []
+            });
+        }
+
+        // Clear context when leaving the page
+        return () => clearContext();
+    }, [problem, currentCode, selectedLanguage, setContext, clearContext]);
+
     useEffect(() => {
         const interval = setInterval(() => setTimeElapsed(prev => prev + 1), 1000);
         return () => clearInterval(interval);
@@ -136,12 +161,12 @@ export default function InterfaceCode() {
                 language: selectedLanguage.toLowerCase(),
                 code: currentCode
             };
-            
+
             // Include custom input if provided
             if (customInput && customInput.trim()) {
                 requestData.customInput = customInput.trim();
             }
-            
+
             const response = await runCode(requestData);
             setRunResult(response.data);
         } catch (error) {
@@ -167,7 +192,7 @@ export default function InterfaceCode() {
                 language: selectedLanguage.toLowerCase(),
                 code: currentCode
             });
-            
+
             // Navigate to submission result page with data
             navigate('/submission-result', {
                 state: {
@@ -230,7 +255,7 @@ export default function InterfaceCode() {
                         <span className="nav-separator"></span>
                         <h1 className="problem-title">{problem.title}</h1>
                     </div>
-                    
+
                     <div className="problem-header">
                         <div className="problem-meta">
                             <span className={`difficulty-badge ${problem.difficulty?.toLowerCase() || 'medium'}`}>
@@ -241,10 +266,10 @@ export default function InterfaceCode() {
                             )}
                         </div>
                     </div>
-                    
+
                     <div className="problem-description-scroll">
                         <div className="description-content" dangerouslySetInnerHTML={{ __html: problem.description }} />
-                        
+
                         <div className="examples-section">
                             {problem.examples && problem.examples.map(ex => (
                                 <div key={ex.id} className="example-card">
@@ -268,7 +293,7 @@ export default function InterfaceCode() {
                                 </div>
                             ))}
                         </div>
-                        
+
                         {problem.constraints && problem.constraints.length > 0 && (
                             <div className="constraint-card">
                                 <h4 className="constraint-title">Constraints:</h4>
@@ -290,9 +315,9 @@ export default function InterfaceCode() {
                     {/* Top Bar with Language and Buttons */}
                     <div className="right-panel-header">
                         <div className="header-left">
-                            <select 
-                                className="language-select" 
-                                value={selectedLanguage} 
+                            <select
+                                className="language-select"
+                                value={selectedLanguage}
                                 onChange={(e) => {
                                     setSelectedLanguage(e.target.value);
                                     setSubmissionResult(null);
@@ -342,8 +367,8 @@ export default function InterfaceCode() {
                                 </div>
                             </div>
                             <div className="console-controls">
-                                <button 
-                                    className="console-control-btn" 
+                                <button
+                                    className="console-control-btn"
                                     onClick={() => {
                                         if (isConsoleMinimized) {
                                             setIsConsoleMinimized(false);
@@ -355,8 +380,8 @@ export default function InterfaceCode() {
                                 >
                                     {isConsoleExpanded ? '⊟' : '⊞'}
                                 </button>
-                                <button 
-                                    className="console-control-btn" 
+                                <button
+                                    className="console-control-btn"
                                     onClick={() => {
                                         if (isConsoleExpanded) {
                                             setIsConsoleExpanded(false);
@@ -378,13 +403,13 @@ export default function InterfaceCode() {
                                     ) : runResult ? (
                                         <div className="run-result">
                                             <div className={`run-status ${runResult.status === 'ACCEPTED' || runResult.status === 'EXECUTED' ? 'accepted' : runResult.status === 'WRONG_ANSWER' ? 'wrong' : 'error'}`}>
-                                                {runResult.status === 'ACCEPTED' ? '✓ All Sample Test Cases Passed' : 
-                                                 runResult.status === 'EXECUTED' ? '✓ Code Executed Successfully' :
-                                                 runResult.status === 'WRONG_ANSWER' ? '✗ Wrong Answer' :
-                                                 runResult.status === 'COMPILE_ERROR' ? '✗ Compilation Error' :
-                                                 runResult.status === 'RUNTIME_ERROR' ? '✗ Runtime Error' :
-                                                 runResult.status === 'TIME_LIMIT_EXCEEDED' ? '⏱ Time Limit Exceeded' :
-                                                 `Status: ${runResult.status}`}
+                                                {runResult.status === 'ACCEPTED' ? '✓ All Sample Test Cases Passed' :
+                                                    runResult.status === 'EXECUTED' ? '✓ Code Executed Successfully' :
+                                                        runResult.status === 'WRONG_ANSWER' ? '✗ Wrong Answer' :
+                                                            runResult.status === 'COMPILE_ERROR' ? '✗ Compilation Error' :
+                                                                runResult.status === 'RUNTIME_ERROR' ? '✗ Runtime Error' :
+                                                                    runResult.status === 'TIME_LIMIT_EXCEEDED' ? '⏱ Time Limit Exceeded' :
+                                                                        `Status: ${runResult.status}`}
                                             </div>
                                             {runResult.executionTimeMs !== undefined && (
                                                 <div className="run-time">Runtime: {runResult.executionTimeMs} ms</div>
@@ -441,8 +466,8 @@ export default function InterfaceCode() {
                                         </div>
                                     ) : (
                                         <div className="run-placeholder">
-                                            Click "Run" to test your code.<br/>
-                                            <span style={{fontSize: '0.85em', opacity: 0.7}}>
+                                            Click "Run" to test your code.<br />
+                                            <span style={{ fontSize: '0.85em', opacity: 0.7 }}>
                                                 Uses sample test cases, or your custom input if provided.
                                             </span>
                                         </div>
