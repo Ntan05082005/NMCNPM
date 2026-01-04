@@ -87,7 +87,7 @@ public class AdminService {
     // ==================== PROBLEM MANAGEMENT ====================
 
     public Page<Problem> getAllProblemsForAdmin(int page, int size, String search) {
-        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
 
         if (search != null && !search.isEmpty()) {
             return problemRepository.findByTitleContainingIgnoreCase(search, pageable);

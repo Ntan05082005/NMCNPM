@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiGrid, FiFileText, FiUsers, FiSend, FiSettings, FiLogOut, FiPlus, FiEdit2, FiTrash2, FiSearch, FiChevronLeft, FiChevronRight, FiEye } from 'react-icons/fi';
+import { FiGrid, FiFileText, FiUsers, FiSend, FiSettings, FiLogOut, FiPlus, FiEdit2, FiTrash2, FiSearch, FiChevronLeft, FiChevronRight, FiEye, FiChevronDown } from 'react-icons/fi';
 import { FaUserShield, FaCode } from 'react-icons/fa';
 import { getAdminStats, getUsers, updateUserRole, deleteUser, getProblemsAdmin, deleteProblem, getAllSubmissions } from '../../API/api-admin';
+import { formatLanguage, formatStatus, formatMemory } from '../../utils/format';
 import './admin.css';
 
 export default function AdminDashboard() {
@@ -14,18 +15,17 @@ export default function AdminDashboard() {
     // Users state
     const [users, setUsers] = useState([]);
     const [usersPage, setUsersPage] = useState(0);
-    const [usersTotalPages, setUsersTotalPages] = useState(0);
 
     // Problems state
     const [problems, setProblems] = useState([]);
     const [problemsPage, setProblemsPage] = useState(0);
-    const [problemsTotalPages, setProblemsTotalPages] = useState(0);
     const [problemSearch, setProblemSearch] = useState('');
+    const [difficultyFilter, setDifficultyFilter] = useState('ALL');
+    const [sortOpen, setSortOpen] = useState(false);
 
     // Submissions state
     const [submissions, setSubmissions] = useState([]);
     const [submissionsPage, setSubmissionsPage] = useState(0);
-    const [submissionsTotalPages, setSubmissionsTotalPages] = useState(0);
 
     const username = localStorage.getItem('username') || 'Admin';
     const userRole = localStorage.getItem('role');
@@ -40,6 +40,7 @@ export default function AdminDashboard() {
     }, [userRole, navigate]);
 
     useEffect(() => {
+        if (activeTab === 'dashboard') loadStats();
         if (activeTab === 'users') loadUsers();
         if (activeTab === 'problems') loadProblems();
         if (activeTab === 'submissions') loadSubmissions();
@@ -58,9 +59,9 @@ export default function AdminDashboard() {
 
     const loadUsers = async () => {
         try {
-            const res = await getUsers(usersPage, 10);
+            // Load all users for client-side pagination
+            const res = await getUsers(0, 1000, 'id', 'asc');
             setUsers(res.data.content || []);
-            setUsersTotalPages(res.data.totalPages || 0);
         } catch (err) {
             console.error('Failed to load users:', err);
         }
@@ -68,9 +69,9 @@ export default function AdminDashboard() {
 
     const loadProblems = async () => {
         try {
-            const res = await getProblemsAdmin(problemsPage, 10, problemSearch);
+            // Load all problems for client-side filtering/pagination
+            const res = await getProblemsAdmin(0, 1000, '');
             setProblems(res.data.content || []);
-            setProblemsTotalPages(res.data.totalPages || 0);
         } catch (err) {
             console.error('Failed to load problems:', err);
         }
@@ -78,9 +79,9 @@ export default function AdminDashboard() {
 
     const loadSubmissions = async () => {
         try {
-            const res = await getAllSubmissions(submissionsPage, 15);
+            // Load all submissions for client-side pagination
+            const res = await getAllSubmissions(0, 1000);
             setSubmissions(res.data.content || []);
-            setSubmissionsTotalPages(res.data.totalPages || 0);
         } catch (err) {
             console.error('Failed to load submissions:', err);
         }
@@ -128,6 +129,72 @@ export default function AdminDashboard() {
         if (d === 'HARD') return 'hard';
         return '';
     };
+
+    const getDifficultyLabel = (d) => {
+        const up = (d || '').toUpperCase();
+        if (up === 'EASY') return 'Easy';
+        if (up === 'MEDIUM') return 'Medium';
+        if (up === 'HARD') return 'Hard';
+        return 'All difficulties';
+    };
+
+    const ITEMS_PER_PAGE = 10;
+
+    // ==================== PROBLEMS PAGINATION ====================
+    // Filter problems by difficulty and search (client-side)
+    const filteredProblems = useMemo(() => {
+        let result = problems;
+        
+        // Filter by difficulty
+        if (difficultyFilter !== 'ALL') {
+            result = result.filter(p => p.difficulty?.toUpperCase() === difficultyFilter);
+        }
+        
+        // Filter by search term
+        if (problemSearch.trim()) {
+            const search = problemSearch.toLowerCase().trim();
+            result = result.filter(p => 
+                p.title?.toLowerCase().includes(search) ||
+                p.id?.toString().includes(search)
+            );
+        }
+        
+        return result;
+    }, [problems, difficultyFilter, problemSearch]);
+
+    // Calculate pagination for filtered results
+    const filteredTotalPages = Math.ceil(filteredProblems.length / ITEMS_PER_PAGE);
+    
+    // Get current page items
+    const paginatedProblems = useMemo(() => {
+        const start = problemsPage * ITEMS_PER_PAGE;
+        return filteredProblems.slice(start, start + ITEMS_PER_PAGE);
+    }, [filteredProblems, problemsPage]);
+
+    // Reset to page 0 when filter/search changes
+    useEffect(() => {
+        setProblemsPage(0);
+    }, [difficultyFilter, problemSearch]);
+
+    // ==================== USERS PAGINATION ====================
+    const usersTotalPages = Math.ceil(users.length / ITEMS_PER_PAGE);
+    
+    const paginatedUsers = useMemo(() => {
+        const start = usersPage * ITEMS_PER_PAGE;
+        return users.slice(start, start + ITEMS_PER_PAGE);
+    }, [users, usersPage]);
+
+    // ==================== SUBMISSIONS PAGINATION ====================
+    const submissionsTotalPages = Math.ceil(submissions.length / ITEMS_PER_PAGE);
+    
+    const paginatedSubmissions = useMemo(() => {
+        const start = submissionsPage * ITEMS_PER_PAGE;
+        return submissions.slice(start, start + ITEMS_PER_PAGE);
+    }, [submissions, submissionsPage]);
+
+    const sortLabel = difficultyFilter === 'ALL' 
+        ? 'All difficulties' 
+        : `Difficulty: ${getDifficultyLabel(difficultyFilter)}`;
 
     const getStatusClass = (status) => {
         if (status === 'ACCEPTED') return 'accepted';
@@ -249,128 +316,223 @@ export default function AdminDashboard() {
                                             onChange={(e) => setProblemSearch(e.target.value)}
                                         />
                                     </div>
-                                    <button className="btn-primary" onClick={() => navigate('/admin/problems/new')}>
-                                        <FiPlus /> New Problem
-                                    </button>
+                                    <div className="header-actions">
+                                        {/* Difficulty Filter Dropdown */}
+                                        <div className="sort-wrapper">
+                                            <button
+                                                className="sort-btn"
+                                                onClick={() => setSortOpen((v) => !v)}
+                                                type="button"
+                                            >
+                                                Sort By: {sortLabel} <FiChevronDown />
+                                            </button>
+                                            {sortOpen && (
+                                                <div className="sort-dropdown">
+                                                    {[
+                                                        { key: 'ALL', label: 'All difficulties' },
+                                                        { key: 'EASY', label: 'Easy' },
+                                                        { key: 'MEDIUM', label: 'Medium' },
+                                                        { key: 'HARD', label: 'Hard' },
+                                                    ].map((opt) => (
+                                                        <div
+                                                            key={opt.key}
+                                                            className={`sort-item ${difficultyFilter === opt.key ? 'active' : ''}`}
+                                                            onClick={() => {
+                                                                setDifficultyFilter(opt.key);
+                                                                setSortOpen(false);
+                                                            }}
+                                                        >
+                                                            {opt.label}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                        <button className="btn-primary" onClick={() => navigate('/admin/problems/new')}>
+                                            <FiPlus /> New Problem
+                                        </button>
+                                    </div>
                                 </div>
-                                <table className="admin-table">
-                                    <thead>
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>Title</th>
-                                            <th>Difficulty</th>
-                                            <th>Submissions</th>
-                                            <th>Acceptance</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {problems.map(p => (
-                                            <tr key={p.id}>
-                                                <td>{p.id}</td>
-                                                <td>{p.title}</td>
-                                                <td><span className={`difficulty-badge ${getDifficultyClass(p.difficulty)}`}>{p.difficulty}</span></td>
-                                                <td>{p.totalSubmissions || 0}</td>
-                                                <td>{p.acceptanceRate ? `${p.acceptanceRate}%` : 'N/A'}</td>
-                                                <td className="actions">
-                                                    <button className="btn-icon" title="View" onClick={() => navigate(`/problem/${p.slug}`)}>
-                                                        <FiEye />
-                                                    </button>
-                                                    <button className="btn-icon" title="Edit" onClick={() => navigate(`/admin/problems/${p.id}/edit`)}>
-                                                        <FiEdit2 />
-                                                    </button>
-                                                    <button className="btn-icon danger" title="Delete" onClick={() => handleDeleteProblem(p.id)}>
-                                                        <FiTrash2 />
-                                                    </button>
-                                                </td>
+                                <div className="table-container">
+                                    <table className="admin-table problems-table">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Title</th>
+                                                <th>Difficulty</th>
+                                                <th>Submissions</th>
+                                                <th>Acceptance</th>
+                                                <th>Actions</th>
                                             </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                                <Pagination page={problemsPage} totalPages={problemsTotalPages} onPageChange={setProblemsPage} />
+                                        </thead>
+                                        <tbody>
+                                            {paginatedProblems.map(p => (
+                                                <tr key={p.id}>
+                                                    <td>{p.id}</td>
+                                                    <td>{p.title}</td>
+                                                    <td><span className={`difficulty-badge ${getDifficultyClass(p.difficulty)}`}>{p.difficulty}</span></td>
+                                                    <td>{p.totalSubmissions || 0}</td>
+                                                    <td>{p.acceptanceRate ? `${p.acceptanceRate}%` : 'N/A'}</td>
+                                                    <td className="actions">
+                                                        <button className="btn-icon" title="View" onClick={() => navigate(`/problem/${p.slug}`)}>
+                                                            <FiEye />
+                                                        </button>
+                                                        <button className="btn-icon" title="Edit" onClick={() => navigate(`/admin/problems/${p.id}/edit`)}>
+                                                            <FiEdit2 />
+                                                        </button>
+                                                        <button className="btn-icon danger" title="Delete" onClick={() => handleDeleteProblem(p.id)}>
+                                                            <FiTrash2 />
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                            {/* Fill empty rows to maintain fixed height */}
+                                            {paginatedProblems.length < ITEMS_PER_PAGE && 
+                                                Array.from({ length: ITEMS_PER_PAGE - paginatedProblems.length }).map((_, i) => (
+                                                    <tr key={`empty-${i}`} className="empty-row">
+                                                        <td>&nbsp;</td>
+                                                        <td>&nbsp;</td>
+                                                        <td>&nbsp;</td>
+                                                        <td>&nbsp;</td>
+                                                        <td>&nbsp;</td>
+                                                        <td>&nbsp;</td>
+                                                    </tr>
+                                                ))
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div className="table-footer">
+                                    <span className="results-count">
+                                        Showing {paginatedProblems.length} of {filteredProblems.length} problems
+                                    </span>
+                                    <Pagination page={problemsPage} totalPages={filteredTotalPages} onPageChange={setProblemsPage} />
+                                </div>
                             </div>
                         )}
 
                         {/* Users Tab */}
                         {activeTab === 'users' && (
                             <div className="users-section">
-                                <table className="admin-table">
-                                    <thead>
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>Username</th>
-                                            <th>Email</th>
-                                            <th>Role</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {users.map(u => (
-                                            <tr key={u.id}>
-                                                <td>{u.id}</td>
-                                                <td>{u.username}</td>
-                                                <td>{u.email}</td>
-                                                <td>
-                                                    <select
-                                                        value={u.role}
-                                                        onChange={(e) => handleRoleChange(u.id, e.target.value)}
-                                                        className={`role-select ${u.role === 'ADMIN' ? 'admin' : ''}`}
-                                                    >
-                                                        <option value="USER">USER</option>
-                                                        <option value="ADMIN">ADMIN</option>
-                                                    </select>
-                                                </td>
-                                                <td className="actions">
-                                                    <button className="btn-icon danger" onClick={() => handleDeleteUser(u.id)}>
-                                                        <FiTrash2 />
-                                                    </button>
-                                                </td>
+                                <div className="table-container">
+                                    <table className="admin-table users-table">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>Username</th>
+                                                <th>Email</th>
+                                                <th>Role</th>
+                                                <th>Actions</th>
                                             </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                                <Pagination page={usersPage} totalPages={usersTotalPages} onPageChange={setUsersPage} />
+                                        </thead>
+                                        <tbody>
+                                            {paginatedUsers.map(u => (
+                                                <tr key={u.id}>
+                                                    <td>{u.id}</td>
+                                                    <td>{u.username}</td>
+                                                    <td>{u.email}</td>
+                                                    <td>
+                                                        <select
+                                                            value={u.role}
+                                                            onChange={(e) => handleRoleChange(u.id, e.target.value)}
+                                                            className={`role-select ${u.role === 'ADMIN' ? 'admin' : ''}`}
+                                                        >
+                                                            <option value="USER">USER</option>
+                                                            <option value="ADMIN">ADMIN</option>
+                                                        </select>
+                                                    </td>
+                                                    <td className="actions">
+                                                        <button className="btn-icon danger" onClick={() => handleDeleteUser(u.id)}>
+                                                            <FiTrash2 />
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                            {/* Fill empty rows to maintain fixed height */}
+                                            {paginatedUsers.length < ITEMS_PER_PAGE && 
+                                                Array.from({ length: ITEMS_PER_PAGE - paginatedUsers.length }).map((_, i) => (
+                                                    <tr key={`empty-${i}`} className="empty-row">
+                                                        <td>&nbsp;</td>
+                                                        <td>&nbsp;</td>
+                                                        <td>&nbsp;</td>
+                                                        <td>&nbsp;</td>
+                                                        <td>&nbsp;</td>
+                                                    </tr>
+                                                ))
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div className="table-footer">
+                                    <span className="results-count">
+                                        Showing {paginatedUsers.length} of {users.length} users
+                                    </span>
+                                    <Pagination page={usersPage} totalPages={usersTotalPages} onPageChange={setUsersPage} />
+                                </div>
                             </div>
                         )}
 
                         {/* Submissions Tab */}
                         {activeTab === 'submissions' && (
                             <div className="submissions-section">
-                                <table className="admin-table">
-                                    <thead>
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>User</th>
-                                            <th>Problem</th>
-                                            <th>Language</th>
-                                            <th>Status</th>
-                                            <th>Runtime</th>
-                                            <th>Memory</th>
-                                            <th>Submitted</th>
-                                            <th>Actions</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {submissions.map(s => (
-                                            <tr key={s.id}>
-                                                <td>{s.id}</td>
-                                                <td>{s.user?.username || 'Unknown'}</td>
-                                                <td>{s.problem?.title || 'Unknown'}</td>
-                                                <td>{s.language}</td>
-                                                <td><span className={`status-badge ${getStatusClass(s.status)}`}>{s.status}</span></td>
-                                                <td>{s.runtime ? `${s.runtime} ms` : 'N/A'}</td>
-                                                <td>{s.memory ? `${(s.memory / 1024).toFixed(1)} MB` : 'N/A'}</td>
-                                                <td>{formatDate(s.submittedAt)}</td>
-                                                <td className="actions">
-                                                    <button className="btn-icon" title="View Code" onClick={() => navigate(`/submissions/${s.id}`)}>
-                                                        <FaCode />
-                                                    </button>
-                                                </td>
+                                <div className="table-container">
+                                    <table className="admin-table submissions-table">
+                                        <thead>
+                                            <tr>
+                                                <th>ID</th>
+                                                <th>User</th>
+                                                <th>Problem</th>
+                                                <th>Language</th>
+                                                <th>Status</th>
+                                                <th>Runtime (ms)</th>
+                                                <th>Memory (KB)</th>
+                                                <th>Submitted</th>
+                                                <th>Action</th>
                                             </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                                <Pagination page={submissionsPage} totalPages={submissionsTotalPages} onPageChange={setSubmissionsPage} />
+                                        </thead>
+                                        <tbody>
+                                            {paginatedSubmissions.map(s => (
+                                                <tr key={s.id}>
+                                                    <td>{s.id}</td>
+                                                    <td>{s.user?.username || 'Unknown'}</td>
+                                                    <td>{s.problem?.title || 'Unknown'}</td>
+                                                    <td>{formatLanguage(s.language)}</td>
+                                                    <td><span className={`status-badge ${getStatusClass(s.status)}`}>{formatStatus(s.status)}</span></td>
+                                                    <td>{s.executionTimeMs != null ? s.executionTimeMs : '-'}</td>
+                                                    <td>{s.memoryUsedKb != null ? s.memoryUsedKb : '-'}</td>
+                                                    <td>{formatDate(s.submittedAt)}</td>
+                                                    <td className="actions">
+                                                        <button className="btn-icon" title="View Code" onClick={() => navigate(`/submissions/${s.id}`)}>
+                                                            <FaCode />
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            ))}
+                                            {/* Fill empty rows to maintain fixed height */}
+                                            {paginatedSubmissions.length < ITEMS_PER_PAGE && 
+                                                Array.from({ length: ITEMS_PER_PAGE - paginatedSubmissions.length }).map((_, i) => (
+                                                    <tr key={`empty-${i}`} className="empty-row">
+                                                        <td>&nbsp;</td>
+                                                        <td>&nbsp;</td>
+                                                        <td>&nbsp;</td>
+                                                        <td>&nbsp;</td>
+                                                        <td>&nbsp;</td>
+                                                        <td>&nbsp;</td>
+                                                        <td>&nbsp;</td>
+                                                        <td>&nbsp;</td>
+                                                        <td>&nbsp;</td>
+                                                    </tr>
+                                                ))
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div className="table-footer">
+                                    <span className="results-count">
+                                        Showing {paginatedSubmissions.length} of {submissions.length} submissions
+                                    </span>
+                                    <Pagination page={submissionsPage} totalPages={submissionsTotalPages} onPageChange={setSubmissionsPage} />
+                                </div>
                             </div>
                         )}
                     </div>
