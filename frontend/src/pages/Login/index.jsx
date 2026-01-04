@@ -25,28 +25,37 @@ export default function LogIn() {
       const token = res.data.token;
       const name = res.data.username;
       const userId = res.data.userId;
+      const role = res.data.role;
 
       // Clear old user data first
       localStorage.clear();
-      
-      // Lưu token, username và userId vào localStorage
+
+      // Lưu token, username, userId và role vào localStorage
       localStorage.setItem("jwt_token", token);
+      localStorage.setItem("token", token); // Also save as 'token' for api calls
       localStorage.setItem("username", name);
       localStorage.setItem("user_id", userId);
+      localStorage.setItem("userId", userId);
+      localStorage.setItem("role", role);
 
       setMessage("Login successful! Redirecting...");
       setTimeout(() => {
-        window.location.href = "/problems"; // chuyển sang trang danh sách bài tập
+        // Redirect admin to admin dashboard
+        if (role === 'ADMIN') {
+          window.location.href = "/admin";
+        } else {
+          window.location.href = "/problems";
+        }
       }, 1200);
     } catch (err) {
       console.error("Full error object:", err);
       console.error("Error response:", err.response);
       console.error("Error response data:", err.response?.data);
       console.error("Error response data type:", typeof err.response?.data);
-      
+
       // Backend trả về lỗi dạng plain text trong response.data
       let errorMessage = "Incorrect username or password!";
-      
+
       if (err.response?.data) {
         // Nếu backend trả về string trực tiếp
         if (typeof err.response.data === 'string') {
@@ -61,7 +70,7 @@ export default function LogIn() {
       } else {
         console.log("Không có err.response.data");
       }
-      
+
       console.log("Error message sẽ hiển thị:", errorMessage);
       setMessage(errorMessage);
     }
@@ -73,12 +82,12 @@ export default function LogIn() {
         {/* NAVBAR */}
         <header className="navbar">
           <nav className="nav-links">
-              <Link to="/practice">Practice</Link>
-              <Link to="/about">About Us</Link>
-              <Link to="/login" className="text-blue">LogIn</Link>
-              <Link to="/signup">
-                  <button className="btn btn-primary small">Sign Up</button>
-              </Link>
+            <Link to="/practice">Practice</Link>
+            <Link to="/about">About Us</Link>
+            <Link to="/login" className="text-blue">LogIn</Link>
+            <Link to="/signup">
+              <button className="btn btn-primary small">Sign Up</button>
+            </Link>
           </nav>
         </header>
 
