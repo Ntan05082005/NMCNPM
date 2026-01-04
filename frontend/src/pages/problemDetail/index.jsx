@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { getProblemBySlug } from "../../API/api-problemdetail.js";
 import "./problem-detail.css"; 
-import { FiSearch, FiBell, FiChevronDown, FiGrid, FiFileText, FiSend, FiUser, FiSettings, FiLogOut } from 'react-icons/fi';
+import { FiSearch, FiBell, FiChevronDown, FiGrid, FiFileText, FiSend, FiUser, FiSettings, FiLogOut, FiShield } from 'react-icons/fi';
 import { FaUserCircle } from 'react-icons/fa';
 
 function ProblemDetail() {
@@ -12,6 +12,8 @@ function ProblemDetail() {
   const [problem, setProblem] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const userRole = localStorage.getItem('role');
+  const isAdmin = userRole === 'ADMIN';
 
   const handleLogout = () => {
     // Clear all user data from localStorage
@@ -81,6 +83,11 @@ function ProblemDetail() {
             <div className="nav-item active"> <FiFileText className="nav-icon" /> Problems </div>
             <div className="nav-item" onClick={() => navigate('/profile/submissions')}> <FiSend className="nav-icon" /> Submissions </div>
             <div className="nav-item" onClick={() => navigate('/profile')}> <FiUser className="nav-icon" /> Profile </div>
+            {isAdmin && (
+              <div className="nav-item admin-nav" onClick={() => navigate('/admin')}>
+                <FiShield className="nav-icon" /> Admin Panel
+              </div>
+            )}
           </nav>
         </div>
         <div className="sidebar-bottom">

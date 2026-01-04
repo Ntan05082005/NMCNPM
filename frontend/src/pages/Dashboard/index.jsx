@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './dashboard.css';
-import { FiGrid, FiFileText, FiSend, FiUser, FiSettings, FiLogOut, FiSearch, FiBell, FiChevronDown, FiTrendingUp, FiAward, FiTarget } from 'react-icons/fi';
+import { FiGrid, FiFileText, FiSend, FiUser, FiSettings, FiLogOut, FiSearch, FiBell, FiChevronDown, FiTrendingUp, FiAward, FiTarget, FiShield } from 'react-icons/fi';
 import { FaUserCircle, FaFire, FaCheckCircle, FaClock } from 'react-icons/fa';
 import { getDashboardStats } from '../../API/api-dashboard.js';
 import { getUserSubmissions } from '../../API/api-submission.js';
@@ -16,6 +16,8 @@ export default function Dashboard() {
 
   const username = localStorage.getItem('username') || 'Guest';
   const userId = localStorage.getItem('userId') || localStorage.getItem('user_id') || '1';
+  const userRole = localStorage.getItem('role');
+  const isAdmin = userRole === 'ADMIN';
 
   useEffect(() => {
     async function loadDashboardData() {
@@ -206,6 +208,11 @@ export default function Dashboard() {
               <div className="nav-item" onClick={() => navigate('/profile')}>
                 <FiUser className="nav-icon" /> Profile
               </div>
+              {isAdmin && (
+                <div className="nav-item admin-nav" onClick={() => navigate('/admin')}>
+                  <FiShield className="nav-icon" /> Admin Panel
+                </div>
+              )}
             </nav>
           </div>
           <div className="sidebar-bottom">

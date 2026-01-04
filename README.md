@@ -61,6 +61,19 @@
   - Test case results display
   - Personal statistics
 
+- **🤖 AI Chatbot (UniCode Assistant)**
+  - Gemini AI-powered coding assistant
+  - Context-aware help on problem pages (knows your current code)
+  - Website-aware responses about UniCode features
+  - Floating chat interface with theme support
+
+- **🛡️ Admin Dashboard**
+  - Admin-only access at `/admin`
+  - Dashboard with platform statistics
+  - Problem management (create, edit, delete with rich text editor)
+  - User management (view all users, change roles)
+  - Submission viewer (view all user submissions)
+
 ### 🎨 User Interface
 
 - Modern React SPA with React Router v7
@@ -69,6 +82,8 @@
 - Code editor integration for problem solving
 - Real-time feedback on code execution
 - Protected routes with authentication guards
+- Multiple themes: Light, Dark, Christmas, New Year
+
 
 ---
 
@@ -385,6 +400,10 @@ jwt.expiration=86400000
 # Flyway Migration
 spring.flyway.enabled=true
 spring.flyway.baseline-on-migrate=true
+
+# Gemini AI Chatbot (Get your key from https://aistudio.google.com/)
+gemini.api.key=YOUR_GEMINI_API_KEY_HERE
+gemini.api.url=https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
 ```
 
 ### Environment Variables

@@ -2,7 +2,7 @@ import React, { useState } from "react"; // 1. Import useState
 import { Card, message } from "antd";
 import { CheckCircleFilled } from "@ant-design/icons";
 // Import icons cho Sidebar
-import { FiGrid, FiFileText, FiSend, FiUser, FiSettings, FiLogOut } from 'react-icons/fi';
+import { FiGrid, FiFileText, FiSend, FiUser, FiSettings, FiLogOut, FiShield } from 'react-icons/fi';
 import { updateUserProfile } from "../../API/api-user";
 import { useNavigate } from "react-router-dom";
 // Import CSS dashboard cho Sidebar
@@ -17,8 +17,10 @@ const THEMES = [
 
 const Settings = () => {
   const navigate = useNavigate();
+  const userRole = localStorage.getItem('role');
+  const isAdmin = userRole === 'ADMIN';
 
-  // 2. KHỞI TẠO STATE: Lấy theme hiện tại từ body class khi trang vừa load
+  // 2. KHỚI TẠO STATE: Lấy theme hiện tại từ body class khi trang vừa load
   const [currentTheme, setCurrentTheme] = useState(() => {
     return document.body.className.replace('theme-', '') || 'light';
   });
@@ -66,6 +68,11 @@ const Settings = () => {
               <div className="nav-item" onClick={() => navigate('/profile')}>
                 <FiUser className="nav-icon" /> Profile
               </div>
+              {isAdmin && (
+                <div className="nav-item admin-nav" onClick={() => navigate('/admin')}>
+                  <FiShield className="nav-icon" /> Admin Panel
+                </div>
+              )}
             </nav>
           </div>
           <div className="sidebar-bottom">

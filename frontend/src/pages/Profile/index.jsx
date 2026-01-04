@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Form, Input, Button, Card, Tabs, message, Avatar } from "antd";
 import { UserOutlined, GithubOutlined, LinkedinOutlined, SaveOutlined } from "@ant-design/icons";
 // Import thêm các icons cho Sidebar
-import { FiGrid, FiFileText, FiSend, FiUser, FiSettings, FiLogOut } from 'react-icons/fi';
+import { FiGrid, FiFileText, FiSend, FiUser, FiSettings, FiLogOut, FiShield } from 'react-icons/fi';
 import { getUserProfile, updateUserProfile } from "../../API/api-user";
 import { useNavigate } from "react-router-dom";
 import "./Profile.css";
@@ -14,6 +14,8 @@ const Profile = () => {
   const [user, setUser] = useState(null);
   const [form] = Form.useForm();
   const navigate = useNavigate();
+  const userRole = localStorage.getItem('role');
+  const isAdmin = userRole === 'ADMIN';
 
   useEffect(() => {
     loadProfile();
@@ -79,6 +81,11 @@ const Profile = () => {
               <div className="nav-item active" onClick={() => navigate('/profile')}>
                 <FiUser className="nav-icon" /> Profile
               </div>
+              {isAdmin && (
+                <div className="nav-item admin-nav" onClick={() => navigate('/admin')}>
+                  <FiShield className="nav-icon" /> Admin Panel
+                </div>
+              )}
             </nav>
           </div>
           <div className="sidebar-bottom">
