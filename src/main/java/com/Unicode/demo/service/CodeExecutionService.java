@@ -100,7 +100,7 @@ public class CodeExecutionService {
         // This keeps program output clean and separate from timing info
         return switch (language) {
             case PYTHON -> String.format(
-                    "docker run --rm --network=%s -v \"%s:/code:ro\" -w /code unicode-python:latest " +
+                    "docker run --rm --network=%s -v \"%s:/code:ro\" -w /code trantho16/unicode-python:latest " +
                             "sh -c \"start=$(date +%%s%%N) && " +
                             "/usr/bin/time -v -o /tmp/time.txt python solution.py < input.txt; " +
                             "end=$(date +%%s%%N) && " +
@@ -108,7 +108,7 @@ public class CodeExecutionService {
                             "echo ___TIME_MS:$(((end-start)/1000000))___ && echo ___MEM_KB:${mem:-0}___\"",
                     DOCKER_NETWORK, absPath);
             case JAVASCRIPT -> String.format(
-                    "docker run --rm --network=%s -v \"%s:/code:ro\" -w /code unicode-node:latest " +
+                    "docker run --rm --network=%s -v \"%s:/code:ro\" -w /code trantho16/unicode-node:latest " +
                             "sh -c \"start=$(date +%%s%%N) && " +
                             "/usr/bin/time -v -o /tmp/time.txt node solution.js < input.txt; " +
                             "end=$(date +%%s%%N) && " +
@@ -116,7 +116,7 @@ public class CodeExecutionService {
                             "echo ___TIME_MS:$(((end-start)/1000000))___ && echo ___MEM_KB:${mem:-0}___\"",
                     DOCKER_NETWORK, absPath);
             case CPP -> String.format(
-                    "docker run --rm --network=%s -v \"%s:/code\" -w /code unicode-gcc:latest " +
+                    "docker run --rm --network=%s -v \"%s:/code\" -w /code trantho16/unicode-gcc:latest " +
                             "sh -c \"g++ -O2 -o solution solution.cpp && " +
                             "start=$(date +%%s%%N) && " +
                             "/usr/bin/time -v -o /tmp/time.txt ./solution < input.txt; " +
