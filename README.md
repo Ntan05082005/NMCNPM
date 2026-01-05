@@ -359,18 +359,43 @@ Ensure Docker Desktop is installed and running:
 # Check Docker installation
 docker --version
 docker ps
+```
 
-# Pull required images (optional, will auto-pull on first use)
-docker pull openjdk:17-slim
-docker pull python:3.11-slim
-docker pull gcc:latest
+#### Build Custom Docker Images (Required)
+
+The code execution service requires custom Docker images with the `time` package pre-installed for accurate memory tracking:
+
+```bash
+# Navigate to project root
+cd <project-root>
+
+# Build Python execution image
+docker build -t unicode-python:latest -f docker/python.Dockerfile docker/
+
+# Build Node.js execution image
+docker build -t unicode-node:latest -f docker/node.Dockerfile docker/
+
+# Build GCC (C++) execution image
+docker build -t unicode-gcc:latest -f docker/gcc.Dockerfile docker/
+```
+
+#### Verify Images
+
+```bash
+# Check that all images are built
+docker image ls
+
+# You should see:
+# unicode-python    latest    ...
+# unicode-node      latest    ...
+# unicode-gcc       latest    ...
 ```
 
 **Test code execution:**
 1. Login to the application
 2. Navigate to any problem
 3. Submit a solution
-4. Verify execution results appear
+4. Verify execution results appear with runtime and memory usage
 
 ---
 

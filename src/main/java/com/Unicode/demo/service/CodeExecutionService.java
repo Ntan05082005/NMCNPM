@@ -95,31 +95,33 @@ public class CodeExecutionService {
     private String buildDockerCommand(Path tempDir, Language language) {
         String absPath = tempDir.toAbsolutePath().toString().replace("\\", "/");
 
-        // Each command wraps execution with shell timing and memory measurement
-        // Output format: normal output followed by ___TIME_MS:123___ and
-        // ___MEM_KB:456___
-        // Memory is captured using /proc/self/status VmHWM (peak resident set size)
+        // Memory tracking using /usr/bin/time -v -o to write timing to separate file
+        // Custom images (unicode-*) have time package pre-installed
+        // This keeps program output clean and separate from timing info
         return switch (language) {
             case PYTHON -> String.format(
-                    "docker run --rm --network=%s -v \"%s:/code:ro\" -w /code python:3.11-slim " +
-                            "sh -c \"start=$(date +%%s%%N) && python solution.py < input.txt && " +
-                            "end=$(date +%%s%%N) && mem=$(grep VmHWM /proc/self/status 2>/dev/null | awk '{print $2}' || echo 0) && "
-                            +
+                    "docker run --rm --network=%s -v \"%s:/code:ro\" -w /code unicode-python:latest " +
+                            "sh -c \"start=$(date +%%s%%N) && " +
+                            "/usr/bin/time -v -o /tmp/time.txt python solution.py < input.txt; " +
+                            "end=$(date +%%s%%N) && " +
+                            "mem=$(grep 'Maximum resident set size' /tmp/time.txt | awk '{print $NF}') && " +
                             "echo ___TIME_MS:$(((end-start)/1000000))___ && echo ___MEM_KB:${mem:-0}___\"",
                     DOCKER_NETWORK, absPath);
             case JAVASCRIPT -> String.format(
-                    "docker run --rm --network=%s -v \"%s:/code:ro\" -w /code node:20-slim " +
-                            "sh -c \"start=$(date +%%s%%N) && node solution.js < input.txt && " +
-                            "end=$(date +%%s%%N) && mem=$(grep VmHWM /proc/self/status 2>/dev/null | awk '{print $2}' || echo 0) && "
-                            +
+                    "docker run --rm --network=%s -v \"%s:/code:ro\" -w /code unicode-node:latest " +
+                            "sh -c \"start=$(date +%%s%%N) && " +
+                            "/usr/bin/time -v -o /tmp/time.txt node solution.js < input.txt; " +
+                            "end=$(date +%%s%%N) && " +
+                            "mem=$(grep 'Maximum resident set size' /tmp/time.txt | awk '{print $NF}') && " +
                             "echo ___TIME_MS:$(((end-start)/1000000))___ && echo ___MEM_KB:${mem:-0}___\"",
                     DOCKER_NETWORK, absPath);
             case CPP -> String.format(
-                    "docker run --rm --network=%s -v \"%s:/code\" -w /code gcc:13 " +
+                    "docker run --rm --network=%s -v \"%s:/code\" -w /code unicode-gcc:latest " +
                             "sh -c \"g++ -O2 -o solution solution.cpp && " +
-                            "start=$(date +%%s%%N) && ./solution < input.txt && " +
-                            "end=$(date +%%s%%N) && mem=$(grep VmHWM /proc/self/status 2>/dev/null | awk '{print $2}' || echo 0) && "
-                            +
+                            "start=$(date +%%s%%N) && " +
+                            "/usr/bin/time -v -o /tmp/time.txt ./solution < input.txt; " +
+                            "end=$(date +%%s%%N) && " +
+                            "mem=$(grep 'Maximum resident set size' /tmp/time.txt | awk '{print $NF}') && " +
                             "echo ___TIME_MS:$(((end-start)/1000000))___ && echo ___MEM_KB:${mem:-0}___\"",
                     DOCKER_NETWORK, absPath);
         };

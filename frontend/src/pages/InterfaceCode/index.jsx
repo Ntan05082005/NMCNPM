@@ -202,7 +202,7 @@ export default function InterfaceCode() {
                     stderr: response.data.stderr || '',
                     compilerError: response.data.compilerError || '',
                     timeLimit: `${response.data.executionTimeMs || 0} ms`,
-                    memoryLimit: response.data.memoryUsedMB ? `${response.data.memoryUsedMB} MB` : 'N/A',
+                    memoryLimit: response.data.memoryUsedMB ? `${Math.round(response.data.memoryUsedMB * 1024)} KB` : 'N/A',
                     testcasesPassed: `${response.data.testCasesPassed || 0} / ${response.data.totalTestCases || 0}`,
                     testResults: response.data.testResults || [],
                     language: selectedLanguage,
