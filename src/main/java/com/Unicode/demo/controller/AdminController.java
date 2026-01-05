@@ -1,5 +1,6 @@
 package com.Unicode.demo.controller;
 
+import com.Unicode.demo.dto.ProblemDto;
 import com.Unicode.demo.entity.*;
 import com.Unicode.demo.service.AdminService;
 import org.springframework.data.domain.Page;
@@ -64,7 +65,7 @@ public class AdminController {
     // ==================== PROBLEM MANAGEMENT ====================
 
     @GetMapping("/problems")
-    public ResponseEntity<Page<Problem>> getAllProblems(
+    public ResponseEntity<Page<ProblemDto>> getAllProblems(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(required = false) String search) {

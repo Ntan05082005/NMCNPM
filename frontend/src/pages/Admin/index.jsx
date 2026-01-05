@@ -51,12 +51,27 @@ export default function AdminDashboard() {
         if (activeTab === 'submissions') loadSubmissions();
     }, [activeTab, usersPage, problemsPage, submissionsPage, problemSearch, submissionFilters]);
 
+    // Real-time updates: Auto-refresh dashboard every 30 seconds
+    useEffect(() => {
+        if (activeTab === 'dashboard') {
+            const interval = setInterval(() => {
+                console.log('🔄 Auto-refreshing dashboard stats...');
+                loadStats();
+            }, 30000); // 30 seconds
+
+            return () => clearInterval(interval);
+        }
+    }, [activeTab]);
+
     const loadStats = async () => {
         try {
             const res = await getAdminStats();
+            console.log('Stats response:', res.data);
             setStats(res.data);
         } catch (err) {
             console.error('Failed to load stats:', err);
+            console.error('Error details:', err.response?.data || err.message);
+            alert('Failed to load stats: ' + (err.response?.data?.error || err.message));
         } finally {
             setLoading(false);
         }
@@ -66,9 +81,12 @@ export default function AdminDashboard() {
         try {
             // Load all users for client-side pagination
             const res = await getUsers(0, 1000, 'id', 'asc');
+            console.log('Users response:', res.data);
             setUsers(res.data.content || []);
         } catch (err) {
             console.error('Failed to load users:', err);
+            console.error('Error details:', err.response?.data || err.message);
+            alert('Failed to load users: ' + (err.response?.data?.error || err.message));
         }
     };
 
@@ -76,9 +94,12 @@ export default function AdminDashboard() {
         try {
             // Load all problems for client-side filtering/pagination
             const res = await getProblemsAdmin(0, 1000, '');
+            console.log('Problems response:', res.data);
             setProblems(res.data.content || []);
         } catch (err) {
             console.error('Failed to load problems:', err);
+            console.error('Error details:', err.response?.data || err.message);
+            alert('Failed to load problems: ' + (err.response?.data?.error || err.message));
         }
     };
 
@@ -86,9 +107,12 @@ export default function AdminDashboard() {
         try {
             // Load submissions with filters
             const res = await getAllSubmissions(0, 1000, submissionFilters);
+            console.log('Submissions response:', res.data);
             setSubmissions(res.data.content || []);
         } catch (err) {
             console.error('Failed to load submissions:', err);
+            console.error('Error details:', err.response?.data || err.message);
+            alert('Failed to load submissions: ' + (err.response?.data?.error || err.message));
         }
     };
 
@@ -208,6 +232,19 @@ export default function AdminDashboard() {
         return new Date(dateStr).toLocaleString();
     };
 
+    const formatTimeAgo = (dateStr) => {
+        if (!dateStr) return 'N/A';
+        const date = new Date(dateStr);
+        const now = new Date();
+        const seconds = Math.floor((now - date) / 1000);
+        
+        if (seconds < 60) return 'just now';
+        if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
+        if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+        if (seconds < 604800) return `${Math.floor(seconds / 86400)}d ago`;
+        return date.toLocaleDateString();
+    };
+
     if (loading) {
         return <div className="admin-loading">Loading Admin Dashboard...</div>;
     }
@@ -272,33 +309,237 @@ export default function AdminDashboard() {
                     <div className="admin-content">
                         {/* Dashboard Tab */}
                         {activeTab === 'dashboard' && stats && (
-                            <div className="stats-grid">
-                                <div className="stat-card blue">
-                                    <div className="stat-icon"><FiUsers /></div>
-                                    <div className="stat-info">
-                                        <h3>{stats.totalUsers}</h3>
-                                        <p>Total Users</p>
+                            <div className="dashboard-wrapper">
+                                {/* Main Stats Grid */}
+                                <div className="stats-grid">
+                                    <div className="stat-card blue">
+                                        <div className="stat-icon"><FiUsers /></div>
+                                        <div className="stat-info">
+                                            <h3>{stats.totalUsers}</h3>
+                                            <p>Total Users</p>
+                                        </div>
+                                    </div>
+                                    <div className="stat-card green">
+                                        <div className="stat-icon"><FiFileText /></div>
+                                        <div className="stat-info">
+                                            <h3>{stats.totalProblems}</h3>
+                                            <p>Problems</p>
+                                        </div>
+                                    </div>
+                                    <div className="stat-card purple">
+                                        <div className="stat-icon"><FiSend /></div>
+                                        <div className="stat-info">
+                                            <h3>{stats.totalSubmissions}</h3>
+                                            <p>Submissions</p>
+                                        </div>
+                                    </div>
+                                    <div className="stat-card orange">
+                                        <div className="stat-icon"><FaUserShield /></div>
+                                        <div className="stat-info">
+                                            <h3>{stats.adminCount}</h3>
+                                            <p>Admins</p>
+                                        </div>
                                     </div>
                                 </div>
-                                <div className="stat-card green">
-                                    <div className="stat-icon"><FiFileText /></div>
-                                    <div className="stat-info">
-                                        <h3>{stats.totalProblems}</h3>
-                                        <p>Problems</p>
+
+                                {/* Advanced Analytics Cards */}
+                                <div className="analytics-grid">
+                                    {/* Success Rate Card with CSS Chart */}
+                                    <div className="analytics-card chart-card">
+                                        <div className="card-header">
+                                            <h3>Submission Statistics</h3>
+                                            <span className="badge success">{stats.successRate}% Success</span>
+                                        </div>
+                                        <div className="card-body">
+                                            {stats.submissionsByStatus && (() => {
+                                                const total = stats.totalSubmissions || 1;
+                                                const statuses = [
+                                                    { name: 'Accepted', value: stats.submissionsByStatus.ACCEPTED || 0, color: '#52c41a' },
+                                                    { name: 'Wrong Answer', value: stats.submissionsByStatus.WRONG_ANSWER || 0, color: '#f5222d' },
+                                                    { name: 'Time Limit', value: stats.submissionsByStatus.TIME_LIMIT_EXCEEDED || 0, color: '#fa8c16' },
+                                                    { name: 'Runtime Error', value: stats.submissionsByStatus.RUNTIME_ERROR || 0, color: '#722ed1' },
+                                                    { name: 'Compile Error', value: stats.submissionsByStatus.COMPILATION_ERROR || 0, color: '#eb2f96' },
+                                                    { name: 'Pending', value: stats.submissionsByStatus.PENDING || 0, color: '#faad14' }
+                                                ].filter(item => item.value > 0);
+                                                
+                                                return (
+                                                    <div className="css-chart-wrapper">
+                                                        {/* Donut Chart */}
+                                                        <div className="css-donut-chart">
+                                                            <svg viewBox="0 0 100 100" className="donut-svg">
+                                                                <circle cx="50" cy="50" r="35" fill="none" stroke="#f0f0f0" strokeWidth="20" />
+                                                                {(() => {
+                                                                    let offset = 0;
+                                                                    return statuses.map((status, index) => {
+                                                                        const percentage = (status.value / total) * 100;
+                                                                        const strokeDasharray = `${percentage * 2.2} ${220 - percentage * 2.2}`;
+                                                                        const strokeDashoffset = -offset * 2.2;
+                                                                        offset += percentage;
+                                                                        return (
+                                                                            <circle
+                                                                                key={index}
+                                                                                cx="50"
+                                                                                cy="50"
+                                                                                r="35"
+                                                                                fill="none"
+                                                                                stroke={status.color}
+                                                                                strokeWidth="20"
+                                                                                strokeDasharray={strokeDasharray}
+                                                                                strokeDashoffset={strokeDashoffset}
+                                                                                transform="rotate(-90 50 50)"
+                                                                            />
+                                                                        );
+                                                                    });
+                                                                })()}
+                                                            </svg>
+                                                            <div className="donut-center">
+                                                                <div className="donut-percentage">{stats.successRate}%</div>
+                                                                <div className="donut-label">Success</div>
+                                                            </div>
+                                                        </div>
+                                                        
+                                                        {/* Legend */}
+                                                        <div className="chart-legend">
+                                                            {statuses.map((status, index) => (
+                                                                <div key={index} className="legend-item">
+                                                                    <div className="legend-color" style={{backgroundColor: status.color}}></div>
+                                                                    <div className="legend-label">{status.name}</div>
+                                                                    <div className="legend-value">{status.value}</div>
+                                                                </div>
+                                                            ))}
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })()}
+                                            
+                                            <div className="status-stats">
+                                                <div className="status-row">
+                                                    <span className="status-dot accepted"></span>
+                                                    <span className="status-label">Accepted:</span>
+                                                    <span className="status-value">{stats.acceptedSubmissions || 0}</span>
+                                                </div>
+                                                <div className="status-row">
+                                                    <span className="status-dot wrong"></span>
+                                                    <span className="status-label">Wrong Answer:</span>
+                                                    <span className="status-value">{stats.wrongAnswerSubmissions || 0}</span>
+                                                </div>
+                                                <div className="status-row">
+                                                    <span className="status-dot tle"></span>
+                                                    <span className="status-label">Time Limit:</span>
+                                                    <span className="status-value">{stats.timeLimitExceeded || 0}</span>
+                                                </div>
+                                                <div className="status-row">
+                                                    <span className="status-dot rte"></span>
+                                                    <span className="status-label">Runtime Error:</span>
+                                                    <span className="status-value">{stats.runtimeError || 0}</span>
+                                                </div>
+                                                <div className="status-row">
+                                                    <span className="status-dot ce"></span>
+                                                    <span className="status-label">Compile Error:</span>
+                                                    <span className="status-value">{stats.compilationError || 0}</span>
+                                                </div>
+                                                <div className="status-row">
+                                                    <span className="status-dot pending"></span>
+                                                    <span className="status-label">Pending:</span>
+                                                    <span className="status-value">{stats.pendingSubmissions || 0}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Activity Card */}
+                                    <div className="analytics-card">
+                                        <div className="card-header">
+                                            <h3>Activity</h3>
+                                        </div>
+                                        <div className="card-body">
+                                            <div className="metric-row">
+                                                <span className="metric-label">Active Users (7d)</span>
+                                                <span className="metric-value">{stats.activeUsersThisWeek}</span>
+                                            </div>
+                                            <div className="metric-row">
+                                                <span className="metric-label">Submissions Today</span>
+                                                <span className="metric-value">{stats.submissionsToday}</span>
+                                            </div>
+                                            <div className="activity-percentage">
+                                                {stats.totalUsers > 0 && (
+                                                    <small>
+                                                        {Math.round((stats.activeUsersThisWeek / stats.totalUsers) * 100)}% of users active
+                                                    </small>
+                                                )}
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div className="stat-card purple">
-                                    <div className="stat-icon"><FiSend /></div>
-                                    <div className="stat-info">
-                                        <h3>{stats.totalSubmissions}</h3>
-                                        <p>Submissions</p>
+
+                                {/* Popular Problems & Recent Activity */}
+                                <div className="dashboard-sections">
+                                    {/* Popular Problems */}
+                                    <div className="dashboard-section">
+                                        <div className="section-header-simple">
+                                            <h3>🔥 Popular Problems</h3>
+                                        </div>
+                                        <div className="popular-problems-list">
+                                            {stats.popularProblems && stats.popularProblems.length > 0 ? (
+                                                stats.popularProblems.map((problem, index) => (
+                                                    <div key={problem.id} className="popular-problem-item">
+                                                        <div className="problem-rank">#{index + 1}</div>
+                                                        <div className="problem-info">
+                                                            <div className="problem-title">{problem.title}</div>
+                                                            <div className="problem-meta">
+                                                                <span className={`difficulty-badge ${getDifficultyClass(problem.difficulty)}`}>
+                                                                    {problem.difficulty}
+                                                                </span>
+                                                                <span className="submission-count">
+                                                                    {problem.submissionCount} submissions
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                        <button 
+                                                            className="btn-view-small" 
+                                                            onClick={() => navigate(`/admin/problems/${problem.id}/edit`)}
+                                                        >
+                                                            <FiEdit2 />
+                                                        </button>
+                                                    </div>
+                                                ))
+                                            ) : (
+                                                <div className="empty-state">No popular problems yet</div>
+                                            )}
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="stat-card orange">
-                                    <div className="stat-icon"><FaUserShield /></div>
-                                    <div className="stat-info">
-                                        <h3>{stats.adminCount}</h3>
-                                        <p>Admins</p>
+
+                                    {/* Recent Activity */}
+                                    <div className="dashboard-section">
+                                        <div className="section-header-simple">
+                                            <h3>⚡ Recent Activity</h3>
+                                        </div>
+                                        <div className="activity-feed">
+                                            {stats.recentActivity && stats.recentActivity.length > 0 ? (
+                                                stats.recentActivity.map((activity) => (
+                                                    <div key={activity.id} className="activity-item">
+                                                        <div className={`activity-status ${getStatusClass(activity.status)}`}></div>
+                                                        <div className="activity-content">
+                                                            <div className="activity-main">
+                                                                <strong>{activity.username}</strong> submitted{' '}
+                                                                <span className="activity-problem">{activity.problemTitle}</span>
+                                                            </div>
+                                                            <div className="activity-meta">
+                                                                <span className={`status-badge ${getStatusClass(activity.status)}`}>
+                                                                    {formatStatus(activity.status)}
+                                                                </span>
+                                                                <span className="language-badge">{formatLanguage(activity.language)}</span>
+                                                                <span className="activity-time">
+                                                                    {formatTimeAgo(activity.submittedAt)}
+                                                                </span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                ))
+                                            ) : (
+                                                <div className="empty-state">No recent activity</div>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
                             </div>

@@ -24,13 +24,12 @@ public class ProblemSpecification {
                 predicates.add(root.get("difficulty").in(difficulties));
             }
 
-            // Filter by tags - TEMPORARILY DISABLED to fix ConcurrentModificationException
-            // TODO: Fix tag filtering with proper implementation
+            // Filter by tags
             if (tagSlugs != null && !tagSlugs.isEmpty()) {
-                // TEMPORARILY COMMENTED OUT - causing ConcurrentModificationException
+                // Use DISTINCT to avoid duplicate results from JOIN
+                query.distinct(true);
                 Join<Problem, Tag> tagJoin = root.join("tags", JoinType.INNER);
                 predicates.add(tagJoin.get("slug").in(tagSlugs));
-                System.out.println("⚠️  Tag filtering temporarily disabled");
             }
 
             // Search in title or description
