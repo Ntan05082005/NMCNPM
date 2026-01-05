@@ -14,7 +14,10 @@
 - [Features](#-features)
 - [Tech Stack](#-tech-stack)
 - [System Architecture](#-system-architecture)
-- [How It Works](#-how-it-works)
+- [How The System Works](#-how-the-system-works)
+- [Database Schema](#️-database-schema)
+- [Authentication & Security Flow](#-authentication--security-flow)
+- [Code Execution System](#️-code-execution-system)
 - [Prerequisites](#-prerequisites)
 - [Quick Start](#-quick-start)
 - [Installation](#-installation)
@@ -200,115 +203,225 @@ The project follows a **clean layered architecture** pattern:
 
 ---
 
-## 🔄 How It Works
+## 🔄 How The System Works
 
-### 1️⃣ Authentication Flow
+This section explains the complete flow of the application from user interaction to response.
 
+### 1️⃣ User Registration & Login Flow
+
+**Local Authentication:**
 ```
-User → Login Form → POST /api/auth/login
-                         ↓
-              AuthController validates credentials
-                         ↓
-              Password checked with BCrypt
-                         ↓
-              JWT Token generated (24h expiration)
-                         ↓
-              Token returned to client
-                         ↓
-        Client stores token in localStorage
-                         ↓
-    All subsequent requests include header:
-         Authorization: Bearer <token>
-                         ↓
-         JwtAuthenticationFilter validates token
-                         ↓
-         SecurityContext set with user details
+┌──────────────────────────────────────────────────────────┐
+│ FRONTEND (React)                                          │
+└────┬─────────────────────────────────────────────────────┘
+     │ 1. User submits registration/login form
+     ▼
+POST /api/auth/register or /api/auth/login
+     │ { username, email, password }
+     ▼
+┌────▼─────────────────────────────────────────────────────┐
+│ BACKEND: AuthController                                   │
+│  ├─ Validate input (empty check, email format)           │
+│  ├─ Check username/email uniqueness                      │
+│  ├─ Hash password with BCrypt                            │
+│  ├─ Save user to database                                │
+│  └─ Generate JWT token (24h expiration)                  │
+└────┬─────────────────────────────────────────────────────┘
+     │ Return: { token, username, userId, email, role }
+     ▼
+┌────▼─────────────────────────────────────────────────────┐
+│ FRONTEND: Store token in localStorage                    │
+│  ├─ localStorage.setItem("jwt_token", token)             │
+│  └─ All API requests include: Authorization: Bearer <token>
+└──────────────────────────────────────────────────────────┘
 ```
 
-**OAuth2 Flow:**
+**OAuth2 Social Login Flow:**
 ```
 User clicks "Login with Google/GitHub/Facebook"
-                         ↓
-        Redirected to OAuth provider
-                         ↓
-        User authorizes application
-                         ↓
-        OAuth2AuthenticationSuccessHandler
-                         ↓
-        User created/updated in database
-                         ↓
-        JWT token generated
-                         ↓
-        Redirect to frontend with token
+     ↓
+Frontend redirects to: /oauth2/authorization/{provider}
+     ↓
+Spring Security OAuth2 handles redirect to provider
+     ↓
+User authorizes on provider's page
+     ↓
+Provider redirects back with authorization code
+     ↓
+CustomOAuth2UserService fetches user info
+     ├─ Extract email, name, avatar from provider
+     ├─ Check if user exists in database
+     └─ Create new user or update existing
+     ↓
+OAuth2AuthenticationSuccessHandler
+     ├─ Generate JWT token
+     └─ Redirect to frontend: /oauth2/redirect?token=<jwt>
+     ↓
+Frontend extracts token from URL and stores it
 ```
 
-### 2️⃣ Code Submission & Execution Flow
+### 2️⃣ Problem Browsing & Filtering Flow
 
 ```
-User writes code → Click Submit → POST /api/submissions
-                                        ↓
-                            SubmissionController receives request
-                                        ↓
-                            SubmissionService validates problem
-                                        ↓
-                            CodeExecutionService starts execution
-                                        ↓
-                ┌───────────────────────┴────────────────────┐
-                ▼                                            ▼
-    Merge user code with driver template         Fetch test cases
-                ▼                                            ▼
-    Write to temporary file                      Prepare inputs
-                ▼                                            ▼
-    Create Docker container                      Run for each test
-    (isolated sandbox)                                      ▼
-                ▼                                   Capture output
-    Execute code (timeout: 2s)                              ▼
-    Track memory & runtime                    Compare with expected
-                ▼                                            ▼
-    Collect stdout/stderr                        JudgeService evaluates
-                └───────────────────────┬────────────────────┘
-                                        ▼
-                    Determine final status:
-                    - ACCEPTED (all tests pass)
-                    - WRONG_ANSWER (output mismatch)
-                    - RUNTIME_ERROR (crash/exception)
-                    - TIME_LIMIT_EXCEEDED (too slow)
-                    - COMPILATION_ERROR (syntax error)
-                                        ▼
-                    Save submission to database
-                                        ▼
-                    Return results to frontend
+┌──────────────────────────────────────────────────────────┐
+│ FRONTEND: User visits /problems page                      │
+└────┬─────────────────────────────────────────────────────┘
+     │ User selects filters (difficulty, tags, search)
+     ▼
+GET /api/problems?page=0&size=20&difficulty=EASY&tags=array
+     │
+     ▼
+┌────▼─────────────────────────────────────────────────────┐
+│ BACKEND: ProblemController.getProblems()                  │
+│  └─ Extract authenticated user (optional)                │
+└────┬─────────────────────────────────────────────────────┘
+     ▼
+┌────▼─────────────────────────────────────────────────────┐
+│ ProblemService.getProblems()                              │
+│  ├─ Build ProblemFilterDto from parameters               │
+│  ├─ Create Sort object (default: title ASC)              │
+│  └─ Build Pageable with page, size, sort                 │
+└────┬─────────────────────────────────────────────────────┘
+     ▼
+┌────▼─────────────────────────────────────────────────────┐
+│ ProblemSpecification.withFilters()                        │
+│  ├─ Build JPA Criteria Query dynamically                 │
+│  ├─ Add difficulty filter (if provided)                  │
+│  ├─ Add tags filter with JOIN (if provided)              │
+│  ├─ Add search filter on title (if provided)             │
+│  └─ Add isPremium filter (if provided)                   │
+└────┬─────────────────────────────────────────────────────┘
+     ▼
+┌────▼─────────────────────────────────────────────────────┐
+│ ProblemRepository.findAll(spec, pageable)                 │
+│  └─ Execute SQL query with JOINs on tags table           │
+└────┬─────────────────────────────────────────────────────┘
+     ▼
+┌────▼─────────────────────────────────────────────────────┐
+│ ProblemMapper.toDto()                                     │
+│  ├─ Convert Problem entity to ProblemDto                 │
+│  ├─ Check if user has solved this problem (if userId)    │
+│  │   └─ Query submissions table for ACCEPTED status      │
+│  ├─ Map tags to TagDto list                              │
+│  └─ Include acceptance rate, total submissions           │
+└────┬─────────────────────────────────────────────────────┘
+     │ Return: PageResponse<ProblemDto>
+     ▼
+┌────▼─────────────────────────────────────────────────────┐
+│ FRONTEND: Render problem list with pagination            │
+│  ├─ Display difficulty badge (Easy/Medium/Hard)          │
+│  ├─ Show solved status (green checkmark)                 │
+│  ├─ Show acceptance rate and tags                        │
+│  └─ Pagination controls at bottom                        │
+└──────────────────────────────────────────────────────────┘
 ```
 
-**Code Execution Security:**
-- Each submission runs in an isolated Docker container
-- No network access
-- Memory limit: 256MB
-- Time limit: 2000ms
-- Container destroyed after execution
-- Temporary files cleaned up
-
-### 3️⃣ Problem Display Flow
+### 3️⃣ Code Submission & Execution Flow (Detailed)
 
 ```
-User visits /problems → GET /api/problems?page=0&size=20
-                                ↓
-                    ProblemController handles request
-                                ↓
-                    ProblemService applies filters
-                                ↓
-        ProblemSpecification builds dynamic query
-                                ↓
-        Repository fetches from database with JOIN on tags
-                                ↓
-        ProblemMapper converts entities to DTOs
-                                ↓
-        Check user's solved status (if authenticated)
-                                ↓
-        Return paginated response with metadata
+┌──────────────────────────────────────────────────────────┐
+│ FRONTEND: User on /interface-code/{slug} page            │
+│  ├─ User writes code in editor                           │
+│  ├─ Selects language (C++, Python, JavaScript)           │
+│  └─ Clicks "Submit" button                               │
+└────┬─────────────────────────────────────────────────────┘
+     │ POST /api/submissions
+     │ { problemId, code, language }
+     ▼
+┌────▼─────────────────────────────────────────────────────┐
+│ BACKEND: SubmissionController.submit()                    │
+│  ├─ Extract authenticated user from JWT                  │
+│  └─ Delegate to SubmissionService                        │
+└────┬─────────────────────────────────────────────────────┘
+     ▼
+┌────▼─────────────────────────────────────────────────────┐
+│ SubmissionService.submit()                                │
+│  ├─ Fetch Problem from database                          │
+│  ├─ Fetch all TestCases for problem                      │
+│  ├─ Create Submission entity (status: PENDING)           │
+│  └─ For each test case:                                  │
+└────┬─────────────────────────────────────────────────────┘
+     ▼
+┌────▼─────────────────────────────────────────────────────┐
+│ CodeExecutionService.execute()                            │
+│  ├─ Get driver template for language                     │
+│  │   (LeetCode-style: wraps user solution function)      │
+│  ├─ Merge user code with driver template                 │
+│  │   driver.replace("{{USER_SOLUTION}}", userCode)       │
+│  ├─ Create temporary directory                           │
+│  ├─ Write code to file (solution.py/js/cpp)              │
+│  ├─ Write test input to input.txt                        │
+│  └─ Build Docker command                                 │
+└────┬─────────────────────────────────────────────────────┘
+     ▼
+┌────▼─────────────────────────────────────────────────────┐
+│ Docker Container Execution (Isolated Sandbox)            │
+│  ┌────────────────────────────────────────────────────┐  │
+│  │ Docker: trantho16/unicode-python:latest           │  │
+│  │  ├─ Network: NONE (no internet access)            │  │
+│  │  ├─ Volume: /code (read-only)                     │  │
+│  │  ├─ Memory limit: 256MB                           │  │
+│  │  └─ Timeout: 10s (hard limit)                     │  │
+│  ├────────────────────────────────────────────────────┤  │
+│  │ Execute: python solution.py < input.txt           │  │
+│  │  ├─ Capture stdout (program output)               │  │
+│  │  ├─ Capture stderr (errors)                       │  │
+│  │  ├─ Track execution time (nanoseconds)            │  │
+│  │  └─ Track memory usage (/usr/bin/time -v)        │  │
+│  └────────────────────────────────────────────────────┘  │
+│  ├─ Container destroyed after execution                  │
+│  └─ Temporary files cleaned up                           │
+└────┬─────────────────────────────────────────────────────┘
+     ▼
+┌────▼─────────────────────────────────────────────────────┐
+│ JudgeService.compareOutputs()                             │
+│  ├─ Normalize whitespace in output                       │
+│  ├─ Compare actual vs expected                           │
+│  └─ Categorize result:                                   │
+│      ├─ ACCEPTED (output matches)                        │
+│      ├─ WRONG_ANSWER (output mismatch)                   │
+│      ├─ RUNTIME_ERROR (exception/crash)                  │
+│      ├─ TIME_LIMIT_EXCEEDED (too slow)                   │
+│      └─ COMPILATION_ERROR (syntax error)                 │
+└────┬─────────────────────────────────────────────────────┘
+     ▼
+┌────▼─────────────────────────────────────────────────────┐
+│ Save Submission to Database                               │
+│  ├─ Update submission status                             │
+│  ├─ Save execution time, memory usage                    │
+│  ├─ Save test cases passed/total                         │
+│  └─ Update problem statistics (acceptance rate)          │
+└────┬─────────────────────────────────────────────────────┘
+     │ Return: SubmitResponse
+     │ { submissionId, status, testResults[], executionTimeMs }
+     ▼
+┌────▼─────────────────────────────────────────────────────┐
+│ FRONTEND: Display Results                                │
+│  ├─ Show status badge (ACCEPTED = green)                 │
+│  ├─ Show test case results (passed/failed)               │
+│  ├─ Show execution time and memory                       │
+│  └─ If error: show error message and stderr              │
+└──────────────────────────────────────────────────────────┘
 ```
 
-### 4️⃣ AI Chatbot Integration
+**LeetCode-Style Driver Templates:**
+```python
+# Example Driver Template for Python (Two Sum problem)
+{{USER_SOLUTION}}  # User's solution function inserted here
+
+if __name__ == "__main__":
+    import json
+    import sys
+    
+    for line in sys.stdin:
+        data = json.loads(line)
+        nums = data["nums"]
+        target = data["target"]
+        result = twoSum(nums, target)
+        print(json.dumps(result))
+```
+
+### 4️⃣ AI Chatbot Integration Flow
 
 ```
 User types message → POST /api/ai/chat
@@ -329,62 +442,355 @@ User types message → POST /api/ai/chat
 
 ---
 
-## 📦 Database Schema
+## 🗄️ Database Schema
+
+The system uses **PostgreSQL 15** with **Flyway migrations** for version control.
+
+### Entity-Relationship Diagram
+
+```
+┌─────────────┐         ┌──────────────┐         ┌────────────┐
+│    users    │         │   problems   │         │    tags    │
+├─────────────┤         ├──────────────┤         ├────────────┤
+│ id (PK)     │────┐    │ id (PK)      │◄────┐   │ id (PK)    │
+│ username    │    │    │ title        │     │   │ name       │
+│ email       │    │    │ slug         │     │   │ slug       │
+│ password    │    │    │ difficulty   │     │   └────────────┘
+│ role        │    │    │ description  │     │         │
+│ provider    │    │    │ category     │     │         │
+└─────────────┘    │    └──────────────┘     │         │
+       │           │           │              │         │
+       │           │           │              │         │
+       │           │      ┌────▼──────────┐   │    ┌────▼──────────┐
+       │           │      │  test_cases   │   │    │ problem_tags  │
+       │           │      ├───────────────┤   │    ├───────────────┤
+       │           │      │ id (PK)       │   │    │ problem_id(FK)│
+       │           │      │ problem_id(FK)│───┘    │ tag_id (FK)   │
+       │           │      │ input         │        └───────────────┘
+       │           │      │ expected_out  │
+       │           │      └───────────────┘
+       │           │
+       │      ┌────▼──────────┐
+       └──────► submissions   │
+              ├───────────────┤
+              │ id (PK)       │
+              │ user_id (FK)  │
+              │ problem_id(FK)│
+              │ code          │
+              │ language      │
+              │ status        │
+              │ execution_time│
+              │ memory_used   │
+              └───────────────┘
+```
 
 ### Core Tables
 
-**users**
+#### 1. **users** - User Account Information
 ```sql
-- id (BIGSERIAL PRIMARY KEY)
-- username (VARCHAR UNIQUE)
-- email (VARCHAR UNIQUE)
-- password (VARCHAR, BCrypt hashed)
-- role (ENUM: USER, ADMIN)
-- provider (VARCHAR: LOCAL, GOOGLE, GITHUB, FACEBOOK)
-- provider_id (VARCHAR)
-- github_link, linkedin_link (VARCHAR)
-- avatar_url, full_name (VARCHAR)
-- theme_preference (VARCHAR)
-- created_at, updated_at (TIMESTAMP)
+CREATE TABLE users (
+    id BIGSERIAL PRIMARY KEY,
+    username VARCHAR(50) UNIQUE NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255),  -- BCrypt hashed (nullable for OAuth)
+    role VARCHAR(20) DEFAULT 'USER' NOT NULL,  -- USER, ADMIN
+    
+    -- OAuth2 fields
+    provider VARCHAR(20) DEFAULT 'LOCAL',  -- LOCAL, GOOGLE, GITHUB, FACEBOOK
+    provider_id VARCHAR(255),
+    
+    -- Profile fields
+    full_name VARCHAR(255),
+    avatar_url TEXT,
+    github_link VARCHAR(255),
+    linkedin_link VARCHAR(255),
+    theme_preference VARCHAR(50) DEFAULT 'light',
+    
+    -- Timestamps
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 ```
 
-**problems**
+#### 2. **problems** - Coding Problems
 ```sql
-- id (SERIAL PRIMARY KEY)
-- title, slug (VARCHAR)
-- difficulty (VARCHAR: EASY, MEDIUM, HARD)
-- description, constraints (TEXT)
-- time_limit_ms, memory_limit_mb (INTEGER)
-- acceptance_rate (DECIMAL)
-- total_submissions, total_accepted (INTEGER)
-- starter_code_cpp/python/javascript (TEXT)
-- driver_code_cpp/python/javascript (TEXT)
-- function_name (VARCHAR)
-- category (VARCHAR)
-- created_at, updated_at (TIMESTAMP)
+CREATE TABLE problems (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    slug VARCHAR(255) UNIQUE NOT NULL,
+    difficulty VARCHAR(20) NOT NULL,  -- EASY, MEDIUM, HARD
+    description TEXT NOT NULL,
+    
+    -- Problem details
+    constraints TEXT,
+    input_format TEXT,
+    output_format TEXT,
+    summary TEXT,
+    learning_objectives TEXT,
+    
+    -- Limits
+    time_limit_ms INTEGER DEFAULT 2000,
+    memory_limit_mb INTEGER DEFAULT 256,
+    
+    -- Statistics
+    acceptance_rate DECIMAL(5,2) DEFAULT 0.0,
+    total_submissions INTEGER DEFAULT 0,
+    total_accepted INTEGER DEFAULT 0,
+    likes INTEGER DEFAULT 0,
+    dislikes INTEGER DEFAULT 0,
+    
+    -- Code templates (starter code shown to user)
+    starter_code_cpp TEXT,
+    starter_code_python TEXT,
+    starter_code_javascript TEXT,
+    
+    -- Driver templates (wraps user solution for LeetCode-style execution)
+    driver_code_cpp TEXT,
+    driver_code_python TEXT,
+    driver_code_javascript TEXT,
+    function_name VARCHAR(100),
+    
+    -- Metadata
+    category VARCHAR(50),  -- Array, String, DP, Graph, etc.
+    is_premium BOOLEAN DEFAULT FALSE,
+    author_id INTEGER REFERENCES users(id),
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);
 ```
 
-**test_cases**
+#### 3. **test_cases** - Test Cases for Problems
 ```sql
-- id (SERIAL PRIMARY KEY)
-- problem_id (FK → problems)
-- input, expected_output (TEXT)
-- is_sample (BOOLEAN)
+CREATE TABLE test_cases (
+    id SERIAL PRIMARY KEY,
+    problem_id INTEGER NOT NULL REFERENCES problems(id) ON DELETE CASCADE,
+    input TEXT NOT NULL,
+    expected_output TEXT NOT NULL,
+    is_sample BOOLEAN DEFAULT FALSE  -- Sample test cases shown to users
+);
 ```
 
-**submissions**
+#### 4. **submissions** - User Code Submissions
 ```sql
-- id (SERIAL PRIMARY KEY)
-- user_id (FK → users)
-- problem_id (FK → problems)
-- code (TEXT)
-- language (ENUM: CPP, PYTHON, JAVASCRIPT)
-- status (ENUM: ACCEPTED, WRONG_ANSWER, etc.)
-- output, error_message (TEXT)
-- execution_time_ms (BIGINT)
-- memory_used_kb (BIGINT)
-- test_cases_passed, total_test_cases (INTEGER)
-- submitted_at (TIMESTAMP)
+CREATE TABLE submissions (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    problem_id INTEGER NOT NULL REFERENCES problems(id) ON DELETE CASCADE,
+    code TEXT NOT NULL,
+    language VARCHAR(20) NOT NULL,  -- CPP, PYTHON, JAVASCRIPT
+    status VARCHAR(30) NOT NULL DEFAULT 'PENDING',
+    -- Status: ACCEPTED, WRONG_ANSWER, RUNTIME_ERROR, 
+    --         TIME_LIMIT_EXCEEDED, COMPILATION_ERROR
+    
+    -- Results
+    output TEXT,
+    error_message TEXT,
+    execution_time_ms BIGINT,
+    memory_used_kb BIGINT,
+    test_cases_passed INTEGER DEFAULT 0,
+    total_test_cases INTEGER DEFAULT 0,
+    
+    submitted_at TIMESTAMP DEFAULT NOW()
+);
+
+-- Indexes for performance
+CREATE INDEX idx_submissions_user_id ON submissions(user_id);
+CREATE INDEX idx_submissions_problem_id ON submissions(problem_id);
+CREATE INDEX idx_submissions_status ON submissions(status);
+CREATE INDEX idx_submissions_submitted_at ON submissions(submitted_at DESC);
+```
+
+#### 5. **tags** - Problem Tags/Categories
+```sql
+CREATE TABLE tags (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(50) UNIQUE NOT NULL,
+    slug VARCHAR(50) UNIQUE NOT NULL,
+    description TEXT,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+```
+
+#### 6. **problem_tags** - Many-to-Many Relationship
+```sql
+CREATE TABLE problem_tags (
+    problem_id BIGINT NOT NULL REFERENCES problems(id) ON DELETE CASCADE,
+    tag_id BIGINT NOT NULL REFERENCES tags(id) ON DELETE CASCADE,
+    PRIMARY KEY (problem_id, tag_id)
+);
+```
+
+### Database Migrations
+
+The system uses **Flyway** for database versioning. Migrations are located in:
+```
+src/main/resources/db/migration/
+```
+
+Key migrations:
+- `V1__create_roles.sql` - Initial roles table
+- `V2__create_users.sql` - Users table
+- `V4__create_problems.sql` - Problems table
+- `V7__enhance_problems_and_add_tags.sql` - Tags and enhancements
+- `V9__create_submissions_and_testcases.sql` - Submissions and test cases
+- `V21__add_driver_templates.sql` - LeetCode-style driver templates
+- `V23__add_user_profile_fields.sql` - User profile enhancements
+- `V28__add_oauth_fields.sql` - OAuth2 support
+
+---
+
+## 🔐 Authentication & Security Flow
+
+### JWT Authentication
+
+**Token Generation:**
+```java
+// JwtUtils.java
+String token = Jwts.builder()
+    .setSubject(username)
+    .setIssuedAt(new Date())
+    .setExpiration(new Date(System.currentTimeMillis() + 86400000)) // 24h
+    .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()), SignatureAlgorithm.HS256)
+    .compact();
+```
+
+**Token Validation Flow:**
+```
+Every API Request with JWT
+     ↓
+JwtAuthenticationFilter intercepts
+     ↓
+Extract token from Authorization header
+     ↓
+JwtUtils.validateToken(token)
+     ├─ Check expiration
+     ├─ Verify signature
+     └─ Extract username
+     ↓
+Load user from database
+     ↓
+Set SecurityContext with user details
+     ↓
+Request proceeds to controller
+```
+
+### Security Configuration
+
+**Protected Routes:**
+- `/api/submissions/**` - Requires authentication
+- `/api/admin/**` - Requires ADMIN role
+- `/api/auth/**` - Public (login/register)
+- `/api/problems/**` - Public (read-only)
+
+**CORS Policy:**
+```java
+// Allows all localhost ports for development
+configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:*"));
+configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+configuration.setAllowCredentials(true);
+```
+
+**Password Security:**
+- BCrypt encryption with default strength (10 rounds)
+- Salted hashing automatically
+- Never store plain text passwords
+
+### OAuth2 Integration
+
+**Supported Providers:**
+1. **Google OAuth2**
+2. **GitHub OAuth2**  
+3. **Facebook OAuth2**
+
+**OAuth2 Configuration (`application.properties`):**
+```properties
+spring.security.oauth2.client.registration.google.client-id=YOUR_CLIENT_ID
+spring.security.oauth2.client.registration.google.client-secret=YOUR_SECRET
+spring.security.oauth2.client.registration.google.scope=email,profile
+```
+
+---
+
+## ⚙️ Code Execution System
+
+### Architecture Overview
+
+The code execution system is the core of the online judge platform, providing secure and isolated code execution.
+
+### Execution Flow Components
+
+**1. CodeExecutionService**
+- Main orchestrator for code execution
+- Manages temporary files and Docker containers
+- Tracks execution time and memory usage
+
+**2. Docker Isolation**
+```bash
+# Python execution example
+docker run --rm \
+  --network=none \
+  -v "/temp/code_exec:/code:ro" \
+  -w /code \
+  trantho16/unicode-python:latest \
+  sh -c "python solution.py < input.txt"
+```
+
+**Security Features:**
+- ✅ Network disabled (`--network=none`)
+- ✅ Read-only volume mount (`:ro`)
+- ✅ Container auto-removed after execution (`--rm`)
+- ✅ Memory limit enforced (256MB)
+- ✅ Timeout enforcement (10s hard limit)
+
+**3. JudgeService**
+- Compares actual output with expected output
+- Normalizes whitespace for fair comparison
+- Categorizes errors (runtime, compilation, timeout)
+
+**4. RuntimeCalculator**
+- Measures execution time externally (nanosecond precision)
+- Provides fallback timing if internal timing fails
+
+**5. ErrorCaptureService**
+- Captures stdout and stderr separately
+- Detects compilation errors vs runtime errors
+- Formats error messages for user-friendly display
+
+### Docker Images
+
+Custom Docker images with pre-installed tools:
+```
+trantho16/unicode-python:latest   # Python 3.11 + /usr/bin/time
+trantho16/unicode-node:latest     # Node.js 20 + /usr/bin/time
+trantho16/unicode-gcc:latest      # GCC 12 + /usr/bin/time
+```
+
+### Execution Statuses
+
+| Status | Description | Condition |
+|--------|-------------|-----------|
+| **ACCEPTED** | ✅ All test cases passed | Output matches expected |
+| **WRONG_ANSWER** | ❌ Incorrect output | Output doesn't match |
+| **RUNTIME_ERROR** | ⚠️ Program crashed | Exception/segfault |
+| **TIME_LIMIT_EXCEEDED** | ⏱️ Too slow | Execution > time limit |
+| **COMPILATION_ERROR** | 🔧 Syntax error | Code failed to compile |
+
+### Test Case Execution
+
+**Sample Test Cases:**
+- First 2 test cases are shown to users
+- Users can run code against samples before submitting
+
+**Hidden Test Cases:**
+- Full submission runs against all test cases
+- Users see pass/fail count, not actual inputs
+
+**Custom Input:**
+- Users can provide custom input for testing
+- No expected output comparison
+- Just shows what their code produces
+
+---
 ```
 
 **tags & problem_tags**
