@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../SignUp/signup.css"; // dùng chung stylesheet với trang SignUp (fix path)
 import heroMan from "../../assets/ảnh-sinh-viên.png";
 
@@ -13,6 +13,11 @@ export default function LogIn() {
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [message, setMessage] = useState("");
+
+  // Reset theme to default on login page (no user logged in)
+  useEffect(() => {
+    document.body.className = '';
+  }, []);
 
   // login handler
   const handleLogin = async (e) => {

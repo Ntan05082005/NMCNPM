@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 const FEATURES = [
   { title: "Problem Library", desc: "Browse problems by topic and difficulty", icon: "🧩" },
@@ -27,6 +27,11 @@ function getInitials(name) {
 }
 
 export default function AboutUsPage() {
+  // Reset theme to default on about page (public page)
+  useEffect(() => {
+    document.body.className = '';
+  }, []);
+
   return (
     <div style={{ fontFamily: "'Inter', system-ui, -apple-system, sans-serif", background: "white" }}>
       {/* Navbar */}
@@ -45,26 +50,26 @@ export default function AboutUsPage() {
         </div>
 
         <nav style={{ display: "flex", alignItems: "center", marginLeft: "auto", gap: "50px" }}>
-          <a href="/problems" style={{ 
-            textDecoration: "none", 
-            color: "#666", 
-            fontSize: "15px", 
+          <a href="/problems" style={{
+            textDecoration: "none",
+            color: "#666",
+            fontSize: "15px",
             fontWeight: 500
           }}>
             Practice
           </a>
-          <a href="/about" style={{ 
-            textDecoration: "none", 
-            color: "#0084ff", 
-            fontSize: "15px", 
-            fontWeight: 600 
+          <a href="/about" style={{
+            textDecoration: "none",
+            color: "#0084ff",
+            fontSize: "15px",
+            fontWeight: 600
           }}>
             About Us
           </a>
-          <a href="/login" style={{ 
-            textDecoration: "none", 
-            color: "#666", 
-            fontSize: "15px", 
+          <a href="/login" style={{
+            textDecoration: "none",
+            color: "#666",
+            fontSize: "15px",
             fontWeight: 500
           }}>
             Login
