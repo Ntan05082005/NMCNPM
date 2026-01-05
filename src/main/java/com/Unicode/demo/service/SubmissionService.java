@@ -197,6 +197,7 @@ public class SubmissionService {
                 .totalTestCases(testCases.size())
                 .stderr(lastStderr)
                 .compilerError(hasCompilationError ? lastStderr : null)
+                .memoryUsedMB(maxMemoryUsedKb > 0 ? maxMemoryUsedKb / 1024.0 : null)
                 .build();
     }
 
