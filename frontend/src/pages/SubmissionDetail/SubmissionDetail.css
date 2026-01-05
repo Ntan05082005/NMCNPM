@@ -203,43 +203,53 @@
 }
 
 .status-wrong {
-  background: linear-gradient(135deg, #fff3cd, #ffeeba);
-  border: 2px solid #ffc107;
-  color: #856404;
+  background: linear-gradient(135deg, #fee2e2, #fecaca);
+  border: 2px solid #ef4444;
+  color: #991b1b;
 }
 
 .status-wrong .status-icon {
-  color: #ff9800;
+  color: #ef4444;
 }
 
 .status-error {
-  background: linear-gradient(135deg, #f8d7da, #f5c6cb);
-  border: 2px solid #dc3545;
-  color: #721c24;
+  background: linear-gradient(135deg, #ffedd5, #fed7aa);
+  border: 2px solid #f97316;
+  color: #9a3412;
 }
 
 .status-error .status-icon {
-  color: #dc3545;
+  color: #f97316;
 }
 
 .status-tle {
-  background: linear-gradient(135deg, #fff3cd, #ffeeba);
-  border: 2px solid #ffc107;
-  color: #856404;
+  background: linear-gradient(135deg, #f3e8ff, #e9d5ff);
+  border: 2px solid #8b5cf6;
+  color: #6b21a8;
 }
 
 .status-tle .status-icon {
-  color: #ff9800;
+  color: #8b5cf6;
+}
+
+.status-compile {
+  background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+  border: 2px solid #3b82f6;
+  color: #1e3a8a;
+}
+
+.status-compile .status-icon {
+  color: #3b82f6;
 }
 
 .status-pending {
-  background: linear-gradient(135deg, #cce5ff, #b8daff);
-  border: 2px solid #007bff;
-  color: #004085;
+  background: linear-gradient(135deg, #f3f4f6, #e5e7eb);
+  border: 2px solid #6b7280;
+  color: #374151;
 }
 
 .status-pending .status-icon {
-  color: #007bff;
+  color: #6b7280;
 }
 
 /* =========================
@@ -394,15 +404,15 @@
   .sd-sidebar {
     display: none;
   }
-  
+
   .sd-container {
     padding: 1.5rem;
   }
-  
+
   .sd-header h1 {
     font-size: 1.4rem;
   }
-  
+
   .sd-info-grid {
     grid-template-columns: repeat(2, 1fr);
   }

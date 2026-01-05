@@ -16,6 +16,23 @@ const formatElapsedTime = (totalSeconds) => {
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 };
 
+// Format category for display
+const formatCategory = (category) => {
+    if (!category) return null;
+    const categoryMap = {
+        'dsa': 'Algorithm & Data Structure',
+        'algorithm-data-structure': 'Algorithm & Data Structure',
+        'implementation': 'Implementation',
+        'debugging': 'Debugging',
+        'system-design': 'System Design',
+        'oop': 'OOP & Design Patterns',
+        'database': 'Database / SQL',
+        'sql': 'Database / SQL'
+    };
+    const lower = category.toLowerCase();
+    return categoryMap[lower] || category;
+};
+
 // --- COMPONENT EDITOR (Giữ nguyên không đổi) ---
 const CodeEditor = ({ defaultCode, submissionStatus, currentCode, onCodeChange, selectedLanguage, onLanguageChange }) => {
     const codeToDisplay = currentCode !== undefined ? currentCode : (defaultCode?.code || "");
@@ -262,7 +279,7 @@ export default function InterfaceCode() {
                                 {problem.difficulty || 'Medium'}
                             </span>
                             {problem.category && (
-                                <span className="category-badge">{problem.category}</span>
+                                <span className="category-badge">{formatCategory(problem.category)}</span>
                             )}
                         </div>
                     </div>

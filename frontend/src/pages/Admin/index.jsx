@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { FiGrid, FiFileText, FiUsers, FiSend, FiSettings, FiLogOut, FiPlus, FiEdit2, FiTrash2, FiSearch, FiChevronLeft, FiChevronRight, FiEye, FiChevronDown } from 'react-icons/fi';
 import { FaUserShield, FaCode } from 'react-icons/fa';
 import { getAdminStats, getUsers, updateUserRole, deleteUser, getProblemsAdmin, deleteProblem, getAllSubmissions } from '../../API/api-admin';
-import { formatLanguage, formatStatus, formatMemory } from '../../utils/format';
+import { formatLanguage, formatStatus, formatMemory, getStatusClass } from '../../utils/format';
 import './admin.css';
 
 export default function AdminDashboard() {
@@ -202,12 +202,6 @@ export default function AdminDashboard() {
     const sortLabel = difficultyFilter === 'ALL'
         ? 'All difficulties'
         : `Difficulty: ${getDifficultyLabel(difficultyFilter)}`;
-
-    const getStatusClass = (status) => {
-        if (status === 'ACCEPTED') return 'accepted';
-        if (status === 'WRONG_ANSWER') return 'wrong';
-        return 'pending';
-    };
 
     const formatDate = (dateStr) => {
         if (!dateStr) return 'N/A';

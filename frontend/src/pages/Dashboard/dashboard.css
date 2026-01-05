@@ -532,15 +532,46 @@
   color: #92400e;
 }
 
+.status-tle {
+  background: #ede9fe;
+  color: #7c3aed;
+}
+
+.status-compile {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.status-mle {
+  background: #dbeafe;
+  color: #2563eb;
+}
+
+.status-pending {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
 .submission-lang,
 .submission-diff {
   font-size: 0.85rem;
   color: var(--text-secondary, #64748b);
 }
 
-.diff-easy { color: #10b981; font-weight: 600; }
-.diff-medium { color: #f59e0b; font-weight: 600; }
-.diff-hard { color: #ef4444; font-weight: 600; }
+.diff-easy {
+  color: #10b981;
+  font-weight: 600;
+}
+
+.diff-medium {
+  color: #f59e0b;
+  font-weight: 600;
+}
+
+.diff-hard {
+  color: #ef4444;
+  font-weight: 600;
+}
 
 .submission-time {
   font-size: 0.85rem;

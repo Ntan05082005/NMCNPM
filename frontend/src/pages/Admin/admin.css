@@ -499,7 +499,7 @@
 /* Status */
 .submissions-table th:nth-child(6),
 .submissions-table td:nth-child(6) {
-    width: 110px;
+    width: 150px;
 }
 
 /* Runtime */
@@ -584,6 +584,26 @@
 .status-badge.pending {
     background: #f3f4f6;
     color: #6b7280;
+}
+
+.status-badge.runtime-error {
+    background: #ffedd5;
+    color: #c2410c;
+}
+
+.status-badge.compile-error {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.status-badge.time-limit {
+    background: #ede9fe;
+    color: #7c3aed;
+}
+
+.status-badge.memory-limit {
+    background: #dbeafe;
+    color: #2563eb;
 }
 
 /* Role Select */

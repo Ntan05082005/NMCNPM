@@ -84,24 +84,26 @@ export default function SpecifiedProblem() {
     }));
   }, [problems]);
 
-  // ✅ filtered = difficultyFilter + searchTerm
+  // ✅ filtered = difficultyFilter + searchTerm + sorted by ID
   const filteredProblems = useMemo(() => {
     const q = searchTerm.trim().toLowerCase();
 
-    return normalized.filter((p) => {
-      // 1) lọc theo difficulty (Sort By)
-      if (difficultyFilter !== "ALL" && p.difficultyNorm !== difficultyFilter) return false;
+    return normalized
+      .filter((p) => {
+        // 1) lọc theo difficulty (Sort By)
+        if (difficultyFilter !== "ALL" && p.difficultyNorm !== difficultyFilter) return false;
 
-      // 2) lọc theo search (title / slug / difficulty / category)
-      if (!q) return true;
+        // 2) lọc theo search (title / slug / difficulty / category)
+        if (!q) return true;
 
-      const title = (p.title || "").toLowerCase();
-      const slug = (p.slug || "").toLowerCase();
-      const diff = (p.difficultyNorm || "").toLowerCase(); // easy/medium/hard
-      const category = (p.category || "").toLowerCase();
+        const title = (p.title || "").toLowerCase();
+        const slug = (p.slug || "").toLowerCase();
+        const diff = (p.difficultyNorm || "").toLowerCase(); // easy/medium/hard
+        const category = (p.category || "").toLowerCase();
 
-      return title.includes(q) || slug.includes(q) || diff.includes(q) || category.includes(q);
-    });
+        return title.includes(q) || slug.includes(q) || diff.includes(q) || category.includes(q);
+      })
+      .sort((a, b) => (a.id || 0) - (b.id || 0)); // Sort by problem ID ascending
   }, [normalized, difficultyFilter, searchTerm]);
 
   const difficultyLabel = (d) => {
