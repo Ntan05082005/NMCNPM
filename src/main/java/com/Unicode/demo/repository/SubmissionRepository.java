@@ -49,4 +49,12 @@ public interface SubmissionRepository extends JpaRepository<Submission, Long>, J
     // Find accepted solutions for a problem
     @Query("SELECT s FROM Submission s WHERE s.problem.id = :problemId AND s.status = 'ACCEPTED' ORDER BY s.submittedAt DESC")
     List<Submission> findByProblemIdAndStatus(@Param("problemId") Long problemId, @Param("status") String status);
+    
+    // Count total submissions for a problem
+    @Query("SELECT COUNT(s) FROM Submission s WHERE s.problem.id = :problemId")
+    Long countByProblemId(@Param("problemId") Long problemId);
+    
+    // Count accepted submissions for a problem
+    @Query("SELECT COUNT(s) FROM Submission s WHERE s.problem.id = :problemId AND s.status = 'ACCEPTED'")
+    Long countAcceptedByProblemId(@Param("problemId") Long problemId);
 }

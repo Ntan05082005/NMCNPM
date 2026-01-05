@@ -105,9 +105,10 @@ public class ProblemService {
     }
 
     private Sort createSort(String sortBy, String sortDirection) {
-        // Default sort
+        // Default sort - Alphabetical by title
         if (sortBy == null || sortBy.trim().isEmpty()) {
-            sortBy = "createdAt";
+            sortBy = "title";
+            sortDirection = "ASC"; // Always ascending for alphabetical order
         }
 
         // Validate sort field
@@ -117,7 +118,7 @@ public class ProblemService {
             case "difficulty" -> "difficulty";
             case "title" -> "title";
             case "createdat" -> "createdAt";
-            default -> "createdAt";
+            default -> "title";
         };
 
         // Determine direction

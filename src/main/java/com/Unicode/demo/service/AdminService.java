@@ -3,6 +3,7 @@ package com.Unicode.demo.service;
 import com.Unicode.demo.dto.*;
 import com.Unicode.demo.entity.*;
 import com.Unicode.demo.enums.Role;
+import com.Unicode.demo.mapper.ProblemMapper;
 import com.Unicode.demo.repository.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,23 +22,28 @@ public class AdminService {
     private final SubmissionRepository submissionRepository;
     private final TagRepository tagRepository;
     private final TestCaseRepository testCaseRepository;
+    private final ProblemMapper problemMapper;
 
     public AdminService(UserRepository userRepository,
             ProblemRepository problemRepository,
             SubmissionRepository submissionRepository,
             TagRepository tagRepository,
-            TestCaseRepository testCaseRepository) {
+            TestCaseRepository testCaseRepository,
+            ProblemMapper problemMapper) {
         this.userRepository = userRepository;
         this.problemRepository = problemRepository;
         this.submissionRepository = submissionRepository;
         this.tagRepository = tagRepository;
         this.testCaseRepository = testCaseRepository;
+        this.problemMapper = problemMapper;
     }
 
     // ==================== DASHBOARD STATS ====================
 
     public Map<String, Object> getDashboardStats() {
         Map<String, Object> stats = new HashMap<>();
+        
+        // Basic counts
         stats.put("totalUsers", userRepository.count());
         stats.put("totalProblems", problemRepository.count());
         stats.put("totalSubmissions", submissionRepository.count());
@@ -48,6 +54,121 @@ public class AdminService {
                 .filter(u -> u.getRole() == Role.ADMIN).count();
         stats.put("adminCount", adminCount);
         stats.put("userCount", userRepository.count() - adminCount);
+
+        // Advanced Analytics
+        
+        // Submission statistics by status (using SubmissionStatus enum)
+        List<Submission> allSubmissions = submissionRepository.findAll();
+        
+        long acceptedSubmissions = allSubmissions.stream()
+                .filter(s -> s.getStatus() != null && s.getStatus().name().equals("ACCEPTED")).count();
+        long wrongAnswerSubmissions = allSubmissions.stream()
+                .filter(s -> s.getStatus() != null && s.getStatus().name().equals("WRONG_ANSWER")).count();
+        long timeLimitExceeded = allSubmissions.stream()
+                .filter(s -> s.getStatus() != null && s.getStatus().name().equals("TIME_LIMIT_EXCEEDED")).count();
+        long runtimeError = allSubmissions.stream()
+                .filter(s -> s.getStatus() != null && s.getStatus().name().equals("RUNTIME_ERROR")).count();
+        long compilationError = allSubmissions.stream()
+                .filter(s -> s.getStatus() != null && s.getStatus().name().equals("COMPILATION_ERROR")).count();
+        long pending = allSubmissions.stream()
+                .filter(s -> s.getStatus() != null && s.getStatus().name().equals("PENDING")).count();
+        
+        long totalSubmissions = submissionRepository.count();
+        
+        stats.put("acceptedSubmissions", acceptedSubmissions);
+        stats.put("wrongAnswerSubmissions", wrongAnswerSubmissions);
+        stats.put("timeLimitExceeded", timeLimitExceeded);
+        stats.put("runtimeError", runtimeError);
+        stats.put("compilationError", compilationError);
+        stats.put("pendingSubmissions", pending);
+        
+        // Success rate
+        double successRate = totalSubmissions > 0 
+            ? (acceptedSubmissions * 100.0 / totalSubmissions) 
+            : 0.0;
+        stats.put("successRate", Math.round(successRate * 100.0) / 100.0);
+        
+        // Submission status breakdown for chart
+        Map<String, Long> submissionsByStatus = new HashMap<>();
+        submissionsByStatus.put("ACCEPTED", acceptedSubmissions);
+        submissionsByStatus.put("WRONG_ANSWER", wrongAnswerSubmissions);
+        submissionsByStatus.put("TIME_LIMIT_EXCEEDED", timeLimitExceeded);
+        submissionsByStatus.put("RUNTIME_ERROR", runtimeError);
+        submissionsByStatus.put("COMPILATION_ERROR", compilationError);
+        submissionsByStatus.put("PENDING", pending);
+        stats.put("submissionsByStatus", submissionsByStatus);
+
+        // Problem difficulty breakdown
+        long easyProblems = problemRepository.findAll().stream()
+                .filter(p -> "EASY".equalsIgnoreCase(p.getDifficulty())).count();
+        long mediumProblems = problemRepository.findAll().stream()
+                .filter(p -> "MEDIUM".equalsIgnoreCase(p.getDifficulty())).count();
+        long hardProblems = problemRepository.findAll().stream()
+                .filter(p -> "HARD".equalsIgnoreCase(p.getDifficulty())).count();
+        
+        Map<String, Long> problemsByDifficulty = new HashMap<>();
+        problemsByDifficulty.put("easy", easyProblems);
+        problemsByDifficulty.put("medium", mediumProblems);
+        problemsByDifficulty.put("hard", hardProblems);
+        stats.put("problemsByDifficulty", problemsByDifficulty);
+
+        // Active users (users who submitted in last 7 days)
+        java.time.LocalDateTime weekAgo = java.time.LocalDateTime.now().minusDays(7);
+        long activeUsersThisWeek = submissionRepository.findAll().stream()
+                .filter(s -> s.getSubmittedAt() != null && s.getSubmittedAt().isAfter(weekAgo))
+                .map(s -> s.getUser().getId())
+                .distinct()
+                .count();
+        stats.put("activeUsersThisWeek", activeUsersThisWeek);
+
+        // Recent submissions (last 24 hours)
+        java.time.LocalDateTime dayAgo = java.time.LocalDateTime.now().minusDays(1);
+        long submissionsToday = submissionRepository.findAll().stream()
+                .filter(s -> s.getSubmittedAt() != null && s.getSubmittedAt().isAfter(dayAgo))
+                .count();
+        stats.put("submissionsToday", submissionsToday);
+
+        // Popular problems (top 5 by submission count)
+        Map<Problem, Long> problemSubmissionCounts = submissionRepository.findAll().stream()
+                .collect(java.util.stream.Collectors.groupingBy(
+                    Submission::getProblem,
+                    java.util.stream.Collectors.counting()
+                ));
+        
+        List<Map<String, Object>> popularProblems = problemSubmissionCounts.entrySet().stream()
+                .sorted(Map.Entry.<Problem, Long>comparingByValue().reversed())
+                .limit(5)
+                .map(entry -> {
+                    Map<String, Object> problemInfo = new HashMap<>();
+                    problemInfo.put("id", entry.getKey().getId());
+                    problemInfo.put("title", entry.getKey().getTitle());
+                    problemInfo.put("difficulty", entry.getKey().getDifficulty());
+                    problemInfo.put("submissionCount", entry.getValue());
+                    return problemInfo;
+                })
+                .toList();
+        stats.put("popularProblems", popularProblems);
+
+        // Recent activity (last 10 submissions)
+        List<Map<String, Object>> recentActivity = submissionRepository.findAll().stream()
+                .sorted((s1, s2) -> {
+                    if (s1.getSubmittedAt() == null) return 1;
+                    if (s2.getSubmittedAt() == null) return -1;
+                    return s2.getSubmittedAt().compareTo(s1.getSubmittedAt());
+                })
+                .limit(10)
+                .map(s -> {
+                    Map<String, Object> activity = new HashMap<>();
+                    activity.put("id", s.getId());
+                    activity.put("username", s.getUser().getUsername());
+                    activity.put("problemTitle", s.getProblem().getTitle());
+                    activity.put("status", s.getStatus());
+                    activity.put("language", s.getLanguage());
+                    activity.put("submittedAt", s.getSubmittedAt());
+                    return activity;
+                })
+                .toList();
+        stats.put("recentActivity", recentActivity);
 
         return stats;
     }
@@ -86,13 +207,37 @@ public class AdminService {
 
     // ==================== PROBLEM MANAGEMENT ====================
 
-    public Page<Problem> getAllProblemsForAdmin(int page, int size, String search) {
+    public Page<ProblemDto> getAllProblemsForAdmin(int page, int size, String search) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("id").ascending());
 
+        Page<Problem> problemPage;
         if (search != null && !search.isEmpty()) {
-            return problemRepository.findByTitleContainingIgnoreCase(search, pageable);
+            problemPage = problemRepository.findByTitleContainingIgnoreCase(search, pageable);
+        } else {
+            problemPage = problemRepository.findAll(pageable);
         }
-        return problemRepository.findAll(pageable);
+        
+        // Map to DTO and recalculate stats from actual submissions
+        return problemPage.map(problem -> {
+            ProblemDto dto = problemMapper.toDto(problem);
+            
+            // Recalculate from actual submissions in database
+            Long totalSubs = submissionRepository.countByProblemId(problem.getId());
+            Long acceptedSubs = submissionRepository.countAcceptedByProblemId(problem.getId());
+            
+            dto.setTotalSubmissions(totalSubs.intValue());
+            dto.setTotalAccepted(acceptedSubs.intValue());
+            
+            // Calculate acceptance rate
+            if (totalSubs > 0) {
+                double rate = (acceptedSubs.doubleValue() / totalSubs.doubleValue()) * 100.0;
+                dto.setAcceptanceRate(new java.math.BigDecimal(rate).setScale(2, java.math.RoundingMode.HALF_UP));
+            } else {
+                dto.setAcceptanceRate(java.math.BigDecimal.ZERO);
+            }
+            
+            return dto;
+        });
     }
 
     public Problem getProblemById(Long problemId) {
@@ -163,9 +308,16 @@ public class AdminService {
         existing.setCategory(updated.getCategory());
 
         // Update tags if provided
+        // - If tagIds is null: keep existing tags (frontend didn't send tagIds field)
+        // - If tagIds is empty list []: clear all tags
+        // - If tagIds has values: replace with new tags
         if (tagIds != null) {
-            Set<Tag> tags = new HashSet<>(tagRepository.findAllById(tagIds));
-            existing.setTags(tags);
+            if (tagIds.isEmpty()) {
+                existing.setTags(new HashSet<>()); // Clear tags
+            } else {
+                Set<Tag> tags = new HashSet<>(tagRepository.findAllById(tagIds));
+                existing.setTags(tags);
+            }
         }
 
         // Update test cases if provided

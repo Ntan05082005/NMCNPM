@@ -14,6 +14,7 @@
 - [Features](#-features)
 - [Tech Stack](#-tech-stack)
 - [System Architecture](#-system-architecture)
+- [How It Works](#-how-it-works)
 - [Prerequisites](#-prerequisites)
 - [Quick Start](#-quick-start)
 - [Installation](#-installation)
@@ -66,6 +67,7 @@
   - Context-aware help on problem pages (knows your current code)
   - Website-aware responses about UniCode features
   - Floating chat interface with theme support
+  - **⚠️ Requires your own Gemini API key** - [Get free key here](https://aistudio.google.com/app/apikey)
 
 - **🛡️ Admin Dashboard**
   - Admin-only access at `/admin`
@@ -84,6 +86,13 @@
 - Protected routes with authentication guards
 - Multiple themes: Light, Dark, Christmas, New Year
 
+### 🔐 OAuth2 Social Login
+
+- Google OAuth2 integration
+- GitHub OAuth2 support
+- Facebook OAuth2 support
+- Automatic user creation on first login
+- Seamless JWT token generation after OAuth success
 
 ---
 
@@ -118,28 +127,333 @@
 
 ## 🏗 System Architecture
 
+### Architecture Diagram
+
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                         Frontend (React)                     │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐   │
-│  │  Pages   │  │   API    │  │  Utils   │  │  Assets  │   │
-│  │          │  │  Layer   │  │          │  │          │   │
-│  └──────────┘  └──────────┘  └──────────┘  └──────────┘   │
+│                    FRONTEND (React + Vite)                  │
+│  Port: 5173 | React Router | Axios | Ant Design | Tailwind │
+└────────────────────────┬────────────────────────────────────┘
+                         │ HTTP/REST API
+                         │ JWT Authentication (Bearer Token)
+┌────────────────────────▼────────────────────────────────────┐
+│              BACKEND (Spring Boot 4.0.0)                    │
+│                     Port: 8080                              │
+├─────────────────────────────────────────────────────────────┤
+│  ┌──────────────┐  ┌──────────────┐  ┌─────────────────┐  │
+│  │ Controllers  │→ │   Services   │→ │  Repositories   │  │
+│  │ (REST APIs)  │  │ (Business    │  │  (Data Access)  │  │
+│  │              │  │  Logic)      │  │                 │  │
+│  └──────────────┘  └──────┬───────┘  └────────┬────────┘  │
+│                            │                   │            │
+│  ┌──────────────┐         │                   │            │
+│  │  Security    │─────────┘                   │            │
+│  │  - JWT       │                             │            │
+│  │  - OAuth2    │                             │            │
+│  └──────────────┘                             │            │
+│                                                │            │
+│  ┌──────────────────────┐  ┌─────────────────▼──────────┐ │
+│  │ CodeExecutionService │  │   PostgreSQL Database      │ │
+│  │ (Docker Sandbox)     │  │   - users, problems        │ │
+│  └──────────┬───────────┘  │   - submissions, testcases │ │
+│             │               │   - tags, problem_tags     │ │
+│             ▼               └────────────────────────────┘ │
+│  ┌──────────────────────┐                                  │
+│  │  Docker Containers   │  ┌─────────────────────────────┐│
+│  │  - cpp:latest        │  │   Gemini AI Service         ││
+│  │  - python:3.9-slim   │  │   (External API)            ││
+│  │  - node:16-alpine    │  └─────────────────────────────┘│
+│  └──────────────────────┘                                  │
 └─────────────────────────────────────────────────────────────┘
-                             ↓ HTTP/REST API
-┌─────────────────────────────────────────────────────────────┐
-│                    Backend (Spring Boot)                     │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐        │
-│  │ Controllers │→ │  Services   │→ │ Repositories │        │
-│  └─────────────┘  └─────────────┘  └─────────────┘        │
-│                          ↓                                   │
-│                   ┌─────────────┐                           │
-│                   │   Security  │                           │
-│                   │  (JWT Auth) │                           │
-│                   └─────────────┘                           │
-└─────────────────────────────────────────────────────────────┘
-                   ↓                        ↓
-         ┌──────────────────┐    ┌──────────────────┐
+```
+
+### Layered Architecture
+
+The project follows a **clean layered architecture** pattern:
+
+**1. Presentation Layer (Frontend)**
+- React components and pages
+- Routing with React Router
+- API communication via Axios
+- State management in components
+
+**2. API Layer (Controllers)**
+- REST endpoints handling HTTP requests
+- Request validation
+- Response formatting
+- Authentication/Authorization checks
+
+**3. Business Logic Layer (Services)**
+- Core application logic
+- Code execution orchestration
+- Test case evaluation
+- Statistics calculation
+
+**4. Data Access Layer (Repositories)**
+- JPA/Hibernate ORM
+- Database queries
+- Transaction management
+
+**5. Data Layer (PostgreSQL)**
+- Persistent data storage
+- Flyway migrations for schema versioning
+
+---
+
+## 🔄 How It Works
+
+### 1️⃣ Authentication Flow
+
+```
+User → Login Form → POST /api/auth/login
+                         ↓
+              AuthController validates credentials
+                         ↓
+              Password checked with BCrypt
+                         ↓
+              JWT Token generated (24h expiration)
+                         ↓
+              Token returned to client
+                         ↓
+        Client stores token in localStorage
+                         ↓
+    All subsequent requests include header:
+         Authorization: Bearer <token>
+                         ↓
+         JwtAuthenticationFilter validates token
+                         ↓
+         SecurityContext set with user details
+```
+
+**OAuth2 Flow:**
+```
+User clicks "Login with Google/GitHub/Facebook"
+                         ↓
+        Redirected to OAuth provider
+                         ↓
+        User authorizes application
+                         ↓
+        OAuth2AuthenticationSuccessHandler
+                         ↓
+        User created/updated in database
+                         ↓
+        JWT token generated
+                         ↓
+        Redirect to frontend with token
+```
+
+### 2️⃣ Code Submission & Execution Flow
+
+```
+User writes code → Click Submit → POST /api/submissions
+                                        ↓
+                            SubmissionController receives request
+                                        ↓
+                            SubmissionService validates problem
+                                        ↓
+                            CodeExecutionService starts execution
+                                        ↓
+                ┌───────────────────────┴────────────────────┐
+                ▼                                            ▼
+    Merge user code with driver template         Fetch test cases
+                ▼                                            ▼
+    Write to temporary file                      Prepare inputs
+                ▼                                            ▼
+    Create Docker container                      Run for each test
+    (isolated sandbox)                                      ▼
+                ▼                                   Capture output
+    Execute code (timeout: 2s)                              ▼
+    Track memory & runtime                    Compare with expected
+                ▼                                            ▼
+    Collect stdout/stderr                        JudgeService evaluates
+                └───────────────────────┬────────────────────┘
+                                        ▼
+                    Determine final status:
+                    - ACCEPTED (all tests pass)
+                    - WRONG_ANSWER (output mismatch)
+                    - RUNTIME_ERROR (crash/exception)
+                    - TIME_LIMIT_EXCEEDED (too slow)
+                    - COMPILATION_ERROR (syntax error)
+                                        ▼
+                    Save submission to database
+                                        ▼
+                    Return results to frontend
+```
+
+**Code Execution Security:**
+- Each submission runs in an isolated Docker container
+- No network access
+- Memory limit: 256MB
+- Time limit: 2000ms
+- Container destroyed after execution
+- Temporary files cleaned up
+
+### 3️⃣ Problem Display Flow
+
+```
+User visits /problems → GET /api/problems?page=0&size=20
+                                ↓
+                    ProblemController handles request
+                                ↓
+                    ProblemService applies filters
+                                ↓
+        ProblemSpecification builds dynamic query
+                                ↓
+        Repository fetches from database with JOIN on tags
+                                ↓
+        ProblemMapper converts entities to DTOs
+                                ↓
+        Check user's solved status (if authenticated)
+                                ↓
+        Return paginated response with metadata
+```
+
+### 4️⃣ AI Chatbot Integration
+
+```
+User types message → POST /api/ai/chat
+                            ↓
+            AIChatController receives request
+                            ↓
+            GeminiService builds prompt:
+            - System prompt (UniCode Assistant role)
+            - Context (current problem, user code)
+            - User message
+                            ↓
+            Call Gemini API (gemini-2.5-flash)
+                            ↓
+            Parse AI response
+                            ↓
+            Return formatted markdown to frontend
+```
+
+---
+
+## 📦 Database Schema
+
+### Core Tables
+
+**users**
+```sql
+- id (BIGSERIAL PRIMARY KEY)
+- username (VARCHAR UNIQUE)
+- email (VARCHAR UNIQUE)
+- password (VARCHAR, BCrypt hashed)
+- role (ENUM: USER, ADMIN)
+- provider (VARCHAR: LOCAL, GOOGLE, GITHUB, FACEBOOK)
+- provider_id (VARCHAR)
+- github_link, linkedin_link (VARCHAR)
+- avatar_url, full_name (VARCHAR)
+- theme_preference (VARCHAR)
+- created_at, updated_at (TIMESTAMP)
+```
+
+**problems**
+```sql
+- id (SERIAL PRIMARY KEY)
+- title, slug (VARCHAR)
+- difficulty (VARCHAR: EASY, MEDIUM, HARD)
+- description, constraints (TEXT)
+- time_limit_ms, memory_limit_mb (INTEGER)
+- acceptance_rate (DECIMAL)
+- total_submissions, total_accepted (INTEGER)
+- starter_code_cpp/python/javascript (TEXT)
+- driver_code_cpp/python/javascript (TEXT)
+- function_name (VARCHAR)
+- category (VARCHAR)
+- created_at, updated_at (TIMESTAMP)
+```
+
+**test_cases**
+```sql
+- id (SERIAL PRIMARY KEY)
+- problem_id (FK → problems)
+- input, expected_output (TEXT)
+- is_sample (BOOLEAN)
+```
+
+**submissions**
+```sql
+- id (SERIAL PRIMARY KEY)
+- user_id (FK → users)
+- problem_id (FK → problems)
+- code (TEXT)
+- language (ENUM: CPP, PYTHON, JAVASCRIPT)
+- status (ENUM: ACCEPTED, WRONG_ANSWER, etc.)
+- output, error_message (TEXT)
+- execution_time_ms (BIGINT)
+- memory_used_kb (BIGINT)
+- test_cases_passed, total_test_cases (INTEGER)
+- submitted_at (TIMESTAMP)
+```
+
+**tags & problem_tags**
+```sql
+tags:
+- id, name, slug
+
+problem_tags (Many-to-Many):
+- problem_id (FK → problems)
+- tag_id (FK → tags)
+```
+
+---
+
+## 🔑 Key Components Explained
+
+### Backend Services
+
+**1. CodeExecutionService**
+- Core service for executing user code
+- Creates isolated Docker containers per submission
+- Supports C++, Python, JavaScript
+- Implements timeout and memory limits
+- Captures stdout, stderr, and runtime metrics
+
+**2. JudgeService**
+- Evaluates submission results
+- Compares actual vs expected output
+- Categorizes errors (compile, runtime, wrong answer)
+- Calculates scores and acceptance rates
+
+**3. ProblemService**
+- Manages problem CRUD operations
+- Implements filtering and search
+- Handles pagination
+- Integrates with user solve status
+
+**4. SubmissionService**
+- Handles code submission workflow
+- Coordinates execution and judging
+- Tracks user statistics
+- Manages submission history
+
+**5. GeminiService**
+- Integrates with Google Gemini AI
+- Provides context-aware assistance
+- Formats prompts for coding help
+
+### Frontend Components
+
+**1. InterfaceCode**
+- Code editor interface
+- Language selector
+- Run/Submit functionality
+- Test case display
+
+**2. Dashboard**
+- User statistics overview
+- Progress tracking
+- Recent submissions
+
+**3. AIChatbot**
+- Floating chat widget
+- Context-aware AI assistance
+- Markdown rendering
+
+---
+
+## 🚀
          │   PostgreSQL     │    │  Docker Engine   │
          │    Database      │    │  (Code Sandbox)  │
          └──────────────────┘    └──────────────────┘
@@ -426,10 +740,58 @@ jwt.expiration=86400000
 spring.flyway.enabled=true
 spring.flyway.baseline-on-migrate=true
 
-# Gemini AI Chatbot (Get your key from https://aistudio.google.com/)
+# Gemini AI Chatbot
+# ⚠️ IMPORTANT: You MUST get your own API key from https://aistudio.google.com/
+# The AI chatbot will NOT work without a valid API key
 gemini.api.key=YOUR_GEMINI_API_KEY_HERE
 gemini.api.url=https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
 ```
+
+### 🤖 Gemini AI API Key Setup (REQUIRED for AI Chatbot)
+
+**⚠️ CRITICAL: The AI Chatbot feature requires your own Gemini API key**
+
+The chatbot will not function without this configuration. Follow these steps:
+
+**1. Get Your Free Gemini API Key:**
+- Visit: https://aistudio.google.com/app/apikey
+- Sign in with your Google account
+- Click "Create API Key"
+- Copy the generated key (starts with `AIza...`)
+
+**2. Add to application.properties:**
+
+Open `src/main/resources/application.properties` and replace:
+```properties
+gemini.api.key=YOUR_GEMINI_API_KEY_HERE
+```
+
+With your actual key:
+```properties
+gemini.api.key=AIzaSyC...YourActualKeyHere...
+```
+
+**3. Restart Backend:**
+```bash
+# Stop the backend (Ctrl+C)
+# Restart it
+./mvnw spring-boot:run
+```
+
+**4. Test AI Chatbot:**
+- Open http://localhost:5173
+- Login to the system
+- Click the floating chat icon (bottom right)
+- Send a message like "What is Unicode?"
+- If configured correctly, you'll get an AI response
+
+**Troubleshooting:**
+- **No API key:** Chatbot returns "AI service is not configured"
+- **Invalid key:** Check for typos, ensure no extra spaces
+- **Rate limit:** Free tier has limits, wait and try again
+- **Backend not restarted:** Changes require backend restart
+
+**Note:** Keep your API key secure! Don't commit it to public repositories.
 
 ### Environment Variables
 
@@ -453,7 +815,17 @@ JWT_EXPIRATION=86400000
 
 # Server
 SERVER_PORT=8080
+
+# Gemini AI (REQUIRED for chatbot feature)
+GEMINI_API_KEY=your_gemini_api_key_here
+GEMINI_API_URL=https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent
 ```
+
+**⚠️ Security Best Practice:**
+- Never commit API keys to version control
+- Use environment variables or `.env` files (add to `.gitignore`)
+- Rotate keys periodically
+- Use different keys for development and production
 
 ### Frontend Configuration
 

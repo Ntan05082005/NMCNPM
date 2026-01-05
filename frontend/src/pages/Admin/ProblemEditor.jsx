@@ -140,14 +140,20 @@ export default function ProblemEditor() {
         }
     };
 
-    // Category to Tag slug mapping
+    // Category to Tag slug mapping (supports both short keys and full names)
     const categoryToTagSlug = {
         'dsa': 'algorithm-data-structure',
+        'Data Structures & Algorithms': 'algorithm-data-structure',
         'implementation': 'implementation',
+        'Implementation / Simulation Problems': 'implementation',
         'debugging': 'debugging',
+        'Debugging Questions': 'debugging',
         'system-design': 'system-design',
+        'System Design Questions': 'system-design',
         'oop': 'oop',
-        'sql': 'database'
+        'Object-Oriented Programming (OOP) & Design Patterns': 'oop',
+        'sql': 'database',
+        'Database / SQL Coding Questions': 'database'
     };
 
     const handleSubmit = async (e) => {
@@ -155,15 +161,33 @@ export default function ProblemEditor() {
         setSaving(true);
 
         try {
-            // Auto-find the tag ID based on selected category
-            const tagSlug = categoryToTagSlug[formData.category];
-            const matchingTag = availableTags.find(t => t.slug === tagSlug);
-            const autoTagIds = matchingTag ? [matchingTag.id] : [];
+            // Determine which tags to send based on category
+            let finalTagIds;
+            
+            if (formData.category) {
+                // Category is selected - find the matching tag
+                const tagSlug = categoryToTagSlug[formData.category];
+                const matchingTag = availableTags.find(t => t.slug === tagSlug);
+                
+                if (matchingTag) {
+                    finalTagIds = [matchingTag.id];
+                } else {
+                    // Category selected but no matching tag found - send empty array to clear tags
+                    console.warn(`No tag found for category: ${formData.category}`);
+                    finalTagIds = [];
+                }
+            } else if (isEditMode) {
+                // Edit mode with no category - preserve existing tags
+                finalTagIds = selectedTagIds.length > 0 ? selectedTagIds : [];
+            } else {
+                // Create mode with no category - no tags
+                finalTagIds = [];
+            }
 
             const payload = {
                 ...formData,
                 testCases: testCases.filter(tc => tc.input && tc.expectedOutput),
-                tagIds: autoTagIds
+                tagIds: finalTagIds
             };
 
             if (isEditMode) {
