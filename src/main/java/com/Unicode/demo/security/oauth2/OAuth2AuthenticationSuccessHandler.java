@@ -43,6 +43,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
                 .queryParam("username", user.getUsername())
                 .queryParam("userId", user.getId())
                 .queryParam("role", user.getRole().name())
+                .encode(java.nio.charset.StandardCharsets.UTF_8)
                 .build().toUriString();
 
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
