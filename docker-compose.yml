@@ -4,7 +4,7 @@ services:
   # PostgreSQL Database
   postgres:
     image: postgres:15-alpine
-    container_name: unicode-postgres
+    container_name: unicode-postgres-2
     restart: unless-stopped
     environment:
       POSTGRES_DB: se_project

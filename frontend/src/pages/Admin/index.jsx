@@ -379,7 +379,7 @@ export default function AdminDashboard() {
                                                     <td>{p.title}</td>
                                                     <td><span className={`difficulty-badge ${getDifficultyClass(p.difficulty)}`}>{p.difficulty}</span></td>
                                                     <td>{p.totalSubmissions || 0}</td>
-                                                    <td>{p.acceptanceRate ? `${p.acceptanceRate}%` : 'N/A'}</td>
+                                                    <td>{p.totalSubmissions > 0 ? `${p.acceptanceRate || 0}%` : 'N/A'}</td>
                                                     <td className="actions">
                                                         <button className="btn-icon" title="View" onClick={() => navigate(`/problem/${p.slug}`)}>
                                                             <FiEye />
