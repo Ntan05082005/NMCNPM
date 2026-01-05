@@ -1,0 +1,508 @@
+/* =========================
+   PAGE & LAYOUT
+========================= */
+.sh-page {
+  width: 100%;
+  min-height: 100vh;
+  background: var(--bg-primary, linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%));
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.sh-dashboard-container {
+  display: flex;
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* =========================
+   SIDEBAR
+========================= */
+.sh-sidebar {
+  width: 280px;
+  background: var(--sidebar-bg, linear-gradient(180deg, #dceaff 0%, #edf3ff 100%));
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 40px 30px;
+  flex-shrink: 0;
+}
+
+.sh-sidebar-top {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.sh-logo {
+  font-size: 36px;
+  font-weight: 800;
+  color: var(--text-primary, #1e3a8a);
+  margin-bottom: 60px;
+  letter-spacing: -1px;
+  display: flex;
+  align-items: center;
+}
+
+.sh-logo-uni {
+  color: var(--accent-color, #2563eb);
+  margin-right: 2px;
+}
+
+.sh-nav-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sh-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text-secondary, #64748b);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0.875rem 1rem;
+  border-radius: 10px;
+}
+
+.sh-nav-item:hover {
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--accent-color, #2563eb);
+  transform: translateX(5px);
+}
+
+.sh-nav-item.active {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: #fff;
+  box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+}
+
+.sh-nav-item.admin-nav {
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(217, 119, 6, 0.1) 100%);
+  color: #d97706;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.sh-nav-item.admin-nav:hover {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: #fff;
+  border-color: transparent;
+}
+
+.sh-nav-icon {
+  font-size: 22px;
+}
+
+.sh-sidebar-bottom {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* =========================
+   MAIN CONTENT
+========================= */
+.sh-container {
+  flex: 1;
+  padding: 2rem 3rem;
+  overflow-y: auto;
+  max-height: 100vh;
+  background: transparent;
+}
+
+.sh-error {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+/* =========================
+   Header
+========================= */
+.sh-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.sh-title {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--text-primary, #111827);
+}
+
+.sh-subtitle {
+  margin-top: 6px;
+  font-size: 14px;
+  color: var(--text-secondary, #6b7280);
+}
+
+.sh-search {
+  min-width: 360px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  border: 1px solid var(--text-secondary, #e5e7eb);
+  outline: none;
+  background: var(--bg-secondary, #fff);
+  color: var(--text-primary, #111827);
+  transition: all 0.15s ease;
+}
+
+.sh-search:focus {
+  border-color: var(--accent-color, #2563eb);
+  box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+}
+
+/* =========================
+   Summary Cards
+========================= */
+.sh-cards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(220px, 1fr));
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.sh-card {
+  background: var(--bg-secondary, #ffffff);
+  border-radius: 18px;
+  padding: 18px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.06);
+}
+
+.sh-card-label {
+  font-size: 13px;
+  color: var(--text-secondary, #6b7280);
+}
+
+.sh-card-value {
+  margin-top: 8px;
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--text-primary, #111827);
+}
+
+/* =========================
+   Tabs
+========================= */
+.sh-tabs {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+
+.sh-tab {
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: 1px solid var(--border-color, #e5e7eb);
+  background: var(--bg-secondary, #ffffff);
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text-primary, #374151);
+  transition: all 0.25s ease;
+}
+
+/* Default hover for tabs without specific category */
+.sh-tab:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* All tab - Blue */
+.sh-tab.tab-all:hover {
+  background: rgba(59, 130, 246, 0.15);
+  border-color: rgba(59, 130, 246, 0.5);
+  color: #2563eb;
+}
+
+.sh-tab.tab-all.active {
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: #ffffff;
+  border-color: #2563eb;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+}
+
+/* Accepted tab - Green */
+.sh-tab.tab-accepted:hover {
+  background: rgba(34, 197, 94, 0.15);
+  border-color: rgba(34, 197, 94, 0.5);
+  color: #16a34a;
+}
+
+.sh-tab.tab-accepted.active {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  color: #ffffff;
+  border-color: #16a34a;
+  box-shadow: 0 4px 12px rgba(22, 163, 74, 0.3);
+}
+
+/* Wrong Answer tab - Red */
+.sh-tab.tab-wrong-answer:hover {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.5);
+  color: #dc2626;
+}
+
+.sh-tab.tab-wrong-answer.active {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: #ffffff;
+  border-color: #dc2626;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+/* Runtime Error tab - Orange */
+.sh-tab.tab-runtime-error:hover {
+  background: rgba(249, 115, 22, 0.15);
+  border-color: rgba(249, 115, 22, 0.5);
+  color: #ea580c;
+}
+
+.sh-tab.tab-runtime-error.active {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  color: #ffffff;
+  border-color: #ea580c;
+  box-shadow: 0 4px 12px rgba(234, 88, 12, 0.3);
+}
+
+/* Compile Error tab - Cyan/Blue */
+.sh-tab.tab-compile-error:hover {
+  background: rgba(6, 182, 212, 0.15);
+  border-color: rgba(6, 182, 212, 0.5);
+  color: #0891b2;
+}
+
+.sh-tab.tab-compile-error.active {
+  background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+  color: #ffffff;
+  border-color: #0891b2;
+  box-shadow: 0 4px 12px rgba(8, 145, 178, 0.3);
+}
+
+/* TLE tab - Purple */
+.sh-tab.tab-time-limit-exceeded:hover {
+  background: rgba(139, 92, 246, 0.15);
+  border-color: rgba(139, 92, 246, 0.5);
+  color: #7c3aed;
+}
+
+.sh-tab.tab-time-limit-exceeded.active {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+  color: #ffffff;
+  border-color: #7c3aed;
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.3);
+}
+
+/* Active tab hover enhancement */
+.sh-tab.active:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.1);
+}
+
+.sh-count {
+  margin-left: 6px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.25);
+  font-size: 12px;
+}
+
+/* =========================
+   Table
+========================= */
+.sh-table-wrap {
+  background: var(--bg-secondary, #ffffff);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.06);
+}
+
+.sh-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.sh-table thead {
+  background: rgba(128, 128, 128, 0.1);
+}
+
+.sh-table th {
+  padding: 14px 16px;
+  font-size: 13px;
+  color: var(--text-secondary, #6b7280);
+  font-weight: 700;
+  text-align: left;
+}
+
+.sh-table td {
+  padding: 14px 16px;
+  border-top: 1px solid rgba(128, 128, 128, 0.15);
+  font-size: 14px;
+  color: var(--text-primary, #111827);
+}
+
+.sh-table tbody tr:hover {
+  background: rgba(128, 128, 128, 0.05);
+}
+
+/* =========================
+   Links & Buttons
+========================= */
+.sh-link {
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--accent-color, #2563eb);
+}
+
+.sh-link:hover {
+  text-decoration: underline;
+}
+
+.sh-btn {
+  padding: 6px 14px;
+  border-radius: 10px;
+  border: 1px solid var(--text-secondary, #e5e7eb);
+  background: var(--bg-secondary, #ffffff);
+  cursor: pointer;
+  font-weight: 600;
+  color: var(--text-primary, #374151);
+  transition: all 0.15s ease;
+}
+
+.sh-btn:hover {
+  background: rgba(128, 128, 128, 0.1);
+}
+
+/* =========================
+   Empty State
+========================= */
+.sh-empty {
+  text-align: center;
+  padding: 24px;
+  color: var(--text-secondary, #6b7280);
+}
+
+/* =========================
+   Status Badges
+========================= */
+.badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+}
+
+/* Accepted - Màu xanh lá nổi bật */
+.badge-accepted {
+  background: #d4edda;
+  color: #28a745;
+  border: 1px solid #28a745;
+  font-weight: 900;
+}
+
+/* Wrong Answer */
+.badge-wa {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+/* Runtime Error */
+.badge-re {
+  background: #ffedd5;
+  color: #9a3412;
+}
+
+/* Compile Error */
+.badge-ce {
+  background: #dbeafe;
+  color: #1e3a8a;
+}
+
+/* Time Limit Exceeded */
+.badge-tle {
+  background: #f3e8ff;
+  color: #6b21a8;
+}
+
+/* =========================
+   Responsive
+========================= */
+@media (max-width: 900px) {
+  .sh-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .sh-search {
+    width: 100%;
+  }
+}
+
+/* =========================
+   Colored Summary Boxes
+========================= */
+
+/* 🔵 Total submissions */
+.card-total {
+  border-left: 5px solid #3b82f6;
+  background: linear-gradient(135deg, #eff6ff, #ffffff);
+}
+
+.card-total .sh-card-label {
+  color: #2563eb;
+}
+
+/* 🟢 Acceptance rate */
+.card-acceptance {
+  border-left: 5px solid #22c55e;
+  background: linear-gradient(135deg, #ecfdf5, #ffffff);
+}
+
+.card-acceptance .sh-card-label {
+  color: #16a34a;
+}
+
+/* 🟣 Solved / Attempted */
+.card-progress {
+  border-left: 5px solid #8b5cf6;
+  background: linear-gradient(135deg, #f5f3ff, #ffffff);
+}
+
+.card-progress .sh-card-label {
+  color: #7c3aed;
+}
+
+/* =========================
+   DIFFICULTY BADGES
+========================= */
+.difficulty-badge {
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.difficulty-easy {
+  background: rgba(46, 213, 115, 0.15);
+  color: #22c55e;
+}
+
+.difficulty-medium {
+  background: rgba(255, 165, 2, 0.15);
+  color: #f59e0b;
+}
+
+.difficulty-hard {
+  background: rgba(239, 68, 68, 0.15);
+  color: #ef4444;
+}

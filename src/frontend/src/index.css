@@ -1,0 +1,278 @@
+@import "tailwindcss";
+
+/* ====================== RESET & GLOBAL ====================== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body, #root { width: 100%; height: 100%; }
+body { font-family: system-ui, -apple-system, sans-serif; background: white; overflow-x: hidden; }
+
+/* Variables */
+:root { --bg-primary: #f5f7fa; --bg-secondary: #ffffff; --text-primary: #333333; --text-secondary: #64748b; --accent-color: #2563eb; --sidebar-bg: linear-gradient(180deg, #dceaff 0%, #edf3ff 100%); }
+body { background: var(--bg-primary); color: var(--text-primary); }
+
+/* Sidebar & Cards */
+.dashboard-page, .sh-page, .list-exercise-page, .specified-problem-page, .problem-detail-page, .interface-code-wrapper, .admin-page, .problem-editor-page { background: var(--bg-primary) !important; }
+.sidebar, .sh-sidebar, .admin-sidebar { background: var(--sidebar-bg) !important; }
+.sidebar a, .sidebar button { color: #1e293b !important; font-weight: 600; padding: 0.75rem 1.25rem; border-radius: 12px; }
+.sidebar a:hover { color: #2563eb !important; background: rgba(37, 99, 235, 0.1); }
+.sidebar a.active { color: #ffffff !important; background: #2563eb; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3); }
+.stat-card, .problem-card, .sh-card, .difficulty-card, .profile-card, .problem-list-card, .learning-card, .example-card-box { background: var(--bg-secondary); color: var(--text-primary); border-radius: 18px; border: 1px solid rgba(0,0,0,0.05); box-shadow: 0 10px 24px rgba(0,0,0,0.05); }
+
+/* Theme Configs */
+body.theme-dark { --bg-primary: #0f172a; --bg-secondary: #1e293b; --text-primary: #f8fafc; --text-secondary: #94a3b8; --accent-color: #60a5fa; --sidebar-bg: linear-gradient(180deg, #1e293b 0%, #0f172a 100%); }
+body.theme-dark .sidebar a { color: #e2e8f0 !important; }
+body.theme-dark .sidebar a:hover { color: #60a5fa !important; background: rgba(96, 165, 250, 0.15); }
+body.theme-dark .sidebar a.active { color: #0f172a !important; background: #60a5fa; }
+body.theme-dark .nav-item, body.theme-dark .sh-nav-item { color: #e2e8f0 !important; }
+body.theme-dark .nav-item:hover, body.theme-dark .sh-nav-item:hover { color: #60a5fa !important; background: rgba(96, 165, 250, 0.15) !important; }
+body.theme-dark .nav-item.active, body.theme-dark .sh-nav-item.active { color: #0f172a !important; background: #60a5fa !important; box-shadow: 0 4px 15px rgba(96, 165, 250, 0.4) !important; }
+body.theme-dark .nav-item.admin-nav, body.theme-dark .sh-nav-item.admin-nav, body.theme-dark .sd-nav-item.admin-nav { background: rgba(251, 191, 36, 0.15) !important; color: #fbbf24 !important; border: 1px solid rgba(251, 191, 36, 0.3) !important; }
+body.theme-dark .nav-item.admin-nav:hover, body.theme-dark .sh-nav-item.admin-nav:hover, body.theme-dark .sd-nav-item.admin-nav:hover { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important; color: #fff !important; }
+body.theme-dark .stat-card, body.theme-dark .sh-card { background: #1e293b; border: 1px solid rgba(148, 163, 184, 0.2); }
+body.theme-dark .submission-item { background: #1e293b; border: 1px solid rgba(148, 163, 184, 0.2); }
+body.theme-dark .submission-item:hover { background: #2d3a4f; }
+body.theme-dark .problem-card { background: #1e293b !important; border: 1px solid rgba(148, 163, 184, 0.2); }
+body.theme-dark .problem-card h3 { color: #f8fafc !important; }
+body.theme-dark .problem-card .card-desc { color: #94a3b8 !important; }
+body.theme-dark .sh-table-wrap { background: #1e293b; border: 1px solid rgba(148, 163, 184, 0.2); }
+body.theme-dark .sh-tab { background: #1e293b; border-color: rgba(148, 163, 184, 0.2); color: #f8fafc; }
+body.theme-dark .recent-submissions, body.theme-dark .recent-submissions-full { background: #1e293b; border: 1px solid rgba(148, 163, 184, 0.2); }
+/* Dark theme - Problem pages */
+body.theme-dark .specified-problem-page, body.theme-dark .problem-detail-page, body.theme-dark .interface-code-wrapper { background: var(--bg-primary) !important; }
+body.theme-dark .specified-problem-page .dashboard-container, body.theme-dark .problem-detail-page .dashboard-container { background: var(--bg-primary) !important; }
+body.theme-dark .problem-list-card, body.theme-dark .learning-card { background: #1e293b !important; border: 1px solid rgba(148, 163, 184, 0.2); }
+body.theme-dark .problem-row { background: #1e293b !important; border: 1px solid rgba(148, 163, 184, 0.2) !important; }
+body.theme-dark .problem-row:hover { background: #2d3a4f !important; }
+body.theme-dark .interface-code-wrapper .sidebar { background: var(--sidebar-bg) !important; }
+body.theme-dark .interface-code-wrapper .main-content { background: var(--bg-primary) !important; }
+body.theme-dark .interface-code-wrapper .problem-description { background: #1e293b !important; border: 1px solid rgba(148, 163, 184, 0.2); color: #f8fafc !important; }
+body.theme-dark .example-card { background: #1e293b !important; border: 1px solid rgba(148, 163, 184, 0.3) !important; color: #f8fafc !important; }
+body.theme-dark .example-card .example-header { background: rgba(96, 165, 250, 0.3) !important; border-bottom: 1px solid rgba(148, 163, 184, 0.3) !important; }
+body.theme-dark .section-card { background: #1e293b !important; border: 1px solid rgba(148, 163, 184, 0.2) !important; }
+body.theme-dark .section-title { color: #f8fafc !important; }
+body.theme-dark .section-title.green { color: #60a5fa !important; }
+body.theme-dark .problem-main { background: var(--bg-primary) !important; }
+/* Dark theme - Submission Result page */
+body.theme-dark .result-page-container { background: var(--bg-primary) !important; }
+body.theme-dark .result-page-container .testcase-status { color: #94a3b8 !important; }
+body.theme-dark .result-page-container .history-container { background: #1e293b !important; border: 1px solid rgba(148, 163, 184, 0.2); }
+body.theme-dark .result-page-container .history-title { color: #60a5fa !important; background: transparent !important; }
+body.theme-dark .result-page-container .history-table thead { background: rgba(96, 165, 250, 0.5) !important; }
+body.theme-dark .result-page-container .history-table tbody tr { background: #1e293b !important; border-bottom: 1px solid rgba(148, 163, 184, 0.2) !important; }
+body.theme-dark .result-page-container .history-table td { color: #f8fafc !important; }
+body.theme-dark .result-page-container .nav-btn { color: #f8fafc !important; }
+
+body.theme-christmas { --bg-primary: #1a3d2e; --bg-secondary: #2d5a47; --text-primary: #ffffff; --text-secondary: #a7f3d0; --accent-color: #dc2626; --sidebar-bg: linear-gradient(135deg, #2d5a47 0%, #1a3d2e 100%); }
+body.theme-christmas::before { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 1; background-image: radial-gradient(circle at 20% 80%, rgba(220, 38, 38, 0.1) 0%, transparent 40%); }
+body.theme-christmas .stat-card, body.theme-christmas .sh-card { background: rgba(45, 90, 71, 0.95); border: 1px solid rgba(167, 243, 208, 0.25); }
+body.theme-christmas .submission-item { background: rgba(45, 90, 71, 0.95); border: 1px solid rgba(167, 243, 208, 0.25); }
+body.theme-christmas .submission-item:hover { background: rgba(55, 100, 81, 0.95); }
+body.theme-christmas .problem-card { background: rgba(45, 90, 71, 0.95) !important; border: 1px solid rgba(167, 243, 208, 0.25); }
+body.theme-christmas .problem-card h3 { color: #ffffff !important; }
+body.theme-christmas .problem-card .card-desc { color: #a7f3d0 !important; }
+body.theme-christmas .sh-table-wrap { background: rgba(45, 90, 71, 0.95); border: 1px solid rgba(167, 243, 208, 0.25); }
+body.theme-christmas .sh-tab { background: rgba(45, 90, 71, 0.95); border-color: rgba(167, 243, 208, 0.25); color: #ffffff; }
+body.theme-christmas .recent-submissions, body.theme-christmas .recent-submissions-full { background: rgba(45, 90, 71, 0.95); border: 1px solid rgba(167, 243, 208, 0.25); }
+body.theme-christmas label, body.theme-christmas h3, body.theme-christmas .sidebar a { color: #ffffff !important; }
+body.theme-christmas .sidebar a:hover { background: rgba(220, 38, 38, 0.2); }
+body.theme-christmas .sidebar a.active { background: #dc2626; }
+body.theme-christmas .nav-item, body.theme-christmas .sh-nav-item { color: #ffffff !important; }
+body.theme-christmas .nav-item.active, body.theme-christmas .sh-nav-item.active { background: #dc2626 !important; box-shadow: 0 4px 15px rgba(220, 38, 38, 0.4) !important; }
+body.theme-christmas .nav-item:hover, body.theme-christmas .sh-nav-item:hover { background: rgba(220, 38, 38, 0.2) !important; color: #ffffff !important; }
+body.theme-christmas .nav-item.admin-nav, body.theme-christmas .sh-nav-item.admin-nav, body.theme-christmas .sd-nav-item.admin-nav { background: rgba(251, 191, 36, 0.2) !important; color: #fcd34d !important; border: 1px solid rgba(251, 191, 36, 0.4) !important; }
+body.theme-christmas .nav-item.admin-nav:hover, body.theme-christmas .sh-nav-item.admin-nav:hover, body.theme-christmas .sd-nav-item.admin-nav:hover { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important; color: #fff !important; }
+/* Christmas theme - Problem pages */
+body.theme-christmas .specified-problem-page, body.theme-christmas .problem-detail-page, body.theme-christmas .interface-code-wrapper { background: var(--bg-primary) !important; }
+body.theme-christmas .specified-problem-page .dashboard-container, body.theme-christmas .problem-detail-page .dashboard-container { background: var(--bg-primary) !important; }
+body.theme-christmas .problem-list-card, body.theme-christmas .learning-card { background: rgba(45, 90, 71, 0.95) !important; border: 1px solid rgba(167, 243, 208, 0.25); }
+body.theme-christmas .problem-row { background: rgba(45, 90, 71, 0.95) !important; border: 1px solid rgba(167, 243, 208, 0.25) !important; }
+body.theme-christmas .problem-row:hover { background: rgba(55, 100, 81, 0.95) !important; }
+body.theme-christmas .example-card-box { background: rgba(37, 99, 235, 0.9) !important; }
+body.theme-christmas .example-card { background: rgba(45, 90, 71, 0.95) !important; border: 1px solid rgba(167, 243, 208, 0.3) !important; color: #ffffff !important; }
+body.theme-christmas .example-card .example-header { background: rgba(220, 38, 38, 0.8) !important; border-bottom: 1px solid rgba(167, 243, 208, 0.3) !important; }
+body.theme-christmas .section-card { background: rgba(45, 90, 71, 0.95) !important; border: 1px solid rgba(167, 243, 208, 0.25) !important; }
+body.theme-christmas .section-title { color: #a7f3d0 !important; }
+body.theme-christmas .section-title.green { color: #22c55e !important; }
+body.theme-christmas .problem-main { background: var(--bg-primary) !important; }
+body.theme-christmas .interface-code-wrapper .sidebar { background: var(--sidebar-bg) !important; }
+body.theme-christmas .interface-code-wrapper .main-content { background: var(--bg-primary) !important; }
+body.theme-christmas .interface-code-wrapper .problem-description { background: rgba(45, 90, 71, 0.95) !important; border: 1px solid rgba(167, 243, 208, 0.25); color: #ffffff !important; }
+/* Christmas theme - Submission Result page */
+body.theme-christmas .result-page-container { background: var(--bg-primary) !important; }
+body.theme-christmas .result-page-container .unicode-logo { background: linear-gradient(135deg, #dc2626, #22c55e) !important; -webkit-background-clip: text !important; background-clip: text !important; -webkit-text-fill-color: transparent !important; }
+body.theme-christmas .result-page-container .testcase-status { color: #a7f3d0 !important; }
+body.theme-christmas .result-page-container .history-container { background: rgba(45, 90, 71, 0.95) !important; border: 1px solid rgba(167, 243, 208, 0.25); }
+body.theme-christmas .result-page-container .history-title { color: #a7f3d0 !important; background: transparent !important; }
+body.theme-christmas .result-page-container .history-table thead { background: rgba(220, 38, 38, 0.8) !important; }
+body.theme-christmas .result-page-container .history-table tbody tr { background: rgba(45, 90, 71, 0.95) !important; border-bottom: 1px solid rgba(167, 243, 208, 0.2) !important; }
+body.theme-christmas .result-page-container .history-table td { color: #ffffff !important; }
+body.theme-christmas .result-page-container .nav-btn { color: #ffffff !important; }
+
+body.theme-newyear { --bg-primary: #2d2d2d; --bg-secondary: #3d3d3d; --text-primary: #ffffff; --text-secondary: #fbbf24; --accent-color: #fbbf24; --sidebar-bg: linear-gradient(135deg, #3d3d3d 0%, #2d2d2d 100%); }
+body.theme-newyear::before { content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 1; opacity: 0.7; background-image: radial-gradient(circle at 25% 30%, rgba(251, 191, 36, 0.15) 0%, transparent 25%); }
+body.theme-newyear .stat-card, body.theme-newyear .sh-card { background: rgba(61, 61, 61, 0.98); border: 1px solid rgba(251, 191, 36, 0.35); }
+body.theme-newyear .submission-item { background: rgba(61, 61, 61, 0.98); border: 1px solid rgba(251, 191, 36, 0.35); }
+body.theme-newyear .submission-item:hover { background: rgba(71, 71, 71, 0.98); }
+body.theme-newyear .problem-card { background: rgba(61, 61, 61, 0.98) !important; border: 1px solid rgba(251, 191, 36, 0.35); }
+body.theme-newyear .problem-card h3 { color: #fbbf24 !important; }
+body.theme-newyear .problem-card .card-desc { color: #ffffff !important; }
+body.theme-newyear .sh-table-wrap { background: rgba(61, 61, 61, 0.98); border: 1px solid rgba(251, 191, 36, 0.35); }
+body.theme-newyear .sh-tab { background: rgba(61, 61, 61, 0.98); border-color: rgba(251, 191, 36, 0.35); color: #ffffff; }
+body.theme-newyear .recent-submissions, body.theme-newyear .recent-submissions-full { background: rgba(61, 61, 61, 0.98); border: 1px solid rgba(251, 191, 36, 0.35); }
+body.theme-newyear label, body.theme-newyear h3 { color: #fbbf24 !important; }
+body.theme-newyear .sidebar a { color: #fde68a !important; }
+body.theme-newyear .sidebar a:hover { background: rgba(251, 191, 36, 0.15); }
+body.theme-newyear .sidebar a.active { color: #2d2d2d !important; background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); }
+body.theme-newyear .nav-item.active, body.theme-newyear .sh-nav-item.active { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%) !important; color: #2d2d2d !important; box-shadow: 0 4px 15px rgba(251, 191, 36, 0.4) !important; }
+body.theme-newyear .nav-item:hover, body.theme-newyear .sh-nav-item:hover { background: rgba(251, 191, 36, 0.15) !important; color: #fbbf24 !important; }
+body.theme-newyear .nav-item, body.theme-newyear .sh-nav-item { color: #fde68a !important; }
+body.theme-newyear .nav-item.admin-nav, body.theme-newyear .sh-nav-item.admin-nav, body.theme-newyear .sd-nav-item.admin-nav { background: rgba(251, 191, 36, 0.2) !important; color: #fbbf24 !important; border: 1px solid rgba(251, 191, 36, 0.5) !important; }
+body.theme-newyear .nav-item.admin-nav:hover, body.theme-newyear .sh-nav-item.admin-nav:hover, body.theme-newyear .sd-nav-item.admin-nav:hover { background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%) !important; color: #2d2d2d !important; }
+/* New Year theme - Problem pages */
+body.theme-newyear .specified-problem-page, body.theme-newyear .problem-detail-page, body.theme-newyear .interface-code-wrapper { background: var(--bg-primary) !important; }
+body.theme-newyear .specified-problem-page .dashboard-container, body.theme-newyear .problem-detail-page .dashboard-container { background: var(--bg-primary) !important; }
+body.theme-newyear .problem-list-card, body.theme-newyear .learning-card { background: rgba(61, 61, 61, 0.98) !important; border: 1px solid rgba(251, 191, 36, 0.35); }
+body.theme-newyear .problem-row { background: rgba(61, 61, 61, 0.98) !important; border: 1px solid rgba(251, 191, 36, 0.35) !important; }
+body.theme-newyear .problem-row:hover { background: rgba(71, 71, 71, 0.98) !important; }
+body.theme-newyear .interface-code-wrapper .sidebar { background: var(--sidebar-bg) !important; }
+body.theme-newyear .interface-code-wrapper .main-content { background: var(--bg-primary) !important; }
+body.theme-newyear .interface-code-wrapper .problem-description { background: rgba(61, 61, 61, 0.98) !important; border: 1px solid rgba(251, 191, 36, 0.35); color: #ffffff !important; }
+body.theme-newyear .example-card { background: rgba(61, 61, 61, 0.98) !important; border: 1px solid rgba(251, 191, 36, 0.4) !important; color: #ffffff !important; }
+body.theme-newyear .example-card .example-header { background: rgba(251, 191, 36, 0.3) !important; border-bottom: 1px solid rgba(251, 191, 36, 0.4) !important; }
+body.theme-newyear .section-card { background: rgba(61, 61, 61, 0.98) !important; border: 1px solid rgba(251, 191, 36, 0.35) !important; }
+body.theme-newyear .section-title { color: #fbbf24 !important; }
+body.theme-newyear .section-title.green { color: #fbbf24 !important; }
+body.theme-newyear .problem-main { background: var(--bg-primary) !important; }
+/* New Year theme - Submission Result page */
+body.theme-newyear .result-page-container { background: var(--bg-primary) !important; }
+body.theme-newyear .result-page-container .testcase-status { color: #fde68a !important; }
+body.theme-newyear .result-page-container .history-container { background: rgba(61, 61, 61, 0.98) !important; border: 1px solid rgba(251, 191, 36, 0.35); }
+body.theme-newyear .result-page-container .history-title { color: #fbbf24 !important; background: transparent !important; }
+body.theme-newyear .result-page-container .history-table thead { background: rgba(251, 191, 36, 0.6) !important; }
+body.theme-newyear .result-page-container .history-table tbody tr { background: rgba(61, 61, 61, 0.98) !important; border-bottom: 1px solid rgba(251, 191, 36, 0.2) !important; }
+body.theme-newyear .result-page-container .history-table td { color: #ffffff !important; }
+body.theme-newyear .result-page-container .nav-btn { color: #fde68a !important; }
+
+.christmas-snow-container, .newyear-fireworks-container { display: none; position: fixed; inset: 0; pointer-events: none; z-index: 9999; overflow: hidden; }
+body.theme-christmas .christmas-snow-container { display: block; }
+body.theme-newyear .newyear-fireworks-container { display: block; }
+
+/* ================== SNOW ANIMATION (ĐÃ KHÔI PHỤC VỀ CODE CŨ) ================== */
+.christmas-snow { position: absolute; opacity: 0.7; text-shadow: 0 0 8px rgba(255,255,255,0.6); color: white; }
+
+.snow-1 { left: 8%; animation: snow-fall-1 9.5s linear infinite; font-size: 24px; }
+.snow-2 { left: 18%; animation: snow-fall-2 10.2s linear infinite 0.2s; font-size: 20px; }
+.snow-3 { left: 32%; animation: snow-fall-3 11s linear infinite 0.5s; font-size: 26px; }
+.snow-4 { left: 47%; animation: snow-fall-1 9.8s linear infinite 0.8s; font-size: 22px; }
+.snow-5 { left: 63%; animation: snow-fall-2 10.5s linear infinite 1.1s; font-size: 19px; }
+.snow-6 { left: 78%; animation: snow-fall-3 11.2s linear infinite 1.4s; font-size: 25px; }
+.snow-7 { left: 5%; animation: snow-fall-2 10.8s linear infinite 4s; font-size: 21px; }
+.snow-8 { left: 15%; animation: snow-fall-1 9.3s linear infinite 4.3s; font-size: 27px; }
+.snow-9 { left: 28%; animation: snow-fall-3 11.5s linear infinite 4.6s; font-size: 18px; }
+.snow-10 { left: 42%; animation: snow-fall-2 10s linear infinite 4.9s; font-size: 23px; }
+.snow-11 { left: 56%; animation: snow-fall-1 9.7s linear infinite 5.2s; font-size: 20px; }
+.snow-12 { left: 71%; animation: snow-fall-3 10.3s linear infinite 5.5s; font-size: 24px; }
+.snow-13 { left: 85%; animation: snow-fall-2 11.8s linear infinite 5.8s; font-size: 22px; }
+.snow-14 { left: 12%; animation: snow-fall-3 10.6s linear infinite 9s; font-size: 26px; }
+.snow-15 { left: 35%; animation: snow-fall-1 9.2s linear infinite 9.4s; font-size: 19px; }
+.snow-16 { left: 52%; animation: snow-fall-2 11.1s linear infinite 9.8s; font-size: 25px; }
+.snow-17 { left: 68%; animation: snow-fall-3 10.4s linear infinite 10.2s; font-size: 21px; }
+.snow-18 { left: 92%; animation: snow-fall-1 9.9s linear infinite 10.6s; font-size: 23px; }
+
+@keyframes snow-fall-1 { 0% { transform: translateY(-50px); opacity: 0; } 10% { opacity: 0.7; } 100% { transform: translateY(100vh) translateX(30px) rotate(360deg); opacity: 0; } }
+@keyframes snow-fall-2 { 0% { transform: translateY(-50px); opacity: 0; } 10% { opacity: 0.6; } 100% { transform: translateY(100vh) translateX(-40px) rotate(-360deg); opacity: 0; } }
+@keyframes snow-fall-3 { 0% { transform: translateY(-50px); opacity: 0; } 10% { opacity: 0.65; } 100% { transform: translateY(100vh) translateX(20px) rotate(180deg); opacity: 0; } }
+
+
+/* ================== FIREWORKS (CODE MỚI NHẤT - TIA SÁNG GRADIENT) ================== */
+
+/* 1. Điểm neo */
+.firework {
+  position: absolute;
+  /* Kích thước tia 80px */
+  --burst-radius: 80px;
+  --streak-width: 3px;
+  z-index: 9999;
+}
+
+/* 2. Container */
+.explosion {
+  position: absolute; top: 0; left: 0; width: 0; height: 0;
+}
+
+/* 3. CÁC TIA SÁNG (RAYS) */
+.ray {
+  position: absolute;
+  bottom: 0; left: 50%;
+  width: var(--streak-width);
+  height: 0px;
+  transform-origin: bottom center;
+  transform: translateX(-50%) rotate(var(--angle));
+  opacity: 0;
+  border-radius: 50% 50% 0 0;
+  /* Animation 5.5s */
+  animation: firework-burst 5.5s ease-out forwards;
+}
+
+/* 4. TÂM SÁNG (FLASH) */
+.flash {
+  position: absolute; top: 0; left: 0;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #fffdd0;
+  box-shadow: 0 0 25px 8px #ffeb3b, 0 0 50px 15px #ffc107;
+  opacity: 0;
+  z-index: 10;
+  animation: flash-animation 5.5s ease-out forwards;
+}
+
+/* 5. MÀU SẮC NEON VỚI GRADIENT */
+.firework--gold .ray {
+  background: linear-gradient(to top, rgba(255, 235, 59, 0) 0%, #ffeb3b 50%, #ffffff 100%);
+  box-shadow: 0 0 8px #ffeb3b, 0 0 16px #ffc107;
+}
+.firework--cyan .ray {
+  background: linear-gradient(to top, rgba(0, 229, 255, 0) 0%, #00e5ff 50%, #ffffff 100%);
+  box-shadow: 0 0 8px #00e5ff, 0 0 16px #00b0ff;
+}
+.firework--red .ray {
+  background: linear-gradient(to top, rgba(255, 64, 129, 0) 0%, #ff4081 50%, #ffffff 100%);
+  box-shadow: 0 0 8px #ff4081, 0 0 16px #f50057;
+}
+
+/* KEYFRAMES PHÁO HOA */
+@keyframes flash-animation {
+  0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+  5% { transform: translate(-50%, -50%) scale(1.5); opacity: 1; }
+  40% { transform: translate(-50%, -50%) scale(1); opacity: 0.9; }
+  100% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+}
+
+@keyframes firework-burst {
+  0% { height: 0; opacity: 0; }
+  10% { height: var(--burst-radius); opacity: 1; }
+  60% { height: var(--burst-radius); opacity: 1; }
+  100% {
+    opacity: 0;
+    height: var(--burst-radius);
+    transform: translateX(-50%) rotate(var(--angle)) translateY(-100px);
+  }
+}
+
+/* Social Links */
+.social-links-section { margin-top: 2rem; padding-top: 2rem; border-top: 2px dashed rgba(0,0,0,0.1); }
+.social-links-section h3 { font-size: 1.1rem; text-transform: uppercase; font-weight: 800; border-bottom: 3px solid; display: inline-block; padding-bottom: 5px; margin-bottom: 1.5rem; }
+.social-links-section h3 { color: #7e22ce; border-color: #d8b4fe; }
+.social-links-section input { border: 2px solid #a855f7 !important; background: #f3e8ff !important; }
+body.theme-christmas .social-links-section { border-top-color: rgba(255,255,255,0.3); }
+body.theme-christmas .social-links-section h3 { color: #fcd34d !important; border-color: #ef4444; }
+body.theme-christmas .ant-form-item-label > label { color: #fca5a5 !important; }
+body.theme-christmas .social-links-section input { background: rgba(20,50,35,0.8) !important; border: 2px solid #fca5a5 !important; color: white !important; }
+body.theme-newyear .social-links-section { border-top-color: rgba(251,191,36,0.3); }
+body.theme-newyear .social-links-section h3 { color: #22d3ee !important; border-color: #22d3ee; }
+body.theme-newyear .ant-form-item-label > label { color: #67e8f9 !important; }
+body.theme-newyear .social-links-section input { background: rgba(0,0,0,0.6) !important; border: 2px solid #22d3ee !important; color: #22d3ee !important; }
+body.theme-dark .social-links-section { border-top-color: rgba(255,255,255,0.1); }
+body.theme-dark .social-links-section h3 { color: #f472b6 !important; border-color: #be185d; }
+body.theme-dark .ant-form-item-label > label { color: #fbcfe8 !important; }
+body.theme-dark .social-links-section input { background: rgba(255,255,255,0.05) !important; border-color: #db2777 !important; color: white !important; }
