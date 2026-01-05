@@ -139,6 +139,59 @@
     flex: 2;
 }
 
+.form-group.flex-3 {
+    flex: 3;
+}
+
+/* Tags Selector */
+.tags-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 16px;
+    background: var(--bg-primary, #f8fafc);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    min-height: 60px;
+}
+
+.tag-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: #fff;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary, #64748b);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: none !important;
+}
+
+.tag-checkbox:hover {
+    border-color: #6366f1;
+    color: #6366f1;
+}
+
+.tag-checkbox.selected {
+    background: #6366f1;
+    border-color: #6366f1;
+    color: #fff;
+}
+
+.tag-checkbox input[type="checkbox"] {
+    display: none;
+}
+
+.no-tags {
+    color: var(--text-secondary, #64748b);
+    font-style: italic;
+    font-size: 13px;
+}
+
 .form-group label {
     font-size: 13px;
     font-weight: 600;
