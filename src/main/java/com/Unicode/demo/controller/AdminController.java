@@ -107,11 +107,16 @@ public class AdminController {
             problem.setExample2Explanation((String) body.get("example2Explanation"));
             problem.setSummary((String) body.get("summary"));
             problem.setLearningObjectives((String) body.get("learningObjectives"));
+            problem.setCategory((String) body.get("category"));
 
             @SuppressWarnings("unchecked")
             List<Map<String, Object>> testCases = (List<Map<String, Object>>) body.get("testCases");
 
-            Problem created = adminService.createProblem(problem, testCases);
+            @SuppressWarnings("unchecked")
+            List<Integer> tagIdInts = (List<Integer>) body.get("tagIds");
+            List<Long> tagIds = tagIdInts != null ? tagIdInts.stream().map(Long::valueOf).toList() : null;
+
+            Problem created = adminService.createProblem(problem, testCases, tagIds);
             return ResponseEntity.ok(created);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
@@ -143,11 +148,18 @@ public class AdminController {
             problem.setExample2Input((String) body.get("example2Input"));
             problem.setExample2Output((String) body.get("example2Output"));
             problem.setExample2Explanation((String) body.get("example2Explanation"));
+            problem.setSummary((String) body.get("summary"));
+            problem.setLearningObjectives((String) body.get("learningObjectives"));
+            problem.setCategory((String) body.get("category"));
 
             @SuppressWarnings("unchecked")
             List<Map<String, Object>> testCases = (List<Map<String, Object>>) body.get("testCases");
 
-            Problem updated = adminService.updateProblem(problemId, problem, testCases);
+            @SuppressWarnings("unchecked")
+            List<Integer> tagIdInts = (List<Integer>) body.get("tagIds");
+            List<Long> tagIds = tagIdInts != null ? tagIdInts.stream().map(Long::valueOf).toList() : null;
+
+            Problem updated = adminService.updateProblem(problemId, problem, testCases, tagIds);
             return ResponseEntity.ok(updated);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
@@ -184,5 +196,12 @@ public class AdminController {
     @GetMapping("/problems/{problemId}/solutions")
     public ResponseEntity<List<Submission>> getAcceptedSolutions(@PathVariable Long problemId) {
         return ResponseEntity.ok(adminService.getAcceptedSolutionsForProblem(problemId));
+    }
+
+    // ==================== TAGS ====================
+
+    @GetMapping("/tags")
+    public ResponseEntity<List<Tag>> getAllTags() {
+        return ResponseEntity.ok(adminService.getAllTags());
     }
 }

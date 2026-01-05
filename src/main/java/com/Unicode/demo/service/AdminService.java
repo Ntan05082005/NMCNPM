@@ -101,13 +101,19 @@ public class AdminService {
     }
 
     @Transactional
-    public Problem createProblem(Problem problem, List<Map<String, Object>> testCases) {
+    public Problem createProblem(Problem problem, List<Map<String, Object>> testCases, List<Long> tagIds) {
         // Generate slug from title
         String slug = problem.getTitle().toLowerCase()
                 .replaceAll("[^a-z0-9\\s-]", "")
                 .replaceAll("\\s+", "-")
                 .replaceAll("-+", "-");
         problem.setSlug(slug);
+
+        // Assign tags if provided
+        if (tagIds != null && !tagIds.isEmpty()) {
+            Set<Tag> tags = new HashSet<>(tagRepository.findAllById(tagIds));
+            problem.setTags(tags);
+        }
 
         Problem saved = problemRepository.save(problem);
 
@@ -127,7 +133,8 @@ public class AdminService {
     }
 
     @Transactional
-    public Problem updateProblem(Long problemId, Problem updated, List<Map<String, Object>> testCases) {
+    public Problem updateProblem(Long problemId, Problem updated, List<Map<String, Object>> testCases,
+            List<Long> tagIds) {
         Problem existing = problemRepository.findById(problemId)
                 .orElseThrow(() -> new RuntimeException("Problem not found"));
 
@@ -151,6 +158,15 @@ public class AdminService {
         existing.setExample2Input(updated.getExample2Input());
         existing.setExample2Output(updated.getExample2Output());
         existing.setExample2Explanation(updated.getExample2Explanation());
+        existing.setSummary(updated.getSummary());
+        existing.setLearningObjectives(updated.getLearningObjectives());
+        existing.setCategory(updated.getCategory());
+
+        // Update tags if provided
+        if (tagIds != null) {
+            Set<Tag> tags = new HashSet<>(tagRepository.findAllById(tagIds));
+            existing.setTags(tags);
+        }
 
         // Update test cases if provided
         if (testCases != null) {
@@ -194,5 +210,11 @@ public class AdminService {
 
     public List<Submission> getAcceptedSolutionsForProblem(Long problemId) {
         return submissionRepository.findByProblemIdAndStatus(problemId, "ACCEPTED");
+    }
+
+    // ==================== TAGS ====================
+
+    public List<Tag> getAllTags() {
+        return tagRepository.findAll();
     }
 }

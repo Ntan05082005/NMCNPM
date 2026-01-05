@@ -66,4 +66,8 @@ export const getAllSubmissions = (page = 0, size = 20, filters = {}) => {
 export const getAcceptedSolutions = (problemId) =>
     API.get(`/api/admin/problems/${problemId}/solutions`);
 
+// ==================== TAGS ====================
+
+export const getAllTags = () => API.get('/api/admin/tags');
+
 export default API;

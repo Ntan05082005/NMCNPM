@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FiArrowLeft, FiSave, FiPlus, FiTrash2 } from 'react-icons/fi';
-import { createProblem, updateProblem, getTestCases, getProblemById } from '../../API/api-admin';
+import { createProblem, updateProblem, getTestCases, getProblemById, getAllTags } from '../../API/api-admin';
 import './problemEditor.css';
 
 export default function ProblemEditor() {
@@ -12,10 +12,15 @@ export default function ProblemEditor() {
     const [loading, setLoading] = useState(false);
     const [saving, setSaving] = useState(false);
 
+    // Tags state
+    const [availableTags, setAvailableTags] = useState([]);
+    const [selectedTagIds, setSelectedTagIds] = useState([]);
+
     // Form state
     const [formData, setFormData] = useState({
         title: '',
         difficulty: 'EASY',
+        category: '',
         description: '',
         constraints: '',
         timeLimitMs: 2000,
@@ -43,11 +48,25 @@ export default function ProblemEditor() {
 
     const [activeCodeTab, setActiveCodeTab] = useState('cpp');
 
+    // Load available tags on mount
+    useEffect(() => {
+        loadTags();
+    }, []);
+
     useEffect(() => {
         if (isEditMode) {
             loadProblem();
         }
     }, [id]);
+
+    const loadTags = async () => {
+        try {
+            const res = await getAllTags();
+            setAvailableTags(res.data || []);
+        } catch (err) {
+            console.error('Failed to load tags:', err);
+        }
+    };
 
     const loadProblem = async () => {
         setLoading(true);
@@ -55,11 +74,12 @@ export default function ProblemEditor() {
             // Load problem details
             const problemRes = await getProblemById(id);
             const problem = problemRes.data;
-            
+
             // Populate form data with problem details
             setFormData({
                 title: problem.title || '',
                 difficulty: problem.difficulty || 'EASY',
+                category: problem.category || '',
                 description: problem.description || '',
                 constraints: problem.constraints || '',
                 timeLimitMs: problem.timeLimitMs || 2000,
@@ -88,6 +108,11 @@ export default function ProblemEditor() {
                 expectedOutput: tc.expectedOutput,
                 isSample: tc.isSample
             })) : [{ input: '', expectedOutput: '', isSample: true }]);
+
+            // Load existing tags
+            if (problem.tags && problem.tags.length > 0) {
+                setSelectedTagIds(problem.tags.map(t => t.id));
+            }
         } catch (err) {
             console.error('Failed to load problem:', err);
         } finally {
@@ -115,14 +140,30 @@ export default function ProblemEditor() {
         }
     };
 
+    // Category to Tag slug mapping
+    const categoryToTagSlug = {
+        'dsa': 'algorithm-data-structure',
+        'implementation': 'implementation',
+        'debugging': 'debugging',
+        'system-design': 'system-design',
+        'oop': 'oop',
+        'sql': 'database'
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setSaving(true);
 
         try {
+            // Auto-find the tag ID based on selected category
+            const tagSlug = categoryToTagSlug[formData.category];
+            const matchingTag = availableTags.find(t => t.slug === tagSlug);
+            const autoTagIds = matchingTag ? [matchingTag.id] : [];
+
             const payload = {
                 ...formData,
-                testCases: testCases.filter(tc => tc.input && tc.expectedOutput)
+                testCases: testCases.filter(tc => tc.input && tc.expectedOutput),
+                tagIds: autoTagIds
             };
 
             if (isEditMode) {
@@ -188,6 +229,24 @@ export default function ProblemEditor() {
                                     <option value="MEDIUM">Medium</option>
                                     <option value="HARD">Hard</option>
                                 </select>
+                            </div>
+                            <div className="form-group">
+                                <label>Category</label>
+                                <select
+                                    value={formData.category}
+                                    onChange={(e) => handleChange('category', e.target.value)}
+                                >
+                                    <option value="">-- Select Category --</option>
+                                    <option value="dsa">Algorithm & Data Structure</option>
+                                    <option value="implementation">Implementation / Simulation</option>
+                                    <option value="debugging">Debugging</option>
+                                    <option value="system-design">System Design</option>
+                                    <option value="oop">OOP & Design Patterns</option>
+                                    <option value="sql">Database / SQL</option>
+                                </select>
+                                <small style={{ color: '#64748b', marginTop: '4px' }}>
+                                    Tag will be auto-assigned based on category selection
+                                </small>
                             </div>
                         </div>
 
