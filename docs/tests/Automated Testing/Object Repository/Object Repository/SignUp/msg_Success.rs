@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<WebElementEntity>
+   <description></description>
+   <name>msg_Success</name>
+   <tag></tag>
+   <elementGuidId>123ab931-26fd-4629-8693-3dcb8dfa4324</elementGuidId>
+   <selectorCollection>
+      <entry>
+         <key>XPATH</key>
+         <value>//div[@id='root']/div[3]/div/main/section[2]/div/div[2]/h3</value>
+      </entry>
+      <entry>
+         <key>CSS</key>
+         <value>h3.success-title</value>
+      </entry>
+   </selectorCollection>
+   <selectorMethod>XPATH</selectorMethod>
+   <smartLocatorCollection>
+      <entry>
+         <key>SMART_LOCATOR</key>
+         <value>internal:role=heading[name=&quot;Registration Successful!&quot;i]</value>
+      </entry>
+   </smartLocatorCollection>
+   <smartLocatorEnabled>false</smartLocatorEnabled>
+   <useRalativeImagePath>true</useRalativeImagePath>
+   <webElementProperties>
+      <isSelected>false</isSelected>
+      <matchCondition>equals</matchCondition>
+      <name>tag</name>
+      <type>Main</type>
+      <value>h3</value>
+      <webElementGuid>f44ad70e-bd9c-4db5-9c5a-46f7b8cbba11</webElementGuid>
+   </webElementProperties>
+   <webElementProperties>
+      <isSelected>false</isSelected>
+      <matchCondition>equals</matchCondition>
+      <name>class</name>
+      <type>Main</type>
+      <value>success-title</value>
+      <webElementGuid>c87e4391-52da-4998-ae7d-d1396f460a11</webElementGuid>
+   </webElementProperties>
+   <webElementProperties>
+      <isSelected>true</isSelected>
+      <matchCondition>equals</matchCondition>
+      <name>text</name>
+      <type>Main</type>
+      <value>Registration Successful!</value>
+      <webElementGuid>58b9e46a-b77c-4406-bb7f-e84e34fa5343</webElementGuid>
+   </webElementProperties>
+   <webElementProperties>
+      <isSelected>false</isSelected>
+      <matchCondition>equals</matchCondition>
+      <name>xpath</name>
+      <type>Main</type>
+      <value>id(&quot;root&quot;)/div[@class=&quot;page signup-page&quot;]/div[@class=&quot;hero-card&quot;]/main[@class=&quot;hero-content&quot;]/section[@class=&quot;signup-card-container&quot;]/div[@class=&quot;signup-card&quot;]/div[@class=&quot;success-view&quot;]/h3[@class=&quot;success-title&quot;]</value>
+      <webElementGuid>11db97c7-a63f-4483-907b-6c88178bbf61</webElementGuid>
+   </webElementProperties>
+   <webElementXpaths>
+      <isSelected>true</isSelected>
+      <matchCondition>equals</matchCondition>
+      <name>xpath:idRelative</name>
+      <type>Main</type>
+      <value>//div[@id='root']/div[3]/div/main/section[2]/div/div[2]/h3</value>
+      <webElementGuid>20384578-f09a-4770-aa4c-ef70cb33f00a</webElementGuid>
+   </webElementXpaths>
+   <webElementXpaths>
+      <isSelected>false</isSelected>
+      <matchCondition>equals</matchCondition>
+      <name>xpath:neighbor</name>
+      <type>Main</type>
+      <value>(.//*[normalize-space(text()) and normalize-space(.)='Uni'])[1]/following::h3[1]</value>
+      <webElementGuid>09ab44eb-3ba1-4596-816c-3676d5d8c7af</webElementGuid>
+   </webElementXpaths>
+   <webElementXpaths>
+      <isSelected>false</isSelected>
+      <matchCondition>equals</matchCondition>
+      <name>xpath:neighbor</name>
+      <type>Main</type>
+      <value>(.//*[normalize-space(text()) and normalize-space(.)='Go to Login'])[1]/preceding::h3[1]</value>
+      <webElementGuid>3c755dba-16ad-450a-b122-aad08c9604ae</webElementGuid>
+   </webElementXpaths>
+   <webElementXpaths>
+      <isSelected>false</isSelected>
+      <matchCondition>equals</matchCondition>
+      <name>xpath:neighbor</name>
+      <type>Main</type>
+      <value>//*/text()[normalize-space(.)='Registration Successful!']/parent::*</value>
+      <webElementGuid>5c30895a-8878-42b5-9a6c-8eefd936b0e7</webElementGuid>
+   </webElementXpaths>
+   <webElementXpaths>
+      <isSelected>false</isSelected>
+      <matchCondition>equals</matchCondition>
+      <name>xpath:position</name>
+      <type>Main</type>
+      <value>//h3</value>
+      <webElementGuid>4267a677-7c18-4c2a-bac2-57c554910705</webElementGuid>
+   </webElementXpaths>
+   <webElementXpaths>
+      <isSelected>false</isSelected>
+      <matchCondition>equals</matchCondition>
+      <name>xpath:customAttributes</name>
+      <type>Main</type>
+      <value>//h3[(text() = 'Registration Successful!' or . = 'Registration Successful!')]</value>
+      <webElementGuid>8657bcca-fec3-4b16-be4c-9c35abb71990</webElementGuid>
+   </webElementXpaths>
+</WebElementEntity>
