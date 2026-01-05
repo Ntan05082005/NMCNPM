@@ -193,13 +193,13 @@ export default function LogIn() {
               <div className="social-separator">Or log in with</div>
 
               <div className="social-icons">
-                <button className="social-btn">
+                <button className="social-btn" onClick={() => window.location.href = 'http://localhost:8080/oauth2/authorization/google'}>
                   <FcGoogle />
                 </button>
-                <button className="social-btn">
+                <button className="social-btn" onClick={() => window.location.href = 'http://localhost:8080/oauth2/authorization/github'}>
                   <FaGithub style={{ color: "#333" }} />
                 </button>
-                <button className="social-btn">
+                <button className="social-btn" onClick={() => window.location.href = 'http://localhost:8080/oauth2/authorization/facebook'}>
                   <FaFacebook style={{ color: "#1877f2" }} />
                 </button>
               </div>
