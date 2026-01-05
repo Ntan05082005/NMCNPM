@@ -22,6 +22,7 @@ import SubmissionResult from './pages/SubmissionResult/index.jsx';
 import SubmissionDetail from './pages/SubmissionDetail/index.jsx';
 import AdminDashboard from './pages/Admin/index.jsx';
 import ProblemEditor from './pages/Admin/ProblemEditor.jsx';
+import OAuth2Redirect from './pages/OAuth2Redirect/index.jsx';
 import AIChatbot from './components/AIChatbot/AIChatbot.jsx';
 import { AIContextProvider } from './components/AIChatbot/AIContext.jsx';
 
@@ -155,6 +156,7 @@ function App() {
           <Route path="/admin" element={<AdminDashboard />} />
           <Route path="/admin/problems/new" element={<ProblemEditor />} />
           <Route path="/admin/problems/:id/edit" element={<ProblemEditor />} />
+          <Route path="/oauth2/redirect" element={<OAuth2Redirect />} />
           <Route path="*" element={<div style={{ padding: 20 }}>No route matched</div>} />
         </Routes>
         <AIChatbot />

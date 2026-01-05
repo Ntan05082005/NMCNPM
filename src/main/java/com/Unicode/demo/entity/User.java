@@ -29,8 +29,15 @@ public class User {
     private String email;
 
     @JsonIgnore
-    @Column(nullable = false)
+    @Column(nullable = true) // nullable for OAuth users (password-less)
     private String password;
+
+    // OAuth2 fields
+    @Column(length = 20)
+    private String provider = "LOCAL"; // LOCAL, GOOGLE, GITHUB, FACEBOOK
+
+    @Column(name = "provider_id")
+    private String providerId;
 
     @JsonIgnore
     @Enumerated(EnumType.STRING)
