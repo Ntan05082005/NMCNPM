@@ -119,6 +119,8 @@ export default function AdminDashboard() {
 
     const handleLogout = () => {
         localStorage.clear();
+        // Remove all theme classes from body
+        document.body.classList.remove('theme-dark', 'theme-christmas', 'theme-newyear', 'theme-light');
         navigate('/login');
     };
 

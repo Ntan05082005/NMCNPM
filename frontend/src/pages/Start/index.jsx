@@ -1,10 +1,15 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./start.css";
 import heroMan from "../../assets/hero-women.png";
 import { Link } from "react-router-dom";
 
 
 export default function Start() {
+  // Reset theme to default on start page (no user logged in)
+  useEffect(() => {
+    document.body.className = '';
+  }, []);
+
   return (
     <div className="start-page">
       <div className="hero-card">
@@ -13,8 +18,8 @@ export default function Start() {
           <div className="logo" onClick={() => window.location.href = '/dashboard'} style={{ cursor: 'pointer' }} title="Go to Dashboard">UniCode</div>
 
           <nav className="nav-links">
-            <Link 
-              to="/problems" 
+            <Link
+              to="/problems"
               style={{
                 cursor: 'pointer',
                 textDecoration: 'none',
@@ -25,14 +30,14 @@ export default function Start() {
             >
               Practice
             </Link>
-            <Link 
-              to="/about" 
-              style={{color: '#666'}}
+            <Link
+              to="/about"
+              style={{ color: '#666' }}
             >
               About Us
             </Link>
-            <Link 
-              to="/login" 
+            <Link
+              to="/login"
               style={{
                 cursor: 'pointer',
                 textDecoration: 'none',
@@ -46,7 +51,7 @@ export default function Start() {
             </Link>
           </nav>
 
-          <Link to="/signup" style={{textDecoration: 'none'}}>
+          <Link to="/signup" style={{ textDecoration: 'none' }}>
             <button className="btn btn-primary small">Sign Up</button>
           </Link>
         </header>
@@ -60,7 +65,7 @@ export default function Start() {
           <section className="hero-left">
             <h1 className="hero-title">
               <span className="line1"> Building Tomorrow</span>
-               <br />
+              <br />
 
               <span className="line2"> One Line At A Time
               </span>

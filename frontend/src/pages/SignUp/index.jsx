@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "./signup.css";
 import heroMan from "../../assets/ảnh-sinh-viên.png";
 // Import thêm icon Check hình tròn (FaCheckCircle)
 import { FaRegEyeSlash, FaGithub, FaFacebook, FaCheckCircle } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { registerUser } from "../../API/api-signup.js";
-import { Link } from "react-router-dom"; 
+import { Link } from "react-router-dom";
 
 
 
@@ -18,12 +18,17 @@ export default function SignUp() {
   // --- 1. STATE MỚI: Kiểm tra đăng ký thành công chưa ---
   const [isSuccess, setIsSuccess] = useState(false);
 
-   // ⬅ NEW: state cho email & username
+  // ⬅ NEW: state cho email & username
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
-  
+
   // State cho thông báo lỗi từ backend
   const [errorMessage, setErrorMessage] = useState("");
+
+  // Reset theme to default on signup page (no user logged in)
+  useEffect(() => {
+    document.body.className = '';
+  }, []);
 
   // Validate Password Real-time
   const handlePasswordChange = (e) => {
@@ -70,13 +75,13 @@ export default function SignUp() {
 
       // Backend trả về lỗi dạng plain text trong response.data
       let backendError = "Register failed! Please try again.";
-      
+
       if (err.response?.data) {
         // Nếu backend trả về string trực tiếp (như "Username đã tồn tại!")
         if (typeof err.response.data === 'string') {
           backendError = err.response.data;
           console.log("Lỗi dạng string:", backendError);
-        } 
+        }
         // Nếu backend trả về object có field message
         else if (err.response.data.message) {
           backendError = err.response.data.message;
@@ -85,7 +90,7 @@ export default function SignUp() {
       } else {
         console.log("Không có err.response.data");
       }
-      
+
       console.log("Error message sẽ hiển thị:", backendError);
       setErrorMessage(backendError);
     }
@@ -100,7 +105,7 @@ export default function SignUp() {
             <Link to="/about">About Us</Link>
             <Link to="/login" className="text-blue">LogIn</Link>
             <Link to="/signup">
-                <button className="btn btn-primary small">Sign Up</button>
+              <button className="btn btn-primary small">Sign Up</button>
             </Link>
           </nav>
         </header>
@@ -156,10 +161,10 @@ export default function SignUp() {
                 <>
                   <form onSubmit={handleSubmit}>
                     <div className="form-group">
-                      <input required type="email" placeholder="Email" className="form-input" value={email} onChange={(e) => setEmail(e.target.value)}/>
+                      <input required type="email" placeholder="Email" className="form-input" value={email} onChange={(e) => setEmail(e.target.value)} />
                     </div>
                     <div className="form-group">
-                      <input required type="text" placeholder="Username" className="form-input"value={username} onChange={(e) => setUsername(e.target.value)}  />
+                      <input required type="text" placeholder="Username" className="form-input" value={username} onChange={(e) => setUsername(e.target.value)} />
                     </div>
 
                     <div className="form-group">
@@ -183,12 +188,12 @@ export default function SignUp() {
 
                     {/* Hiển thị lỗi từ backend */}
                     {errorMessage && (
-                      <div style={{ 
-                        color: '#dc3545', 
-                        backgroundColor: '#f8d7da', 
+                      <div style={{
+                        color: '#dc3545',
+                        backgroundColor: '#f8d7da',
                         border: '1px solid #f5c6cb',
-                        padding: '10px', 
-                        borderRadius: '5px', 
+                        padding: '10px',
+                        borderRadius: '5px',
                         marginBottom: '15px',
                         fontSize: '14px'
                       }}>
