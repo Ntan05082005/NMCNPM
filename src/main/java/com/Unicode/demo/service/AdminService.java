@@ -201,11 +201,35 @@ public class AdminService {
 
     // ==================== SUBMISSION MANAGEMENT ====================
 
-    public Page<Submission> getAllSubmissions(int page, int size, String status, Long problemId, Long userId) {
+    public Page<Submission> getAllSubmissions(int page, int size, String status, String language, String username,
+            Long problemId, Long userId) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("submittedAt").descending());
 
-        // For now, return all submissions - could add filters later
-        return submissionRepository.findAll(pageable);
+        // Build specification for dynamic filtering
+        org.springframework.data.jpa.domain.Specification<Submission> spec = (root, query, cb) -> cb.conjunction();
+
+        if (status != null && !status.isEmpty()) {
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("status").as(String.class), status));
+        }
+
+        if (language != null && !language.isEmpty()) {
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("language").as(String.class), language));
+        }
+
+        if (username != null && !username.isEmpty()) {
+            spec = spec.and((root, query, cb) -> cb.like(cb.lower(root.get("user").get("username")),
+                    "%" + username.toLowerCase() + "%"));
+        }
+
+        if (problemId != null) {
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("problem").get("id"), problemId));
+        }
+
+        if (userId != null) {
+            spec = spec.and((root, query, cb) -> cb.equal(root.get("user").get("id"), userId));
+        }
+
+        return submissionRepository.findAll(spec, pageable);
     }
 
     public List<Submission> getAcceptedSolutionsForProblem(Long problemId) {

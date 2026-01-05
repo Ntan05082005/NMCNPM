@@ -188,9 +188,12 @@ public class AdminController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             @RequestParam(required = false) String status,
+            @RequestParam(required = false) String language,
+            @RequestParam(required = false) String username,
             @RequestParam(required = false) Long problemId,
             @RequestParam(required = false) Long userId) {
-        return ResponseEntity.ok(adminService.getAllSubmissions(page, size, status, problemId, userId));
+        return ResponseEntity
+                .ok(adminService.getAllSubmissions(page, size, status, language, username, problemId, userId));
     }
 
     @GetMapping("/problems/{problemId}/solutions")

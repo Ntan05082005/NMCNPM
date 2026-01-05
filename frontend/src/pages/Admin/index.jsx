@@ -26,6 +26,11 @@ export default function AdminDashboard() {
     // Submissions state
     const [submissions, setSubmissions] = useState([]);
     const [submissionsPage, setSubmissionsPage] = useState(0);
+    const [submissionFilters, setSubmissionFilters] = useState({
+        username: '',
+        status: '',
+        language: ''
+    });
 
     const username = localStorage.getItem('username') || 'Admin';
     const userRole = localStorage.getItem('role');
@@ -44,7 +49,7 @@ export default function AdminDashboard() {
         if (activeTab === 'users') loadUsers();
         if (activeTab === 'problems') loadProblems();
         if (activeTab === 'submissions') loadSubmissions();
-    }, [activeTab, usersPage, problemsPage, submissionsPage, problemSearch]);
+    }, [activeTab, usersPage, problemsPage, submissionsPage, problemSearch, submissionFilters]);
 
     const loadStats = async () => {
         try {
@@ -79,8 +84,8 @@ export default function AdminDashboard() {
 
     const loadSubmissions = async () => {
         try {
-            // Load all submissions for client-side pagination
-            const res = await getAllSubmissions(0, 1000);
+            // Load submissions with filters
+            const res = await getAllSubmissions(0, 1000, submissionFilters);
             setSubmissions(res.data.content || []);
         } catch (err) {
             console.error('Failed to load submissions:', err);
@@ -146,27 +151,27 @@ export default function AdminDashboard() {
     // Filter problems by difficulty and search (client-side)
     const filteredProblems = useMemo(() => {
         let result = problems;
-        
+
         // Filter by difficulty
         if (difficultyFilter !== 'ALL') {
             result = result.filter(p => p.difficulty?.toUpperCase() === difficultyFilter);
         }
-        
+
         // Filter by search term
         if (problemSearch.trim()) {
             const search = problemSearch.toLowerCase().trim();
-            result = result.filter(p => 
+            result = result.filter(p =>
                 p.title?.toLowerCase().includes(search) ||
                 p.id?.toString().includes(search)
             );
         }
-        
+
         return result;
     }, [problems, difficultyFilter, problemSearch]);
 
     // Calculate pagination for filtered results
     const filteredTotalPages = Math.ceil(filteredProblems.length / ITEMS_PER_PAGE);
-    
+
     // Get current page items
     const paginatedProblems = useMemo(() => {
         const start = problemsPage * ITEMS_PER_PAGE;
@@ -180,7 +185,7 @@ export default function AdminDashboard() {
 
     // ==================== USERS PAGINATION ====================
     const usersTotalPages = Math.ceil(users.length / ITEMS_PER_PAGE);
-    
+
     const paginatedUsers = useMemo(() => {
         const start = usersPage * ITEMS_PER_PAGE;
         return users.slice(start, start + ITEMS_PER_PAGE);
@@ -188,14 +193,14 @@ export default function AdminDashboard() {
 
     // ==================== SUBMISSIONS PAGINATION ====================
     const submissionsTotalPages = Math.ceil(submissions.length / ITEMS_PER_PAGE);
-    
+
     const paginatedSubmissions = useMemo(() => {
         const start = submissionsPage * ITEMS_PER_PAGE;
         return submissions.slice(start, start + ITEMS_PER_PAGE);
     }, [submissions, submissionsPage]);
 
-    const sortLabel = difficultyFilter === 'ALL' 
-        ? 'All difficulties' 
+    const sortLabel = difficultyFilter === 'ALL'
+        ? 'All difficulties'
         : `Difficulty: ${getDifficultyLabel(difficultyFilter)}`;
 
     const getStatusClass = (status) => {
@@ -389,7 +394,7 @@ export default function AdminDashboard() {
                                                 </tr>
                                             ))}
                                             {/* Fill empty rows to maintain fixed height */}
-                                            {paginatedProblems.length < ITEMS_PER_PAGE && 
+                                            {paginatedProblems.length < ITEMS_PER_PAGE &&
                                                 Array.from({ length: ITEMS_PER_PAGE - paginatedProblems.length }).map((_, i) => (
                                                     <tr key={`empty-${i}`} className="empty-row">
                                                         <td>&nbsp;</td>
@@ -451,7 +456,7 @@ export default function AdminDashboard() {
                                                 </tr>
                                             ))}
                                             {/* Fill empty rows to maintain fixed height */}
-                                            {paginatedUsers.length < ITEMS_PER_PAGE && 
+                                            {paginatedUsers.length < ITEMS_PER_PAGE &&
                                                 Array.from({ length: ITEMS_PER_PAGE - paginatedUsers.length }).map((_, i) => (
                                                     <tr key={`empty-${i}`} className="empty-row">
                                                         <td>&nbsp;</td>
@@ -477,6 +482,49 @@ export default function AdminDashboard() {
                         {/* Submissions Tab */}
                         {activeTab === 'submissions' && (
                             <div className="submissions-section">
+                                {/* Submissions Filter Bar */}
+                                <div className="section-header submissions-filters">
+                                    <div className="search-box">
+                                        <FiSearch />
+                                        <input
+                                            type="text"
+                                            placeholder="Search by username..."
+                                            value={submissionFilters.username}
+                                            onChange={(e) => setSubmissionFilters(prev => ({ ...prev, username: e.target.value }))}
+                                        />
+                                    </div>
+                                    <div className="filter-group">
+                                        <select
+                                            value={submissionFilters.status}
+                                            onChange={(e) => setSubmissionFilters(prev => ({ ...prev, status: e.target.value }))}
+                                            className="filter-select"
+                                        >
+                                            <option value="">All Status</option>
+                                            <option value="ACCEPTED">Accepted</option>
+                                            <option value="WRONG_ANSWER">Wrong Answer</option>
+                                            <option value="TIME_LIMIT_EXCEEDED">Time Limit</option>
+                                            <option value="RUNTIME_ERROR">Runtime Error</option>
+                                            <option value="COMPILATION_ERROR">Compile Error</option>
+                                            <option value="PENDING">Pending</option>
+                                        </select>
+                                        <select
+                                            value={submissionFilters.language}
+                                            onChange={(e) => setSubmissionFilters(prev => ({ ...prev, language: e.target.value }))}
+                                            className="filter-select"
+                                        >
+                                            <option value="">All Languages</option>
+                                            <option value="CPP">C++</option>
+                                            <option value="PYTHON">Python</option>
+                                            <option value="JAVASCRIPT">JavaScript</option>
+                                        </select>
+                                        <button
+                                            className="btn-secondary"
+                                            onClick={() => setSubmissionFilters({ username: '', status: '', language: '' })}
+                                        >
+                                            Clear Filters
+                                        </button>
+                                    </div>
+                                </div>
                                 <div className="table-container">
                                     <table className="admin-table submissions-table">
                                         <thead>
@@ -511,7 +559,7 @@ export default function AdminDashboard() {
                                                 </tr>
                                             ))}
                                             {/* Fill empty rows to maintain fixed height */}
-                                            {paginatedSubmissions.length < ITEMS_PER_PAGE && 
+                                            {paginatedSubmissions.length < ITEMS_PER_PAGE &&
                                                 Array.from({ length: ITEMS_PER_PAGE - paginatedSubmissions.length }).map((_, i) => (
                                                     <tr key={`empty-${i}`} className="empty-row">
                                                         <td>&nbsp;</td>
