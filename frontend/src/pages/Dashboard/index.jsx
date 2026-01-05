@@ -162,10 +162,15 @@ export default function Dashboard() {
   };
 
   const getStatusClass = (status) => {
-    switch (status) {
+    const upperStatus = (status || '').toUpperCase();
+    switch (upperStatus) {
       case 'ACCEPTED': return 'status-accepted';
       case 'WRONG_ANSWER': return 'status-wrong';
       case 'RUNTIME_ERROR': return 'status-error';
+      case 'COMPILE_ERROR':
+      case 'COMPILATION_ERROR': return 'status-compile';
+      case 'TIME_LIMIT_EXCEEDED': return 'status-tle';
+      case 'MEMORY_LIMIT_EXCEEDED': return 'status-mle';
       default: return 'status-pending';
     }
   };

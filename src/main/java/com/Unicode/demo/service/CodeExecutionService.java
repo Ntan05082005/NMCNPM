@@ -102,7 +102,7 @@ public class CodeExecutionService {
             case PYTHON -> String.format(
                     "docker run --rm --network=%s -v \"%s:/code:ro\" -w /code trantho16/unicode-python:latest " +
                             "sh -c \"start=$(date +%%s%%N) && " +
-                            "/usr/bin/time -v -o /tmp/time.txt python solution.py < input.txt; " +
+                            "/usr/bin/time -v -o /tmp/time.txt python solution.py < input.txt && " +
                             "end=$(date +%%s%%N) && " +
                             "mem=$(grep 'Maximum resident set size' /tmp/time.txt | awk '{print $NF}') && " +
                             "echo ___TIME_MS:$(((end-start)/1000000))___ && echo ___MEM_KB:${mem:-0}___\"",
@@ -110,7 +110,7 @@ public class CodeExecutionService {
             case JAVASCRIPT -> String.format(
                     "docker run --rm --network=%s -v \"%s:/code:ro\" -w /code trantho16/unicode-node:latest " +
                             "sh -c \"start=$(date +%%s%%N) && " +
-                            "/usr/bin/time -v -o /tmp/time.txt node solution.js < input.txt; " +
+                            "/usr/bin/time -v -o /tmp/time.txt node solution.js < input.txt && " +
                             "end=$(date +%%s%%N) && " +
                             "mem=$(grep 'Maximum resident set size' /tmp/time.txt | awk '{print $NF}') && " +
                             "echo ___TIME_MS:$(((end-start)/1000000))___ && echo ___MEM_KB:${mem:-0}___\"",
@@ -119,7 +119,7 @@ public class CodeExecutionService {
                     "docker run --rm --network=%s -v \"%s:/code\" -w /code trantho16/unicode-gcc:latest " +
                             "sh -c \"g++ -O2 -o solution solution.cpp && " +
                             "start=$(date +%%s%%N) && " +
-                            "/usr/bin/time -v -o /tmp/time.txt ./solution < input.txt; " +
+                            "/usr/bin/time -v -o /tmp/time.txt ./solution < input.txt && " +
                             "end=$(date +%%s%%N) && " +
                             "mem=$(grep 'Maximum resident set size' /tmp/time.txt | awk '{print $NF}') && " +
                             "echo ___TIME_MS:$(((end-start)/1000000))___ && echo ___MEM_KB:${mem:-0}___\"",

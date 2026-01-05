@@ -109,6 +109,11 @@ public class SubmissionService {
 
                 if (result.timedOut()) {
                     hasTimeout = true;
+                } else if (problem.getTimeLimitMs() != null
+                        && result.executionTimeMs() > problem.getTimeLimitMs() + 200) {
+                    // Soft timeout check (external timeout is 10s, but problem might have 1s limit)
+                    // Add 200ms buffer for overhead
+                    hasTimeout = true;
                 }
 
                 if (result.hasCompilationError()) {
@@ -149,6 +154,14 @@ public class SubmissionService {
                     passed);
             log.debug("Driver template present: {}", driverTemplate != null && !driverTemplate.isEmpty());
 
+            // Check if execution time exceeded problem limit (even if it didn't hit hard
+            // docker timeout)
+            if (problem.getTimeLimitMs() != null && result.executionTimeMs() > problem.getTimeLimitMs() + 200) {
+                // Mark as TLE instead of checking output
+                hasTimeout = true;
+                passed = false;
+            }
+
             if (passed) {
                 passedCount++;
             }
@@ -160,7 +173,7 @@ public class SubmissionService {
                     .actualOutput(result.output())
                     .passed(passed)
                     .executionTimeMs(result.executionTimeMs())
-                    .status(passed ? "CORRECT" : "WRONG_ANSWER")
+                    .status(passed ? "CORRECT" : (hasTimeout ? "TIME_LIMIT_EXCEEDED" : "WRONG_ANSWER"))
                     .build();
 
             testResults.add(testResult);

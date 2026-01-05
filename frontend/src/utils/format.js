@@ -64,3 +64,32 @@ export function formatStatus(status) {
         .toLowerCase()
         .replace(/\b\w/g, c => c.toUpperCase());
 }
+
+/**
+ * Get CSS class for status badge based on submission status
+ * Returns consistent class names for styling across all pages
+ */
+export function getStatusClass(status) {
+    if (!status) return 'pending';
+
+    const statusStr = String(status).toUpperCase();
+
+    switch (statusStr) {
+        case 'ACCEPTED':
+            return 'accepted';
+        case 'WRONG_ANSWER':
+            return 'wrong';
+        case 'RUNTIME_ERROR':
+            return 'runtime-error';
+        case 'COMPILE_ERROR':
+        case 'COMPILATION_ERROR':
+            return 'compile-error';
+        case 'TIME_LIMIT_EXCEEDED':
+            return 'time-limit';
+        case 'MEMORY_LIMIT_EXCEEDED':
+            return 'memory-limit';
+        case 'PENDING':
+        default:
+            return 'pending';
+    }
+}

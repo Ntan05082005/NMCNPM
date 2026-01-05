@@ -65,7 +65,7 @@ const SubmissionDetail = () => {
     if (upperStatus === 'ACCEPTED') return 'status-accepted';
     if (upperStatus === 'WRONG_ANSWER') return 'status-wrong';
     if (upperStatus === 'RUNTIME_ERROR') return 'status-error';
-    if (upperStatus === 'COMPILATION_ERROR' || upperStatus === 'COMPILE_ERROR') return 'status-error';
+    if (upperStatus === 'COMPILATION_ERROR' || upperStatus === 'COMPILE_ERROR') return 'status-compile';
     if (upperStatus === 'TIME_LIMIT_EXCEEDED') return 'status-tle';
     if (upperStatus === 'PENDING') return 'status-pending';
     return 'status-error';
