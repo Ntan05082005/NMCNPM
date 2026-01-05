@@ -58,6 +58,8 @@ export const getTestCases = (problemId) =>
 export const getAllSubmissions = (page = 0, size = 20, filters = {}) => {
     let url = `/api/admin/submissions?page=${page}&size=${size}`;
     if (filters.status) url += `&status=${filters.status}`;
+    if (filters.language) url += `&language=${filters.language}`;
+    if (filters.username) url += `&username=${encodeURIComponent(filters.username)}`;
     if (filters.problemId) url += `&problemId=${filters.problemId}`;
     if (filters.userId) url += `&userId=${filters.userId}`;
     return API.get(url);
