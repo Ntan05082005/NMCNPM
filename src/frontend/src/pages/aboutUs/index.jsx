@@ -12,7 +12,7 @@ const TEAM = [
   { name: "Tran Tho", role: "Backend Developer" },
   { name: "Tran Thi Xuan Tai", role: "Frontend Developer" },
   { name: "Do Thi Hoai Thuong", role: "Frontend Developer" },
-  { name: "Dinh Ngoc Anh Duong", role: "QA Tester" },
+  { name: "Dinh Ngoc Anh Duong", role: "Backend Developer" },
 ];
 
 const TECH = ["React", "Spring Boot", "PostgreSQL", "Redis", "Docker"];
