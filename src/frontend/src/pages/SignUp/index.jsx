@@ -103,7 +103,7 @@ export default function SignUp() {
           <nav className="nav-links">
             <Link to="/practice">Practice</Link>
             <Link to="/about">About Us</Link>
-            <Link to="/login" className="text-blue">LogIn</Link>
+            <Link to="/login" className="text-blue">Log In</Link>
             <Link to="/signup">
               <button className="btn btn-primary small">Sign Up</button>
             </Link>
